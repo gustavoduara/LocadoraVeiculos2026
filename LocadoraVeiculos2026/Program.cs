@@ -1,8 +1,8 @@
+using LocadoraDeVeiculos.Aplicacao;
 using LocadoraDeVeiculos.Infraestrutura.Orm;
 using LocadoraDeVeiculos.WebApi.Config.Orm;
 using LocadoraDeVeiculos.WebApi.Config.Swagger;
 using System.Text.Json.Serialization;
-
 namespace LocadoraDeVeiculos.WebApi;
 
 public class Program
