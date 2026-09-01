@@ -1,15 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36804.6 d17.14
+VisualStudioVersion = 17.14.36804.6
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocadoraVeiculos.WebApi", "LocadoraVeiculos2026\LocadoraVeiculos.WebApi.csproj", "{58DAF050-77A1-4C30-A48D-9059A101B072}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocadoraDeVeiculos.WebApi", "LocadoraVeiculos2026\LocadoraDeVeiculos.WebApi.csproj", "{58DAF050-77A1-4C30-A48D-9059A101B072}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocadoraVeiculos.Aplicacao", "LocadoraVeiculos.Aplicacao\LocadoraVeiculos.Aplicacao.csproj", "{EF72B5B9-87A8-4081-A7BB-9E980B02F2DC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocadoraDeVeiculos.Aplicacao", "LocadoraVeiculos.Aplicacao\LocadoraDeVeiculos.Aplicacao.csproj", "{EF72B5B9-87A8-4081-A7BB-9E980B02F2DC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocadoraVeiculos.Dominio", "LocadoraVeiculos.Dominio\LocadoraVeiculos.Dominio.csproj", "{94A625D1-4DA7-4EB5-80D1-FEDBD3047DD9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocadoraDeVeiculos.Dominio", "LocadoraVeiculos.Dominio\LocadoraDeVeiculos.Dominio.csproj", "{94A625D1-4DA7-4EB5-80D1-FEDBD3047DD9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocadoraVeiculos.Infraestrutura.Orm", "LocadoraVeiculos.Infraestrutura.Orm\LocadoraVeiculos.Infraestrutura.Orm.csproj", "{5E9DE3D5-26AE-4FF2-9354-89B9FD793846}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocadoraDeVeiculos.Infraestrutura.Orm", "LocadoraVeiculos.Infraestrutura.Orm\LocadoraDeVeiculos.Infraestrutura.Orm.csproj", "{5E9DE3D5-26AE-4FF2-9354-89B9FD793846}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2. Core", "2. Core", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
