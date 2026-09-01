@@ -1,16 +1,18 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
+using Microsoft.EntityFrameworkCore.SqlServer;
 
 namespace LocadoraDeVeiculos.Infraestrutura.Orm.Compartilhado;
 
-public class AppDbContext(DbContextOptions options) : DbContext(options)
+public static class AppDbContextFactory
 {
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    public static AppDbContext CriarDbContext(string connectionString)
     {
-        var assembly = typeof(AppDbContext).Assembly;
+        var options = new DbContextOptionsBuilder<AppDbContext>()
+            .UseSqlServer(connectionString, opt => opt.EnableRetryOnFailure(3))
+            .Options;
 
-        modelBuilder.ApplyConfigurationsFromAssembly(assembly);
+        var dbContext = new AppDbContext(options);
 
-        base.OnModelCreating(modelBuilder);
+        return dbContext;
     }
 }

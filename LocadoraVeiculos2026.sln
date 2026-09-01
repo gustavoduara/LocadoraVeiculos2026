@@ -10,6 +10,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocadoraDeVeiculos.Dominio", "LocadoraVeiculos.Dominio\LocadoraDeVeiculos.Dominio.csproj", "{94A625D1-4DA7-4EB5-80D1-FEDBD3047DD9}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocadoraDeVeiculos.Infraestrutura.Orm", "LocadoraVeiculos.Infraestrutura.Orm\LocadoraDeVeiculos.Infraestrutura.Orm.csproj", "{5E9DE3D5-26AE-4FF2-9354-89B9FD793846}"
+	ProjectSection(ProjectDependencies) = postProject
+		{94A625D1-4DA7-4EB5-80D1-FEDBD3047DD9} = {94A625D1-4DA7-4EB5-80D1-FEDBD3047DD9}
+		{EF72B5B9-87A8-4081-A7BB-9E980B02F2DC} = {EF72B5B9-87A8-4081-A7BB-9E980B02F2DC}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2. Core", "2. Core", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
