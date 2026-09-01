@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -9,7 +10,7 @@ public static class DependencyInjection
     public static IServiceCollection AddCamadaAplicacao(this IServiceCollection services, IConfiguration configuration)
     {
         var assembly = typeof(DependencyInjection).Assembly;
-
+        
         services.AddValidatorsFromAssembly(assembly);
 
         var licenseKey = configuration["LUCKYPENNY_LICENSE_KEY"];
