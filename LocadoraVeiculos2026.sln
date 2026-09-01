@@ -4,6 +4,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.14.36804.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocadoraDeVeiculos.WebApi", "LocadoraVeiculos2026\LocadoraDeVeiculos.WebApi.csproj", "{58DAF050-77A1-4C30-A48D-9059A101B072}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5E9DE3D5-26AE-4FF2-9354-89B9FD793846} = {5E9DE3D5-26AE-4FF2-9354-89B9FD793846}
+		{94A625D1-4DA7-4EB5-80D1-FEDBD3047DD9} = {94A625D1-4DA7-4EB5-80D1-FEDBD3047DD9}
+		{EF72B5B9-87A8-4081-A7BB-9E980B02F2DC} = {EF72B5B9-87A8-4081-A7BB-9E980B02F2DC}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocadoraDeVeiculos.Aplicacao", "LocadoraVeiculos.Aplicacao\LocadoraDeVeiculos.Aplicacao.csproj", "{EF72B5B9-87A8-4081-A7BB-9E980B02F2DC}"
 EndProject
