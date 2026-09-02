@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using LocadoraDeVeiculos.Infraestrutura.Jwt.Services;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace LocadoraDeVeiculos.Infraestrutura.Jwt
+namespace LocadoraDeVeiculos.Infraestrutura.Jwt;
+
+public static class DependencyInjection
 {
-    internal class DependencyInjection
+    public static IServiceCollection AddCamadaInfraestruturaJwt(this IServiceCollection services)
     {
+        services.AddScoped<AccessTokenProvider>();
+        services.AddScoped<RefreshTokenProvider>();
+
+        return services;
     }
 }
