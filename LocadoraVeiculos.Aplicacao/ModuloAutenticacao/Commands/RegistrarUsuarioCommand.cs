@@ -1,12 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using FluentResults;
+using LocadoraDeVeiculos.Dominio.ModuloAutenticacao;
+using MediatR;
 namespace LocadoraDeVeiculos.Aplicacao.ModuloAutenticacao.Commands
 {
-    internal class RegistrarUsuarioCommand
-    {
-    }
+    public record RegistrarUsuarioCommand(
+        string NomeCompleto,
+        string Email,
+        string Senha,
+        string ConfirmarSenha
+        )
+        
+        : IRequest<Result<(AccessToken AccessToken, RefreshToken RefreshToken)>>;
+    
+
+    
 }
