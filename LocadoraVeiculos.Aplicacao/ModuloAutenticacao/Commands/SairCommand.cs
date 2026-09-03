@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FluentResults;
+using MediatR;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +8,5 @@ using System.Threading.Tasks;
 
 namespace LocadoraDeVeiculos.Aplicacao.ModuloAutenticacao.Commands
 {
-    internal class SairCommand
-    {
-    }
+    public record SairCommand(string RefreshTokenHash) : IRequest<Result>;
 }
