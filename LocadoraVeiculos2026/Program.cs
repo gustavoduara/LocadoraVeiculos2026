@@ -1,4 +1,5 @@
 using LocadoraDeVeiculos.Aplicacao;
+using LocadoraDeVeiculos.Infraestrutura.Jwt;
 using LocadoraDeVeiculos.Infraestrutura.Orm;
 using LocadoraDeVeiculos.WebApi.Config.Http;
 using LocadoraDeVeiculos.WebApi.Config.Orm;
@@ -13,7 +14,9 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
-        builder.Services.AddCamadaInfraestruturaOrm(builder.Configuration);
+        builder.Services.AddCamadaInfraestruturaOrm(builder.Configuration)
+            .AddCamadaInfraestruturaJwt();
+
         builder.Services.AddCamadaAplicacao(builder.Configuration);
         builder.Services.AddSwaggerConfig();
 

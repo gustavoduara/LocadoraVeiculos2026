@@ -14,7 +14,7 @@ public class AccessTokenProvider
 {
     private readonly AppDbContext dbContext;
     private readonly UserManager<Usuario> userManager;
-
+    private readonly IConfiguration configuration;
     private readonly string audienciaValida;
     private readonly string chaveAssinaturaJwt;
 

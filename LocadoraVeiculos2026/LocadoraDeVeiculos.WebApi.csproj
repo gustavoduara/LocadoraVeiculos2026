@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\LocadoraDeVeiculos.Infraestrutura.jwt\LocadoraDeVeiculos.Infraestrutura.Jwt.csproj" />
     <ProjectReference Include="..\LocadoraVeiculos.Aplicacao\LocadoraDeVeiculos.Aplicacao.csproj" />
     <ProjectReference Include="..\LocadoraVeiculos.Infraestrutura.Orm\LocadoraDeVeiculos.Infraestrutura.Orm.csproj" />
   </ItemGroup>
