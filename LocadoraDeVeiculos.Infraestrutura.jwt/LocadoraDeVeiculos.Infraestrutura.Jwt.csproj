@@ -13,9 +13,9 @@
   <ItemGroup>
 
 	<FrameworkReference Include="Microsoft.AspNetCore.App"/>
-    <ProjectReference Include="..\LocadoraVeiculos.Aplicacao\LocadoraDeVeiculos.Aplicacao.csproj" />
     <ProjectReference Include="..\LocadoraVeiculos.Dominio\LocadoraDeVeiculos.Dominio.csproj" />
-    <ProjectReference Include="..\LocadoraVeiculos.Infraestrutura.Orm\LocadoraDeVeiculos.Infraestrutura.Orm.csproj" />
+	<ProjectReference Include="..\LocadoraVeiculos.Infraestrutura.Orm\LocadoraDeVeiculos.Infraestrutura.Orm.csproj" />
+
   </ItemGroup>
 
 </Project>
