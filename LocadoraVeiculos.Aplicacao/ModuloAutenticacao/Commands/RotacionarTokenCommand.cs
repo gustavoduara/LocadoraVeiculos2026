@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace LocadoraDeVeiculos.Aplicacao.ModuloAutenticacao.Commands
 {
     public record RotacionarTokenCommand(string RefreshTokenString)
-        : IRequest<Result<(AccessToken AccessToken, RefreshToken, RefreshToken)>>;
+        : IRequest<Result<(AccessToken, RefreshToken)>>;
     
     
 }
