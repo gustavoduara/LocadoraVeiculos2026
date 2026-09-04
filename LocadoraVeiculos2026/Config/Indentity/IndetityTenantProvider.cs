@@ -1,6 +1,26 @@
-﻿namespace LocadoraDeVeiculos.WebApi.Config.Indentity
+﻿using LocadoraDeVeiculos.Dominio.ModuloAutenticacao;
+
+namespace LocadoraDeVeiculos.WebApi.Config.Identity;
+
+public class IdentityTenantProvider(IHttpContextAccessor contextAccessor) : ITenantProvider
 {
-    public class IndetityTenantProvider
+    public Guid? EmpresaId
     {
+        get
+        {
+            var user = contextAccessor.HttpContext?.User;
+
+            var empresaIdClaim = user?.FindFirst("EmpresaId")?.Value;
+
+            if (Guid.TryParse(empresaIdClaim, out var empresaId))
+                return empresaId;
+
+            return null;
+        }
+    }
+
+    public bool EstaNoCargo(string cargo)
+    {
+        return contextAccessor.HttpContext?.User?.IsInRole(cargo) ?? false;
     }
 }
