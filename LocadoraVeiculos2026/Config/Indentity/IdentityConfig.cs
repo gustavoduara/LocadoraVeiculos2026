@@ -17,6 +17,7 @@ public static class IdentityConfig
     {
         services.AddScoped<ITenantProvider, IdentityTenantProvider>();
 
+
         services.AddIdentity<Usuario, Cargo>(options =>
         {
             options.User.RequireUniqueEmail = true;

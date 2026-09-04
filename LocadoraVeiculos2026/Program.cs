@@ -2,6 +2,7 @@ using LocadoraDeVeiculos.Aplicacao;
 using LocadoraDeVeiculos.Infraestrutura.Jwt;
 using LocadoraDeVeiculos.Infraestrutura.Orm;
 using LocadoraDeVeiculos.WebApi.Config.Http;
+using LocadoraDeVeiculos.WebApi.Config.Identity;
 using LocadoraDeVeiculos.WebApi.Config.Orm;
 using LocadoraDeVeiculos.WebApi.Config.Swagger;
 using System.Text.Json.Serialization;
@@ -17,8 +18,12 @@ public class Program
         builder.Services.AddCamadaInfraestruturaOrm(builder.Configuration)
             .AddCamadaInfraestruturaJwt();
 
+
         builder.Services.AddCamadaAplicacao(builder.Configuration);
+
         builder.Services.AddSwaggerConfig();
+        builder.Services.AddIdentityProviderConfig(builder.Configuration);
+
 
         builder.Services.ConfigureOptions<CorsConfig>() .AddCors();
 
