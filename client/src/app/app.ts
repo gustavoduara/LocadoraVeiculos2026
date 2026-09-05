@@ -1,12 +1,12 @@
-import { Component, signal } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
-  templateUrl: './app.html',
-  styleUrl: './app.scss'
+  imports: [],
+  template: `
+    <main class="container-fluid py-3">
+      <h1 class="text-4xl">LocadoraDeVeiculos!</h1>
+    </main>
+  `,
 })
-export class App {
-  protected readonly title = signal('client');
-}
+export class App { }
