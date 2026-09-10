@@ -1,5 +1,3 @@
-import { PartialObserver } from 'rxjs';
-
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,7 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { Router, RouterLink } from '@angular/router';
 
 import { NotificacaoService } from '../../shared/notificacao/notificacao.service';
-import { AccessTokenModel, LoginModel } from '../auth.models';
+import { LoginModel } from '../auth.models';
 import { AuthService } from '../auth.service';
 
 @Component({
@@ -50,11 +48,17 @@ export class Login {
 
         const loginModel: LoginModel = this.loginForm.value;
 
-        const loginObserver: PartialObserver<AccessTokenModel> = {
-            error: (err) => this.notificacaoService.erro(err),
-            complete: () => this.router.navigate(['/inicio']),
-        };
-
-        this.authService.login(loginModel).subscribe(loginObserver);
+        this.authService.login(loginModel).subscribe({
+            next: () => {
+                this.notificacaoService.sucesso('Login realizado com sucesso!');
+                this.router.navigate(['/inicio']);
+            },
+            error: (err) => {
+                const mensagem = typeof err.error === 'string'
+                    ? err.error
+                    : err.error?.mensagem || 'Falha ao autenticar. Verifique suas credenciais.';
+                this.notificacaoService.erro(mensagem);
+            }
+        });
     }
 }

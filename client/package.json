@@ -31,12 +31,9 @@
     "@angular/material": "^20.2.14",
     "@angular/platform-browser": "^20.3.0",
     "@angular/router": "^20.3.0",
-    "@tailwindcss/postcss": "^4.1.17",
     "date-fns": "^4.1.0",
     "ngx-mask": "^20.0.3",
-    "postcss": "^8.5.6",
     "rxjs": "~7.8.0",
-    "tailwindcss": "^4.1.17",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
@@ -44,7 +41,10 @@
     "@angular/cli": "^20.3.2",
     "@angular/compiler-cli": "^20.3.0",
     "@eslint/js": "^9.39.1",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@tailwindcss/vite": "^4.3.3",
     "@types/jasmine": "~5.1.0",
+    "baseline-browser-mapping": "^2.11.22",
     "eslint": "^9.39.1",
     "globals": "^16.5.0",
     "jasmine-core": "~5.9.0",
@@ -53,7 +53,9 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "postcss": "^8.5.28",
     "prettier": "^3.7.4",
+    "tailwindcss": "^4.3.3",
     "typescript": "~5.9.2",
     "typescript-eslint": "^8.48.1"
   }
