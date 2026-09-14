@@ -19,8 +19,5 @@
 		<ProjectReference Include="..\LocadoraVeiculos.Infraestrutura.Orm\LocadoraDeVeiculos.Infraestrutura.Orm.csproj" />
 		<ProjectReference Include="..\LocadoraVeiculos.Dominio\LocadoraDeVeiculos.Dominio.csproj" />
 	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="ModuloFuncionario\Handlers\" />
-	</ItemGroup>
 
 </Project>
