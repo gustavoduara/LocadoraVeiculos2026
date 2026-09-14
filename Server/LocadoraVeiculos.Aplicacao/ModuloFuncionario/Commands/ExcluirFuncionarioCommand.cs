@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentResults;
+using MediatR;
 
-namespace LocadoraDeVeiculos.Aplicacao.ModuloFuncionario.Commands
-{
-    internal class ExcluirFuncionarioCommand
-    {
-    }
-}
+namespace LocadoraDeVeiculos.Aplicacao.ModuloFuncionario.Commands;
+
+public record ExcluirFuncionarioCommand(Guid Id) : IRequest<Result<ExcluirFuncionarioResult>>;
+
+public record ExcluirFuncionarioResult();

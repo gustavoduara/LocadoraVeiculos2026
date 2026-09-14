@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using FluentResults;
+using MediatR;
 
-namespace LocadoraDeVeiculos.Aplicacao.ModuloFuncionario.Commands
-{
-    internal class SelecionarFuncionarioPorIdQuery
-    {
-    }
-}
+namespace LocadoraDeVeiculos.Aplicacao.ModuloFuncionario.Commands;
+
+public record SelecionarFuncionarioPorIdQuery(Guid Id) : IRequest<Result<SelecionarFuncionarioPorIdResult>>;
+
+public record SelecionarFuncionarioPorIdResult(
+    Guid Id,
+    string NomeCompleto,
+    string Email,
+    decimal Salario,
+    DateTimeOffset AdmissaoEmUtc
+);
