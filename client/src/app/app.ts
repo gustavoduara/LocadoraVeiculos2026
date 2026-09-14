@@ -1,5 +1,3 @@
-import { PartialObserver } from 'rxjs';
-
 import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
@@ -11,7 +9,8 @@ import { ShellComponent } from './shared/shell/shell.component';
 @Component({
   selector: 'app-root',
   imports: [ShellComponent, RouterOutlet, AsyncPipe],
-  template: ` @if (accessToken$ | async; as accessToken) {
+  template: `
+    @if (accessToken$ | async; as accessToken) {
       <app-shell
         [usuarioAutenticado]="accessToken.usuarioAutenticado"
         (logoutRequisitado)="logout()"
@@ -22,7 +21,8 @@ import { ShellComponent } from './shared/shell/shell.component';
       <main class="container-fluid py-3">
         <router-outlet></router-outlet>
       </main>
-    }`,
+    }
+  `,
 })
 export class App {
   protected readonly router = inject(Router);
@@ -32,11 +32,9 @@ export class App {
   protected readonly accessToken$ = this.authService.obterAccessToken();
 
   protected logout() {
-    const sairObserver: PartialObserver<null> = {
+    this.authService.sair().subscribe({
       error: (err) => this.notificacaoService.erro(err.message),
       complete: () => this.router.navigate(['/auth', 'login']),
-    };
-
-    this.authService.sair().subscribe(sairObserver);
+    });
   }
 }

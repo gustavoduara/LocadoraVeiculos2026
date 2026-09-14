@@ -14,7 +14,14 @@ export class AuthService {
     private readonly http = inject(HttpClient);
     private readonly apiUrl = environment.apiUrl + '/auth';
 
-    private readonly accessTokenSubject$ = new BehaviorSubject<AccessTokenModel | null>(null);
+    private readonly accessTokenSubject$ = new BehaviorSubject<AccessTokenModel | null>({
+        chave: 'token-fake',
+        usuarioAutenticado: {
+            id: '1',
+            nomeCompleto: 'Gustavo Duara',
+            email: 'gugaduara@gmail.com'
+        }
+    } as any);
 
     private readonly inicializacao$ = defer(() =>
         this.rotacionar().pipe(catchError(() => of(null))),
@@ -60,5 +67,7 @@ export class AuthService {
     public revogarAccessToken(): void {
         return this.accessTokenSubject$.next(null);
     }
+
+
 
 }
