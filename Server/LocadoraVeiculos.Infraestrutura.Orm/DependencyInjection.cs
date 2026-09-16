@@ -1,8 +1,8 @@
 ﻿using LocadoraDeVeiculos.Infraestrutura.Orm.Compartilhado;
+using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloFuncionario;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
 
 namespace LocadoraDeVeiculos.Infraestrutura.Orm;
 
@@ -13,11 +13,15 @@ public static class DependencyInjection
     {
         services.AddEntityFrameworkConfig(configuration);
 
+        services.AddScoped<RepositorioFuncionarioEmOrm>();
+
         return services;
     }
 
     private static void AddEntityFrameworkConfig(
-        this IServiceCollection services, IConfiguration configuration)
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
     {
         var connectionString = configuration["SQL_CONNECTION_STRING"];
 
@@ -25,6 +29,6 @@ public static class DependencyInjection
             throw new Exception("A variável SQL_CONNECTION_STRING não foi fornecida.");
 
         services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlServer(connectionString, opt => opt.EnableRetryOnFailure(3)));
+            options.UseSqlServer(connectionString, (opt) => opt.EnableRetryOnFailure(3)));
     }
 }
