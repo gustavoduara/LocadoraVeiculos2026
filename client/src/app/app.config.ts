@@ -9,6 +9,7 @@ import { CanActivateFn, provideRouter, Router, Routes } from '@angular/router';
 import { provideAuth } from './auth/auth.provider';
 import { AuthService } from './auth/auth.service';
 import { provideNotifications } from './shared/notificacao/notificacao.provider';
+import { FuncionarioService } from './funcionarios/funcionario.service';
 
 const usuarioDesconhecidoGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
@@ -36,6 +37,14 @@ const routes: Routes = [
     path: 'auth',
     loadChildren: () => import('./auth/auth.routes').then((r) => r.authRoutes),
     canMatch: [usuarioDesconhecidoGuard],
+  },
+
+  {
+    path: 'funcionarios',
+    loadChildren: () =>
+      import('./funcionarios/funcionario.routes').then((r) => r.funcionarioRoutes),
+    canMatch: [usuarioAutenticadoGuard],
+
   },
   {
     path: 'inicio',
