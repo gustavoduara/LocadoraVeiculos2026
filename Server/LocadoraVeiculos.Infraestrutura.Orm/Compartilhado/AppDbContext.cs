@@ -1,5 +1,6 @@
 ﻿using LocadoraDeVeiculos.Dominio.ModuloAutenticacao;
 using LocadoraDeVeiculos.Dominio.ModuloFuncionario;
+using LocadoraDeVeiculos.Dominio.ModuloGrupoVeiculos;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,6 +14,8 @@ public class AppDbContext(
     public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<Funcionario> Funcionarios { get; set; }
 
+    public DbSet<GrupoVeiculos> GruposVeiculos { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -20,6 +23,9 @@ public class AppDbContext(
         {
             // Query Filters
             modelBuilder.Entity<Funcionario>()
+                        .HasQueryFilter(f => f.EmpresaId == tenantProvider.EmpresaId.GetValueOrDefault() && !f.Excluido);
+
+            modelBuilder.Entity<GrupoVeiculos>()
                         .HasQueryFilter(f => f.EmpresaId == tenantProvider.EmpresaId.GetValueOrDefault() && !f.Excluido);
         }
 
