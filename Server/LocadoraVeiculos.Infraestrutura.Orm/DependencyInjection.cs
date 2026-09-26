@@ -1,6 +1,7 @@
-﻿using LocadoraDeVeiculos.Infraestrutura.Orm.Compartilhado;
+﻿using LocadoraDeVeiculos.Dominio.ModuloGrupoVeiculos;
+using LocadoraDeVeiculos.Infraestrutura.Orm.Compartilhado;
 using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloFuncionario;
-using LocadoraDeVeiculos.Dominio.ModuloGrupoVeiculos;
+using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloGrupoVeiculos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +16,8 @@ public static class DependencyInjection
         services.AddEntityFrameworkConfig(configuration);
 
         services.AddScoped<RepositorioFuncionarioEmOrm>();
+
+        services.AddScoped<RepositorioGrupoVeiculosEmOrm>();
 
         return services;
     }

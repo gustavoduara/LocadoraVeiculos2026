@@ -13,7 +13,6 @@ public class AppDbContext(
 {
     public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<Funcionario> Funcionarios { get; set; }
-
     public DbSet<GrupoVeiculos> GruposVeiculos { get; set; }
 
 
