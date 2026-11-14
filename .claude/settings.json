@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dotnet:*)",
+      "Bash(dotnet ef:*)",
+      "Bash(sqlcmd:*)",
+      "Bash(SqlLocalDB:*)",
+      "Bash(npm:*)",
+      "Bash(npx:*)",
+      "PowerShell(dotnet:*)",
+      "PowerShell(dotnet ef:*)",
+      "PowerShell(sqlcmd:*)",
+      "PowerShell(SqlLocalDB:*)",
+      "PowerShell(npm:*)",
+      "PowerShell(npx:*)"
+    ]
+  }
+}
