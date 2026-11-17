@@ -28,6 +28,9 @@ public class MapeadorFuncionarioEmOrm : IEntityTypeConfiguration<Funcionario>
                .HasColumnType("datetimeoffset")
                .IsRequired();
 
+        builder.Property(c => c.Ativo)
+               .IsRequired();
+
         builder.HasOne(c => c.Usuario)
                .WithOne()
                .HasForeignKey<Funcionario>(f => f.UsuarioId)

@@ -6,5 +6,6 @@ public record SelecionarFuncionarioPorIdResponse(
     string Cpf,
     string Email,
     decimal Salario,
-    DateTimeOffset AdmissaoEmUtc
+    DateTimeOffset AdmissaoEmUtc,
+    bool Ativo
 );

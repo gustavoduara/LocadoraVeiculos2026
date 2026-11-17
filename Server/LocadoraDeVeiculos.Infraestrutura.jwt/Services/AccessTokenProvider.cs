@@ -52,7 +52,7 @@ public class AccessTokenProvider
             var funcionario = await dbContext.Set<Funcionario>()
                 .AsNoTracking()
                 .IgnoreQueryFilters()
-                .FirstOrDefaultAsync(f => f.UsuarioId == usuario.Id && !f.Excluido);
+                .FirstOrDefaultAsync(f => f.UsuarioId == usuario.Id && !f.Excluido && f.Ativo);
 
             if (funcionario is null)
                 throw new Exception("Funcionário não encontrado ou inativo.");

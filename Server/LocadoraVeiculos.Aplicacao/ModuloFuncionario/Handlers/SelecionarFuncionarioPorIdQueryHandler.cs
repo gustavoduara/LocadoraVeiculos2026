@@ -24,7 +24,8 @@ public class SelecionarFuncionarioPorIdQueryHandler(RepositorioFuncionarioEmOrm 
             registroEncontrado.Cpf,
             registroEncontrado.Email,
             registroEncontrado.Salario,
-            registroEncontrado.AdmissaoEmUtc
+            registroEncontrado.AdmissaoEmUtc,
+            registroEncontrado.Ativo
         );
 
         return Result.Ok(result);

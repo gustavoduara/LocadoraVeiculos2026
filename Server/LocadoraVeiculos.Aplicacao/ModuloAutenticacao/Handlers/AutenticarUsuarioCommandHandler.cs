@@ -3,6 +3,7 @@ using LocadoraDeVeiculos.Aplicacao.Compartilhado;
 using LocadoraDeVeiculos.Aplicacao.ModuloAutenticacao.Commands;
 using LocadoraDeVeiculos.Dominio.ModuloAutenticacao;
 using LocadoraDeVeiculos.Infraestrutura.Jwt.Services;
+using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloFuncionario;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
@@ -11,6 +12,7 @@ namespace LocadoraDeVeiculos.Aplicacao.ModuloAutenticacao.Handlers;
 
 public class AutenticarUsuarioCommandHandler(
     UserManager<Usuario> userManager,
+    RepositorioFuncionarioEmOrm repositorioFuncionario,
     AccessTokenProvider tokenProvider,
     RefreshTokenProvider refreshTokenProvider,
     ILogger<AutenticarUsuarioCommandHandler> logger
@@ -33,6 +35,15 @@ public class AutenticarUsuarioCommandHandler(
 
             if (!credenciaisValidas)
                 return Result.Fail(ResultadosErro.RequisicaoInvalidaErro("Login ou senha incorretos."));
+
+            if (await userManager.IsInRoleAsync(usuarioEncontrado, CargoUsuario.Funcionario.ToString()))
+            {
+                var funcionario = await repositorioFuncionario.SelecionarPorUsuarioIdAsync(usuarioEncontrado.Id);
+
+                if (funcionario is null || funcionario.Excluido || !funcionario.Ativo)
+                    return Result.Fail(ResultadosErro.RequisicaoInvalidaErro(
+                        "Esta conta está desativada. Procure o administrador da empresa."));
+            }
 
             var accessToken = await tokenProvider.GerarAccessTokenAsync(usuarioEncontrado);
 

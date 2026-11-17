@@ -21,7 +21,8 @@ public class SelecionarFuncionariosQueryHandler(
                 r.NomeCompleto,
                 r.Email,
                 r.Salario,
-                r.AdmissaoEmUtc
+                r.AdmissaoEmUtc,
+                r.Ativo
             ))
             .ToImmutableList();
 

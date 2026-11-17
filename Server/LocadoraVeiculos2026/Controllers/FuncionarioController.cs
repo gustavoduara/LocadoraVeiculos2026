@@ -63,6 +63,21 @@ public sealed class FuncionarioController(IMediator mediator) : MainController
         });
     }
 
+    [HttpPatch("{id:guid}/status")]
+    public async Task<ActionResult<AlterarStatusFuncionarioResponse>> AlterarStatus(
+        Guid id,
+        AlterarStatusFuncionarioRequest request,
+        CancellationToken cancellationToken
+    )
+    {
+        AlterarStatusFuncionarioCommand command = new(id, request.Ativo);
+
+        Result<AlterarStatusFuncionarioResult> result = await mediator.Send(command, cancellationToken);
+
+        return ProcessarResultado(result, (valor) =>
+            Ok(new AlterarStatusFuncionarioResponse(valor.Id, valor.Ativo)));
+    }
+
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult<ExcluirFuncionarioResponse>> Excluir(
         Guid id,
@@ -111,7 +126,8 @@ public sealed class FuncionarioController(IMediator mediator) : MainController
                 valor.Cpf,
                 valor.Email,
                 valor.Salario,
-                valor.AdmissaoEmUtc
+                valor.AdmissaoEmUtc,
+                valor.Ativo
             );
 
             return Ok(response);

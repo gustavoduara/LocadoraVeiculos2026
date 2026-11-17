@@ -12,5 +12,6 @@ public record SelecionarFuncionariosDto(
     string NomeCompleto,
     string Email,
     decimal Salario,
-    DateTimeOffset AdmissaoEmUtc
+    DateTimeOffset AdmissaoEmUtc,
+    bool Ativo
 );

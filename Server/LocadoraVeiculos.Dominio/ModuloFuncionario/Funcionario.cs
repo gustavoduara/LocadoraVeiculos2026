@@ -10,6 +10,7 @@ public class Funcionario : EntidadeBase<Funcionario>
     public string Email { get; set; }
     public decimal Salario { get; set; }
     public DateTimeOffset AdmissaoEmUtc { get; set; }
+    public bool Ativo { get; set; } = true;
 
     public Guid UsuarioId { get; set; }
     public Usuario? Usuario { get; set; }
@@ -33,6 +34,20 @@ public class Funcionario : EntidadeBase<Funcionario>
         Email = email;
         Salario = salario;
         AdmissaoEmUtc = admissaoEmUtc;
+    }
+
+    public void AtualizarPerfil(string nomeCompleto, string cpf)
+    {
+        NomeCompleto = nomeCompleto;
+        Cpf = cpf;
+
+        if (Usuario is not null)
+            Usuario.FullName = nomeCompleto;
+    }
+
+    public void DefinirStatus(bool ativo)
+    {
+        Ativo = ativo;
     }
 
     public override void AtualizarRegistro(Funcionario registroEditado)
