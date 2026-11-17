@@ -13,12 +13,19 @@
         <hr class="my-6 border-muted/30" />
 
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            @for (funcionario of funcionarios$ | async; track $index) {
-            <mat-card class="p-3 rounded-2xl shadow-sm">
+            @for (funcionario of funcionarios(); track funcionario.id) {
+            <mat-card class="p-3 rounded-2xl shadow-sm" [class.opacity-60]="!funcionario.ativo">
                 <mat-card-header class="pb-2">
                     <mat-card-title class="text-lg font-medium">
                         {{ funcionario.nomeCompleto }}
                     </mat-card-title>
+                    <mat-card-subtitle>
+                        @if (funcionario.ativo) {
+                        <span class="text-green-700">● Conta ativa</span>
+                        } @else {
+                        <span class="text-red-700">● Conta desativada</span>
+                        }
+                    </mat-card-subtitle>
                 </mat-card-header>
 
                 <mat-card-content class="min-h-[40px] mt-3">
@@ -31,6 +38,11 @@
                 </mat-card-content>
 
                 <mat-card-actions align="end" class="flex items-center justify-end gap-2 pt-2">
+                    <button type="button" mat-icon-button (click)="alternarStatus(funcionario)"
+                        [attr.aria-label]="funcionario.ativo ? 'Desativar conta' : 'Ativar conta'"
+                        [attr.title]="funcionario.ativo ? 'Desativar conta' : 'Ativar conta'">
+                        <mat-icon>{{ funcionario.ativo ? 'toggle_on' : 'toggle_off' }}</mat-icon>
+                    </button>
                     <a [routerLink]="['editar', funcionario.id]" mat-icon-button aria-label="Editar">
                         <mat-icon>edit</mat-icon>
                     </a>

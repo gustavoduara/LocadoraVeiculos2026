@@ -36,6 +36,7 @@ export interface SelecionarFuncionariosModel {
     email: string;
     salario: number;
     admissaoEmUtc: string;
+    ativo: boolean;
 }
 
 export interface DetalhesFuncionarioModel {
@@ -45,4 +46,28 @@ export interface DetalhesFuncionarioModel {
     email: string;
     salario: number;
     admissaoEmUtc: string;
+    ativo: boolean;
+}
+export interface AlterarStatusFuncionarioResponseModel {
+    id: string;
+    ativo: boolean;
+}
+
+export interface MeuPerfilModel {
+    id: string;
+    nomeCompleto: string;
+    cpf: string;
+    email: string;
+    salario: number;
+    admissaoEmUtc: string;
+}
+
+export interface EditarMeuPerfilModel {
+    nomeCompleto: string;
+    cpf: string;
+}
+
+export interface EditarMeuPerfilResponseModel {
+    nomeCompleto: string;
+    cpf: string;
 }

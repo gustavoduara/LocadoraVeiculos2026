@@ -8,8 +8,8 @@ import { CanActivateFn, provideRouter, Router, Routes } from '@angular/router';
 
 import { provideAuth } from './auth/auth.provider';
 import { AuthService } from './auth/auth.service';
+import { cargoGuard } from './auth/cargo.guard';
 import { provideNotifications } from './shared/notificacao/notificacao.provider';
-import { FuncionarioService } from './funcionarios/funcionario.service';
 
 const usuarioDesconhecidoGuard: CanActivateFn = () => {
   const authService = inject(AuthService);
@@ -39,12 +39,27 @@ const routes: Routes = [
     canMatch: [usuarioDesconhecidoGuard],
   },
 
+  // Somente o administrador da empresa gerencia funcionários.
   {
     path: 'funcionarios',
     loadChildren: () =>
       import('./funcionarios/funcionario.routes').then((r) => r.funcionarioRoutes),
-    canMatch: [usuarioAutenticadoGuard],
+    canMatch: [usuarioAutenticadoGuard, cargoGuard('Empresa')],
+  },
 
+  // Cada funcionário edita apenas o próprio perfil.
+  {
+    path: 'perfil',
+    loadChildren: () =>
+      import('./funcionarios/perfil/perfil.routes').then((r) => r.perfilRoutes),
+    canMatch: [usuarioAutenticadoGuard, cargoGuard('Funcionario')],
+  },
+
+  {
+    path: 'grupos-veiculos',
+    loadChildren: () =>
+      import('./grupo-veiculos/grupo-veiculos.routes').then((r) => r.grupoVeiculosRoutes),
+    canMatch: [usuarioAutenticadoGuard, cargoGuard('Empresa', 'Funcionario')],
   },
   {
     path: 'inicio',

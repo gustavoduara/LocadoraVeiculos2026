@@ -7,7 +7,9 @@ import { environment } from '../../environments/environment';
 import {
     CadastrarFuncionarioModel, CadastrarFuncionarioResponseModel, DetalhesFuncionarioModel,
     EditarFuncionarioModel, EditarFuncionarioResponseModel, SelecionarFuncionariosModel,
-    SelecionarFuncionariosResponseModel
+    SelecionarFuncionariosResponseModel,
+    AlterarStatusFuncionarioResponseModel, EditarMeuPerfilModel, EditarMeuPerfilResponseModel,
+    MeuPerfilModel
 } from './funcionario.models';
 
 @Injectable()
@@ -40,6 +42,18 @@ export class FuncionarioService {
         const urlCompleto = `${this.apiUrl}/${id}`;
 
         return this.http.get<DetalhesFuncionarioModel>(urlCompleto);
+    }
+
+    public alterarStatus(id: string, ativo: boolean): Observable<AlterarStatusFuncionarioResponseModel> {
+        return this.http.patch<AlterarStatusFuncionarioResponseModel>(`${this.apiUrl}/${id}/status`, { ativo });
+    }
+
+    public selecionarMeuPerfil(): Observable<MeuPerfilModel> {
+        return this.http.get<MeuPerfilModel>(`${this.apiUrl}/meu-perfil`);
+    }
+
+    public editarMeuPerfil(model: EditarMeuPerfilModel): Observable<EditarMeuPerfilResponseModel> {
+        return this.http.put<EditarMeuPerfilResponseModel>(`${this.apiUrl}/meu-perfil`, model);
     }
 
     public selecionarTodos(): Observable<SelecionarFuncionariosModel[]> {

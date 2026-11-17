@@ -44,6 +44,27 @@
           Funcionários
         </a>
       }
+      <a
+        mat-list-item
+        [routerLink]="['/grupos-veiculos']"
+        routerLinkActive="nav-link-active"
+        class="my-1"
+      >
+        <mat-icon class="material-icons-outlined" matListItemIcon>category</mat-icon>
+        Grupos de Veículos
+      </a>
+
+      @if (usuarioAutenticado?.cargo === 'Funcionario') {
+        <a
+          mat-list-item
+          [routerLink]="['/perfil']"
+          routerLinkActive="nav-link-active"
+          class="my-1"
+        >
+          <mat-icon class="material-icons-outlined" matListItemIcon>account_circle</mat-icon>
+          Meu Perfil
+        </a>
+      }
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content>
@@ -71,6 +92,12 @@
         </button>
 
         <mat-menu #opcoesUsuario="matMenu">
+          @if (usuarioAutenticado.cargo === 'Funcionario') {
+            <a mat-menu-item routerLink="/perfil" style="min-width: 160px">
+              <mat-icon>account_circle</mat-icon>
+              Meu Perfil
+            </a>
+          }
           <button mat-menu-item style="min-width: 160px" (click)="logoutRequisitado.emit()">
             <mat-icon>arrow_backwards</mat-icon>
             Logout

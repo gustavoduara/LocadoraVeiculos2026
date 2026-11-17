@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { Router, RouterLink } from '@angular/router';
 
 import { NotificacaoService } from '../../shared/notificacao/notificacao.service';
+import { mensagemDeErro } from '../../shared/erros/mensagem-erro';
 import { LoginModel } from '../auth.models';
 import { AuthService } from '../auth.service';
 
@@ -54,9 +55,7 @@ export class Login {
                 this.router.navigate(['/inicio']);
             },
             error: (err) => {
-                const mensagem = typeof err.error === 'string'
-                    ? err.error
-                    : err.error?.mensagem || 'Falha ao autenticar. Verifique suas credenciais.';
+                const mensagem = mensagemDeErro(err, 'Falha ao autenticar. Verifique suas credenciais.');
                 this.notificacaoService.erro(mensagem);
             }
         });

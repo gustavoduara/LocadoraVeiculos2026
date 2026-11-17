@@ -16,13 +16,13 @@ Camadas (pastas ≠ nome dos projetos/namespaces: pastas `LocadoraVeiculos.*`, n
 | `LocadoraDeVeiculos.Infraestrutura.jwt/` | `AccessTokenProvider`, `RefreshTokenProvider` |
 
 - Módulos existentes: Autenticação, Funcionário, GrupoVeiculos. Novo módulo = Dominio entidade → Orm mapeador+repositório (+registrar em `DependencyInjection` do Orm) → Aplicacao commands/handlers/validators → Controller + Models → migration.
-- Rotas: `api/auth` (autenticar, registrar, rotacionar, sair), `api/funcionarios`, `api/grupos-veiculos`. Autorização por cargo (`Empresa`, `Funcionario`).
+- Rotas: `api/auth` (autenticar, registrar, rotacionar, sair), `api/funcionarios` (só `Empresa`; inclui `PATCH {id}/status` para ativar/desativar), `api/funcionarios/meu-perfil` (só `Funcionario`: GET/PUT de nome e CPF próprios; o id vem do token), `api/grupos-veiculos` (`Empresa` e `Funcionario`). Desativar um funcionário revoga access/refresh tokens e bloqueia o login.
 - Multi-tenant: filtro global `EmpresaId == tenant && !Excluido` em `AppDbContext` (soft delete); tenant vem da claim `EmpresaId` (`IdentityTenantProvider`).
 - JWT: token valida `jti` contra `Usuario.AccessTokenVersionId` (revogação); refresh token em cookie (`RefreshTokenCookieService`).
 - Em `Development` a API roda `Database.Migrate()` ao subir e expõe Swagger em `/swagger`.
 
 ### client (Angular 20, standalone, Material + Tailwind 4, ngx-mask)
-`client/src/app/`: `auth/` (login, registro, interceptor, service), `funcionarios/` (CRUD: listar/cadastrar/editar/excluir), `shared/` (shell, notificação), `inicio/`. Ainda **não há** tela de grupos de veículos.
+`client/src/app/`: `auth/` (login, registro, interceptor, service, `cargo.guard.ts`), `funcionarios/` (CRUD + ativar/desativar; `perfil/` = Meu Perfil do funcionário), `grupo-veiculos/` (CRUD), `shared/` (shell, notificação, `erros/mensagem-erro.ts`), `inicio/`. Rotas protegidas por cargo via `cargoGuard(...)` em `app.config.ts`. Novo módulo no front = copiar `grupo-veiculos/` (models, service, routes, listar/cadastrar/editar/excluir) + rota + item no shell.
 Ambientes: `src/environments/environment(.development).ts` (`apiUrl`).
 
 ## Configuração local (user-secrets do projeto WebApi, `UserSecretsId` b49f88a1-…)
