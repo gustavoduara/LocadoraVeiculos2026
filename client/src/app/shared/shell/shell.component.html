@@ -74,6 +74,16 @@
         Clientes
       </a>
 
+      <a
+        mat-list-item
+        [routerLink]="['/condutores']"
+        routerLinkActive="nav-link-active"
+        class="my-1"
+      >
+        <mat-icon class="material-icons-outlined" matListItemIcon>assignment_ind</mat-icon>
+        Condutores
+      </a>
+
       @if (usuarioAutenticado?.cargo === 'Empresa') {
         <a
           mat-list-item

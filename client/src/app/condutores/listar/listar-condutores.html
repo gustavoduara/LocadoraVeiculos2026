@@ -1,0 +1,67 @@
+<section class="mx-auto max-w-screen-xl px-4">
+    <div class="py-6">
+        <h2 class="text-2xl font-semibold">Condutores</h2>
+
+        <!-- Ações e filtro -->
+        <div class="mt-4 flex flex-col sm:flex-row sm:items-center gap-3">
+            <a mat-flat-button class="flex items-center justify-center gap-2 h-10" routerLink="cadastrar">
+                <mat-icon class="!text-base">add</mat-icon>
+                Cadastrar
+            </a>
+
+            <mat-form-field class="w-full sm:w-80" subscriptSizing="dynamic">
+                <mat-label>Filtrar por cliente</mat-label>
+                <mat-select [value]="clienteFiltro()" (selectionChange)="filtrar($event.value)">
+                    <mat-option [value]="null">Todos os clientes</mat-option>
+                    @for (cliente of clientes; track cliente.id) {
+                    <mat-option [value]="cliente.id">{{ cliente.nome }}</mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+        <hr class="my-6 border-muted/30" />
+
+        @if (condutores().length === 0) {
+        <p class="text-gray-600">
+            {{ clienteFiltro() ? 'Nenhum condutor para este cliente.' : 'Nenhum condutor cadastrado ainda.' }}
+        </p>
+        }
+
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            @for (condutor of condutores(); track condutor.id) {
+            <mat-card class="p-3 rounded-2xl shadow-sm">
+                <mat-card-header class="pb-2">
+                    <mat-card-title class="text-lg font-medium">{{ condutor.nome }}</mat-card-title>
+                    <mat-card-subtitle>Cliente: {{ condutor.nomeCliente }}</mat-card-subtitle>
+                </mat-card-header>
+
+                <mat-card-content class="mt-2 text-sm">
+                    <p><span class="font-medium">CPF:</span> {{ condutor.cpf }}</p>
+                    <p><span class="font-medium">CNH:</span> {{ condutor.cnh }}</p>
+                    <p>
+                        <span class="font-medium">Validade da CNH:</span>
+                        {{ dataBr(condutor.validadeCnh) }}
+                        @if (condutor.cnhVencida) {
+                        <span class="ml-1 rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">
+                            Vencida
+                        </span>
+                        }
+                    </p>
+                    <p><span class="font-medium">Telefone:</span> {{ condutor.telefone }}</p>
+                    <p><span class="font-medium">E-mail:</span> {{ condutor.email }}</p>
+                </mat-card-content>
+
+                <mat-card-actions align="end" class="flex items-center justify-end gap-2 pt-2">
+                    <a [routerLink]="['editar', condutor.id]" mat-icon-button aria-label="Editar">
+                        <mat-icon>edit</mat-icon>
+                    </a>
+                    <a [routerLink]="['excluir', condutor.id]" mat-icon-button aria-label="Excluir">
+                        <mat-icon>delete</mat-icon>
+                    </a>
+                </mat-card-actions>
+            </mat-card>
+            }
+        </div>
+    </div>
+</section>

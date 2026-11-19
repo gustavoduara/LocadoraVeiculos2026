@@ -75,6 +75,13 @@ const routes: Routes = [
     canMatch: [usuarioAutenticadoGuard, cargoGuard('Empresa', 'Funcionario')],
   },
 
+  // Condutores: cadastro operacional, liberado para administrador e funcionários.
+  {
+    path: 'condutores',
+    loadChildren: () => import('./condutores/condutor.routes').then((r) => r.condutorRoutes),
+    canMatch: [usuarioAutenticadoGuard, cargoGuard('Empresa', 'Funcionario')],
+  },
+
   // Catálogo de taxas e serviços (GPS, cadeirinha...): somente o administrador da empresa gerencia.
   {
     path: 'taxas-servicos',
