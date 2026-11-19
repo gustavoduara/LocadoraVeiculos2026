@@ -54,6 +54,18 @@
         Grupos de Veículos
       </a>
 
+      @if (usuarioAutenticado?.cargo === 'Empresa') {
+        <a
+          mat-list-item
+          [routerLink]="['/configuracoes']"
+          routerLinkActive="nav-link-active"
+          class="my-1"
+        >
+          <mat-icon class="material-icons-outlined" matListItemIcon>settings</mat-icon>
+          Configurações
+        </a>
+      }
+
       @if (usuarioAutenticado?.cargo === 'Funcionario') {
         <a
           mat-list-item

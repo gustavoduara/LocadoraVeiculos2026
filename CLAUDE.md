@@ -15,14 +15,14 @@ Camadas (pastas ≠ nome dos projetos/namespaces: pastas `LocadoraVeiculos.*`, n
 | `LocadoraVeiculos.Infraestrutura.Orm/` | EF Core 8 + SQL Server: `AppDbContext`, repositórios, mapeadores, `Migrations/` |
 | `LocadoraDeVeiculos.Infraestrutura.jwt/` | `AccessTokenProvider`, `RefreshTokenProvider` |
 
-- Módulos existentes: Autenticação, Funcionário, GrupoVeiculos. Novo módulo = Dominio entidade → Orm mapeador+repositório (+registrar em `DependencyInjection` do Orm) → Aplicacao commands/handlers/validators → Controller + Models → migration.
-- Rotas: `api/auth` (autenticar, registrar, rotacionar, sair), `api/funcionarios` (só `Empresa`; inclui `PATCH {id}/status` para ativar/desativar), `api/funcionarios/meu-perfil` (só `Funcionario`: GET/PUT de nome e CPF próprios; o id vem do token), `api/grupos-veiculos` (`Empresa` e `Funcionario`). Desativar um funcionário revoga access/refresh tokens e bloqueia o login.
+- Módulos existentes: Autenticação, Funcionário, GrupoVeiculos, Configuração (preço dos combustíveis; entidade `Configuracao` única por empresa, upsert; `TipoCombustivel` em `Dominio/Compartilhado`). Novo módulo = Dominio entidade → Orm mapeador+repositório (+registrar em `DependencyInjection` do Orm) → Aplicacao commands/handlers/validators → Controller + Models → migration.
+- Rotas: `api/auth` (autenticar, registrar, rotacionar, sair), `api/funcionarios` (só `Empresa`; inclui `PATCH {id}/status` para ativar/desativar), `api/funcionarios/meu-perfil` (só `Funcionario`: GET/PUT de nome e CPF próprios; o id vem do token), `api/grupos-veiculos` (`Empresa` e `Funcionario`), `api/configuracoes` (GET `Empresa`+`Funcionario`, PUT só `Empresa`). Desativar um funcionário revoga access/refresh tokens e bloqueia o login.
 - Multi-tenant: filtro global `EmpresaId == tenant && !Excluido` em `AppDbContext` (soft delete); tenant vem da claim `EmpresaId` (`IdentityTenantProvider`).
 - JWT: token valida `jti` contra `Usuario.AccessTokenVersionId` (revogação); refresh token em cookie (`RefreshTokenCookieService`).
 - Em `Development` a API roda `Database.Migrate()` ao subir e expõe Swagger em `/swagger`.
 
 ### client (Angular 20, standalone, Material + Tailwind 4, ngx-mask)
-`client/src/app/`: `auth/` (login, registro, interceptor, service, `cargo.guard.ts`), `funcionarios/` (CRUD + ativar/desativar; `perfil/` = Meu Perfil do funcionário), `grupo-veiculos/` (CRUD), `shared/` (shell, notificação, `erros/mensagem-erro.ts`), `inicio/`. Rotas protegidas por cargo via `cargoGuard(...)` em `app.config.ts`. Novo módulo no front = copiar `grupo-veiculos/` (models, service, routes, listar/cadastrar/editar/excluir) + rota + item no shell.
+`client/src/app/`: `auth/` (login, registro, interceptor, service, `cargo.guard.ts`), `funcionarios/` (CRUD + ativar/desativar; `perfil/` = Meu Perfil do funcionário), `grupo-veiculos/` (CRUD), `configuracoes/` (preços dos combustíveis, só Empresa), `shared/` (shell, notificação, `erros/mensagem-erro.ts`), `inicio/`. Rotas protegidas por cargo via `cargoGuard(...)` em `app.config.ts`. Novo módulo no front = copiar `grupo-veiculos/` (models, service, routes, listar/cadastrar/editar/excluir) + rota + item no shell.
 Ambientes: `src/environments/environment(.development).ts` (`apiUrl`).
 
 ## Configuração local (user-secrets do projeto WebApi, `UserSecretsId` b49f88a1-…)
@@ -60,3 +60,4 @@ Não existe projeto de testes no Server.
 4. Versões de EF Tools misturadas entre csproj (8.0.30 e 10.0.11) e `dotnet-ef` global 10.0.14 — funciona, mas atenção a avisos.
 5. `package-lock.json` na raiz do repo é lixo (vazio) e está untracked; o lock real é `client/package-lock.json`.
 6. Erros de digitação nos nomes: pasta `Config/Indentity`, `IndetityTenantProvider.cs`, `RepostiorioGrupoVeiculosEmOrm.cs`.
+7. **LocalDB e testes do Claude:** não iniciar/usar a instância `mssqllocaldb` a partir do Claude — quando ela é iniciada pela sessão do Claude, o Visual Studio do dev falha com "LocalDB instance startup: SQL Server process failed to start" (erro 575). Para testar a API: `SqlLocalDB create ClaudeDev`, rodar com `SQL_CONNECTION_STRING` apontando para `(localdb)\ClaudeDev` (env var sobrescreve o user-secret), porta separada (`--no-launch-profile --urls "https://localhost:9199;http://localhost:9150"`) e, ao final, `SqlLocalDB stop ClaudeDev -k` + `SqlLocalDB delete ClaudeDev`. Compilar (`dotnet build`) **antes** de `dotnet run --no-build`, senão migrations novas não são aplicadas.

@@ -61,6 +61,13 @@ const routes: Routes = [
       import('./grupo-veiculos/grupo-veiculos.routes').then((r) => r.grupoVeiculosRoutes),
     canMatch: [usuarioAutenticadoGuard, cargoGuard('Empresa', 'Funcionario')],
   },
+  // Preço dos combustíveis: somente o administrador da empresa altera.
+  {
+    path: 'configuracoes',
+    loadChildren: () =>
+      import('./configuracoes/configuracao.routes').then((r) => r.configuracaoRoutes),
+    canMatch: [usuarioAutenticadoGuard, cargoGuard('Empresa')],
+  },
   {
     path: 'inicio',
     loadComponent: () => import('./inicio/inicio').then((c) => c.Inicio),
