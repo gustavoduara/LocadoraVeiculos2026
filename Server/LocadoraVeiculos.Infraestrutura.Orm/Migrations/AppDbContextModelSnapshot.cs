@@ -281,6 +281,56 @@ namespace LocadoraDeVeiculos.Infraestrutura.Orm.Migrations
                     b.ToTable("GruposVeiculos");
                 });
 
+            modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloPlanoCobranca.PlanoCobranca", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("ControladoKmDisponiveis")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("ControladoPrecoDiaria")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("ControladoPrecoPorKmExtrapolado")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTimeOffset>("CriadoEmUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<decimal>("DiarioPrecoDiaria")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("DiarioPrecoPorKm")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("EmpresaId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Excluido")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("ExcluidoEmUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("GrupoVeiculosId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("LivrePrecoDiaria")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GrupoVeiculosId");
+
+                    b.HasIndex("EmpresaId", "GrupoVeiculosId")
+                        .IsUnique()
+                        .HasFilter("[Excluido] = 0");
+
+                    b.ToTable("PlanosCobranca");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.Property<int>("Id")
@@ -423,6 +473,25 @@ namespace LocadoraDeVeiculos.Infraestrutura.Orm.Migrations
                         .IsRequired();
 
                     b.Navigation("Empresa");
+                });
+
+            modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloPlanoCobranca.PlanoCobranca", b =>
+                {
+                    b.HasOne("LocadoraDeVeiculos.Dominio.ModuloAutenticacao.Usuario", "Empresa")
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("LocadoraDeVeiculos.Dominio.ModuloGrupoVeiculos.GrupoVeiculos", "GrupoVeiculos")
+                        .WithMany()
+                        .HasForeignKey("GrupoVeiculosId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Empresa");
+
+                    b.Navigation("GrupoVeiculos");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
