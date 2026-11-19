@@ -77,6 +77,16 @@
 
         <a
           mat-list-item
+          [routerLink]="['/taxas-servicos']"
+          routerLinkActive="nav-link-active"
+          class="my-1"
+        >
+          <mat-icon class="material-icons-outlined" matListItemIcon>receipt_long</mat-icon>
+          Taxas e Serviços
+        </a>
+
+        <a
+          mat-list-item
           [routerLink]="['/configuracoes']"
           routerLinkActive="nav-link-active"
           class="my-1"

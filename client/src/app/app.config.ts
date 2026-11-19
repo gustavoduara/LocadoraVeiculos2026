@@ -68,6 +68,14 @@ const routes: Routes = [
     canMatch: [usuarioAutenticadoGuard, cargoGuard('Empresa', 'Funcionario')],
   },
 
+  // Catálogo de taxas e serviços (GPS, cadeirinha...): somente o administrador da empresa gerencia.
+  {
+    path: 'taxas-servicos',
+    loadChildren: () =>
+      import('./taxas-servicos/taxa-servico.routes').then((r) => r.taxaServicoRoutes),
+    canMatch: [usuarioAutenticadoGuard, cargoGuard('Empresa')],
+  },
+
   // Planos de cobrança por grupo de veículos: somente o administrador da empresa gerencia.
   {
     path: 'planos-cobranca',
