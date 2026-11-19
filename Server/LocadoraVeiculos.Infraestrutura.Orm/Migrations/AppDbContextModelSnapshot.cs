@@ -162,6 +162,72 @@ namespace LocadoraDeVeiculos.Infraestrutura.Orm.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloAutomovel.Automovel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Ano")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CapacidadeCombustivelLitros")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Cor")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTimeOffset>("CriadoEmUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("EmpresaId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Excluido")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("ExcluidoEmUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<byte[]>("Foto")
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("FotoNomeArquivo")
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<string>("FotoTipoConteudo")
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<Guid>("GrupoVeiculosId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Marca")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Modelo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Placa")
+                        .IsRequired()
+                        .HasColumnType("varchar(8)");
+
+                    b.Property<int>("TipoCombustivel")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GrupoVeiculosId");
+
+                    b.HasIndex("EmpresaId", "Placa")
+                        .IsUnique()
+                        .HasFilter("[Excluido] = 0");
+
+                    b.ToTable("Automoveis");
+                });
+
             modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloConfiguracao.Configuracao", b =>
                 {
                     b.Property<Guid>("Id")
@@ -432,6 +498,25 @@ namespace LocadoraDeVeiculos.Infraestrutura.Orm.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloAutomovel.Automovel", b =>
+                {
+                    b.HasOne("LocadoraDeVeiculos.Dominio.ModuloAutenticacao.Usuario", "Empresa")
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("LocadoraDeVeiculos.Dominio.ModuloGrupoVeiculos.GrupoVeiculos", "GrupoVeiculos")
+                        .WithMany()
+                        .HasForeignKey("GrupoVeiculosId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Empresa");
+
+                    b.Navigation("GrupoVeiculos");
                 });
 
             modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloConfiguracao.Configuracao", b =>

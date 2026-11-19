@@ -3,6 +3,7 @@ using LocadoraDeVeiculos.Aplicacao.Compartilhado;
 using LocadoraDeVeiculos.Aplicacao.ModuloGrupoVeiculos.Commands;
 using LocadoraDeVeiculos.Dominio.ModuloGrupoVeiculos;
 using LocadoraDeVeiculos.Infraestrutura.Orm.Compartilhado;
+using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloAutomovel;
 using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloGrupoVeiculos;
 using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloPlanoCobranca;
 using MediatR;
@@ -14,6 +15,7 @@ public class ExcluirGrupoVeiculosCommandHandler(
     AppDbContext appDbContext,
     RepositorioGrupoVeiculosEmOrm repositorioGrupoVeiculos,
     RepositorioPlanoCobrancaEmOrm repositorioPlanoCobranca,
+    RepositorioAutomovelEmOrm repositorioAutomovel,
     ILogger<ExcluirGrupoVeiculosCommandHandler> logger
 ) : IRequestHandler<ExcluirGrupoVeiculosCommand, Result<ExcluirGrupoVeiculosResult>>
 {
@@ -24,6 +26,10 @@ public class ExcluirGrupoVeiculosCommandHandler(
 
         if (registroEncontrado is null)
             return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro(command.Id));
+
+        if (await repositorioAutomovel.ExisteParaGrupoAsync(command.Id))
+            return Result.Fail(ResultadosErro.ExclusaoBloqueadaErro(
+                "Não é possível excluir um grupo de veículos que possui automóveis cadastrados."));
 
         if (await repositorioPlanoCobranca.ExisteParaGrupoAsync(command.Id))
             return Result.Fail(ResultadosErro.ExclusaoBloqueadaErro(
