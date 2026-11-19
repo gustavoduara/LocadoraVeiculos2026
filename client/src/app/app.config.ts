@@ -61,6 +61,14 @@ const routes: Routes = [
       import('./grupo-veiculos/grupo-veiculos.routes').then((r) => r.grupoVeiculosRoutes),
     canMatch: [usuarioAutenticadoGuard, cargoGuard('Empresa', 'Funcionario')],
   },
+  // Planos de cobrança por grupo de veículos: somente o administrador da empresa gerencia.
+  {
+    path: 'planos-cobranca',
+    loadChildren: () =>
+      import('./planos-cobranca/plano-cobranca.routes').then((r) => r.planoCobrancaRoutes),
+    canMatch: [usuarioAutenticadoGuard, cargoGuard('Empresa')],
+  },
+
   // Preço dos combustíveis: somente o administrador da empresa altera.
   {
     path: 'configuracoes',

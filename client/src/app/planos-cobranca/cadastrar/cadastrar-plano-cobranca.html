@@ -1,0 +1,23 @@
+<section class="mx-auto max-w-4xl px-4 py-6">
+    <h2 class="text-2xl font-semibold">Cadastro de Plano de Cobrança</h2>
+    <hr class="my-4 border-muted/30" />
+
+    <mat-card class="p-4 rounded-2xl shadow-sm">
+        @if (grupos.length === 0) {
+        <mat-card-content>
+            <p class="text-gray-700">
+                Não há grupos de veículos sem plano de cobrança. Cada grupo tem um plano; cadastre um novo
+                grupo ou edite o plano de um grupo existente.
+            </p>
+            <div class="flex justify-end gap-3 pt-4">
+                <a mat-stroked-button routerLink="/planos-cobranca">Voltar</a>
+                <a mat-flat-button routerLink="/grupos-veiculos/cadastrar">Cadastrar grupo</a>
+            </div>
+        </mat-card-content>
+        } @else {
+        <mat-card-content>
+            <app-plano-cobranca-form [grupos]="grupos" (salvar)="cadastrar($event)" />
+        </mat-card-content>
+        }
+    </mat-card>
+</section>

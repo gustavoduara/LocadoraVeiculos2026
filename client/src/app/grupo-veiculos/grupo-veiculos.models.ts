@@ -19,6 +19,7 @@ export interface SelecionarGruposVeiculosResponseModel {
 }
 
 export interface SelecionarGruposVeiculosModel {
+    plano?: PlanoResumoModel | null;
     id: string;
     nome: string;
 }
@@ -26,4 +27,11 @@ export interface SelecionarGruposVeiculosModel {
 export interface DetalhesGrupoVeiculosModel {
     id: string;
     nome: string;
+}
+
+export interface PlanoResumoModel {
+    id: string;
+    diario: { precoDiaria: number; precoPorKm: number };
+    controlado: { kmDisponiveis: number; precoDiaria: number; precoPorKmExtrapolado: number };
+    livre: { precoDiaria: number };
 }

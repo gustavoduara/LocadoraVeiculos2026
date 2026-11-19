@@ -57,6 +57,16 @@
       @if (usuarioAutenticado?.cargo === 'Empresa') {
         <a
           mat-list-item
+          [routerLink]="['/planos-cobranca']"
+          routerLinkActive="nav-link-active"
+          class="my-1"
+        >
+          <mat-icon class="material-icons-outlined" matListItemIcon>request_quote</mat-icon>
+          Planos de Cobrança
+        </a>
+
+        <a
+          mat-list-item
           [routerLink]="['/configuracoes']"
           routerLinkActive="nav-link-active"
           class="my-1"
