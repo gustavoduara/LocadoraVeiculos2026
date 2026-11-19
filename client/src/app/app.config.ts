@@ -61,6 +61,13 @@ const routes: Routes = [
       import('./grupo-veiculos/grupo-veiculos.routes').then((r) => r.grupoVeiculosRoutes),
     canMatch: [usuarioAutenticadoGuard, cargoGuard('Empresa', 'Funcionario')],
   },
+  // Automóveis: cadastro operacional, liberado para o administrador e para os funcionários.
+  {
+    path: 'automoveis',
+    loadChildren: () => import('./automoveis/automovel.routes').then((r) => r.automovelRoutes),
+    canMatch: [usuarioAutenticadoGuard, cargoGuard('Empresa', 'Funcionario')],
+  },
+
   // Planos de cobrança por grupo de veículos: somente o administrador da empresa gerencia.
   {
     path: 'planos-cobranca',

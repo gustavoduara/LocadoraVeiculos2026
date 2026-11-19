@@ -1,0 +1,66 @@
+<section class="mx-auto max-w-screen-xl px-4">
+    <div class="py-6">
+        <h2 class="text-2xl font-semibold">Automóveis</h2>
+
+        <!-- Ações e filtro -->
+        <div class="mt-4 flex flex-col sm:flex-row sm:items-center gap-3">
+            <a mat-flat-button class="flex items-center justify-center gap-2 h-10" routerLink="cadastrar">
+                <mat-icon class="!text-base">add</mat-icon>
+                Cadastrar
+            </a>
+
+            <mat-form-field class="w-full sm:w-72" subscriptSizing="dynamic">
+                <mat-label>Filtrar por grupo</mat-label>
+                <mat-select [value]="grupoFiltro()" (selectionChange)="filtrar($event.value)">
+                    <mat-option [value]="null">Todos os grupos</mat-option>
+                    @for (grupo of grupos; track grupo.id) {
+                    <mat-option [value]="grupo.id">{{ grupo.nome }}</mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+        <hr class="my-6 border-muted/30" />
+
+        @if (automoveis().length === 0) {
+        <p class="text-gray-600">
+            {{ grupoFiltro() ? 'Nenhum automóvel neste grupo.' : 'Nenhum automóvel cadastrado ainda.' }}
+        </p>
+        }
+
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            @for (automovel of automoveis(); track automovel.id) {
+            <mat-card class="rounded-2xl shadow-sm overflow-hidden">
+                <app-foto-automovel class="h-44" [automovelId]="automovel.id" [temFoto]="automovel.temFoto"
+                    [descricao]="'Foto de ' + automovel.marca + ' ' + automovel.modelo" />
+
+                <mat-card-header class="pt-3">
+                    <mat-card-title class="text-lg font-medium">
+                        {{ automovel.marca }} {{ automovel.modelo }}
+                    </mat-card-title>
+                    <mat-card-subtitle>{{ formatarPlaca(automovel.placa) }}</mat-card-subtitle>
+                </mat-card-header>
+
+                <mat-card-content class="mt-2 text-sm">
+                    <p><span class="font-medium">Grupo:</span> {{ automovel.nomeGrupo }}</p>
+                    <p><span class="font-medium">Cor:</span> {{ automovel.cor }} · {{ automovel.ano }}</p>
+                    <p>
+                        <span class="font-medium">Combustível:</span>
+                        {{ rotuloCombustivel(automovel.tipoCombustivel) }} ·
+                        {{ automovel.capacidadeCombustivelLitros }} L
+                    </p>
+                </mat-card-content>
+
+                <mat-card-actions align="end" class="flex items-center justify-end gap-2 pt-2">
+                    <a [routerLink]="['editar', automovel.id]" mat-icon-button aria-label="Editar">
+                        <mat-icon>edit</mat-icon>
+                    </a>
+                    <a [routerLink]="['excluir', automovel.id]" mat-icon-button aria-label="Excluir">
+                        <mat-icon>delete</mat-icon>
+                    </a>
+                </mat-card-actions>
+            </mat-card>
+            }
+        </div>
+    </div>
+</section>

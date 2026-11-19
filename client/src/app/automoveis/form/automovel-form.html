@@ -1,0 +1,111 @@
+<form [formGroup]="form" (ngSubmit)="enviar()" class="space-y-4">
+    <!-- Foto -->
+    <div class="flex flex-col sm:flex-row items-start gap-4">
+        <div class="w-48 h-32 rounded-xl border border-gray-200 overflow-hidden shrink-0">
+            @if (previaUrl(); as previa) {
+            <img [src]="previa" alt="Prévia da foto selecionada" class="w-full h-full object-cover" />
+            } @else if (original && original.temFoto && !fotoRemovida()) {
+            <app-foto-automovel class="w-full h-full" [automovelId]="original.id" [temFoto]="true" />
+            } @else {
+            <div class="w-full h-full flex items-center justify-center text-gray-400 bg-gray-100">
+                <mat-icon class="!text-5xl !w-12 !h-12">directions_car</mat-icon>
+            </div>
+            }
+        </div>
+
+        <div class="space-y-2">
+            <p class="text-sm text-gray-700">
+                {{ nomeDaFoto ?? 'Nenhuma foto selecionada' }}
+            </p>
+
+            <div class="flex flex-wrap gap-2">
+                <input #seletor type="file" accept="image/jpeg,image/png,image/webp" hidden
+                    (change)="selecionarArquivo($event)" />
+
+                <button type="button" mat-stroked-button (click)="seletor.click()" [disabled]="processandoFoto()">
+                    <mat-icon>photo_camera</mat-icon>
+                    {{ processandoFoto() ? 'Processando...' : 'Selecionar foto' }}
+                </button>
+
+                @if (temFotoAtual) {
+                <button type="button" mat-button (click)="removerFoto()">
+                    <mat-icon>delete</mat-icon>
+                    Remover foto
+                </button>
+                }
+            </div>
+
+            @if (erroFoto(); as erro) {
+            <p class="text-sm text-red-600">{{ erro }}</p>
+            }
+            <p class="text-xs text-gray-500">JPEG, PNG ou WebP. A imagem é reduzida automaticamente.</p>
+        </div>
+    </div>
+
+    <mat-form-field class="w-full">
+        <mat-label>Grupo de veículos</mat-label>
+        <mat-select formControlName="grupoVeiculosId">
+            @for (grupo of grupos; track grupo.id) {
+            <mat-option [value]="grupo.id">{{ grupo.nome }}</mat-option>
+            }
+        </mat-select>
+        @if (erroDo('grupoVeiculosId'); as erro) { <mat-error>Selecione o grupo de veículos.</mat-error> }
+    </mat-form-field>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <mat-form-field>
+            <mat-label>Placa</mat-label>
+            <input matInput formControlName="placa" mask="SSS-0A00" [dropSpecialCharacters]="false"
+                style="text-transform: uppercase" placeholder="ABC-1D23" />
+            @if (erroDo('placa'); as erro) { <mat-error>{{ erro }}</mat-error> }
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Marca</mat-label>
+            <input matInput formControlName="marca" />
+            @if (erroDo('marca'); as erro) { <mat-error>{{ erro }}</mat-error> }
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Modelo</mat-label>
+            <input matInput formControlName="modelo" />
+            @if (erroDo('modelo'); as erro) { <mat-error>{{ erro }}</mat-error> }
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Cor</mat-label>
+            <input matInput formControlName="cor" />
+            @if (erroDo('cor'); as erro) { <mat-error>{{ erro }}</mat-error> }
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Ano</mat-label>
+            <input matInput type="number" formControlName="ano" />
+            @if (erroDo('ano'); as erro) { <mat-error>{{ erro }}</mat-error> }
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Tipo de combustível</mat-label>
+            <mat-select formControlName="tipoCombustivel">
+                @for (combustivel of combustiveis; track combustivel.valor) {
+                <mat-option [value]="combustivel.valor">{{ combustivel.rotulo }}</mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Capacidade do tanque (litros)</mat-label>
+            <input matInput type="number" step="1" min="1" formControlName="capacidadeCombustivelLitros" />
+            @if (erroDo('capacidadeCombustivelLitros'); as erro) { <mat-error>{{ erro }}</mat-error> }
+        </mat-form-field>
+    </div>
+
+    <div class="flex items-center justify-end gap-3 pt-4">
+        <a mat-stroked-button routerLink="/automoveis" class="px-4">Voltar</a>
+
+        <button type="submit" mat-flat-button class="px-6" [disabled]="processandoFoto()">
+            <mat-icon class="!text-base mr-1">check</mat-icon>
+            {{ edicao ? 'Salvar' : 'Concluir' }}
+        </button>
+    </div>
+</form>

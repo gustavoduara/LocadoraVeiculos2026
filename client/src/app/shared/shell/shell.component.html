@@ -54,6 +54,16 @@
         Grupos de Veículos
       </a>
 
+      <a
+        mat-list-item
+        [routerLink]="['/automoveis']"
+        routerLinkActive="nav-link-active"
+        class="my-1"
+      >
+        <mat-icon class="material-icons-outlined" matListItemIcon>directions_car</mat-icon>
+        Automóveis
+      </a>
+
       @if (usuarioAutenticado?.cargo === 'Empresa') {
         <a
           mat-list-item
