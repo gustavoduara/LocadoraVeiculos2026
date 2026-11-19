@@ -64,6 +64,16 @@
         Automóveis
       </a>
 
+      <a
+        mat-list-item
+        [routerLink]="['/clientes']"
+        routerLinkActive="nav-link-active"
+        class="my-1"
+      >
+        <mat-icon class="material-icons-outlined" matListItemIcon>groups</mat-icon>
+        Clientes
+      </a>
+
       @if (usuarioAutenticado?.cargo === 'Empresa') {
         <a
           mat-list-item

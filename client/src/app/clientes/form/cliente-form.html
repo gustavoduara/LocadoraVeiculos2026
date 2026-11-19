@@ -1,0 +1,119 @@
+<form [formGroup]="form" (ngSubmit)="enviar()" class="space-y-4">
+    <fieldset class="rounded-xl border border-gray-300 p-4">
+        <legend class="px-2 text-sm font-medium">Tipo de cliente</legend>
+
+        <mat-radio-group formControlName="tipo" class="flex flex-col sm:flex-row gap-4">
+            @for (tipo of tipos; track tipo.valor) {
+            <mat-radio-button [value]="tipo.valor">{{ tipo.rotulo }}</mat-radio-button>
+            }
+        </mat-radio-group>
+
+        @if (edicao) {
+        <p class="mt-2 text-xs text-gray-500">O tipo do cliente não pode ser alterado depois do cadastro.</p>
+        }
+    </fieldset>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <mat-form-field class="sm:col-span-2">
+            <mat-label>{{ ehPessoaFisica ? 'Nome completo' : 'Razão social / Nome' }}</mat-label>
+            <input matInput formControlName="nome" />
+            @if (erroDo('nome'); as erro) { <mat-error>{{ erro }}</mat-error> }
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>E-mail</mat-label>
+            <input matInput type="email" formControlName="email" />
+            @if (erroDo('email'); as erro) { <mat-error>{{ erro }}</mat-error> }
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Telefone</mat-label>
+            <input matInput formControlName="telefone" mask="(00) 0000-00009" [dropSpecialCharacters]="false"
+                placeholder="(00) 00000-0000" />
+            @if (erroDo('telefone'); as erro) { <mat-error>{{ erro }}</mat-error> }
+        </mat-form-field>
+
+        @if (ehPessoaFisica) {
+        <mat-form-field>
+            <mat-label>CPF</mat-label>
+            <input matInput formControlName="cpf" mask="000.000.000-00" [dropSpecialCharacters]="false" />
+            @if (erroDo('cpf'); as erro) { <mat-error>{{ erro }}</mat-error> }
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>RG</mat-label>
+            <input matInput formControlName="rg" />
+            @if (erroDo('rg'); as erro) { <mat-error>{{ erro }}</mat-error> }
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>CNH</mat-label>
+            <input matInput formControlName="cnh" mask="00000000000" placeholder="11 dígitos" />
+            @if (erroDo('cnh'); as erro) { <mat-error>{{ erro }}</mat-error> }
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Pessoa jurídica vinculada (opcional)</mat-label>
+            <mat-select formControlName="pessoaJuridicaId">
+                <mat-option [value]="null">Nenhuma</mat-option>
+                @for (pj of opcoesDeVinculo; track pj.id) {
+                <mat-option [value]="pj.id">{{ pj.nome }} ({{ pj.cnpj }})</mat-option>
+                }
+            </mat-select>
+        </mat-form-field>
+        } @else {
+        <mat-form-field>
+            <mat-label>CNPJ</mat-label>
+            <input matInput formControlName="cnpj" mask="00.000.000/0000-00" [dropSpecialCharacters]="false" />
+            @if (erroDo('cnpj'); as erro) { <mat-error>{{ erro }}</mat-error> }
+        </mat-form-field>
+        }
+    </div>
+
+    <h3 class="text-base font-medium pt-2">Endereço</h3>
+
+    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        <mat-form-field>
+            <mat-label>Estado</mat-label>
+            <mat-select formControlName="estado">
+                @for (uf of estados; track uf) {
+                <mat-option [value]="uf">{{ uf }}</mat-option>
+                }
+            </mat-select>
+            @if (erroDo('estado'); as erro) { <mat-error>Selecione o estado.</mat-error> }
+        </mat-form-field>
+
+        <mat-form-field class="sm:col-span-3">
+            <mat-label>Cidade</mat-label>
+            <input matInput formControlName="cidade" />
+            @if (erroDo('cidade'); as erro) { <mat-error>{{ erro }}</mat-error> }
+        </mat-form-field>
+
+        <mat-form-field class="sm:col-span-2">
+            <mat-label>Bairro</mat-label>
+            <input matInput formControlName="bairro" />
+            @if (erroDo('bairro'); as erro) { <mat-error>{{ erro }}</mat-error> }
+        </mat-form-field>
+
+        <mat-form-field class="sm:col-span-1">
+            <mat-label>Rua</mat-label>
+            <input matInput formControlName="rua" />
+            @if (erroDo('rua'); as erro) { <mat-error>{{ erro }}</mat-error> }
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>Número</mat-label>
+            <input matInput formControlName="numero" />
+            @if (erroDo('numero'); as erro) { <mat-error>{{ erro }}</mat-error> }
+        </mat-form-field>
+    </div>
+
+    <div class="flex items-center justify-end gap-3 pt-4">
+        <a mat-stroked-button routerLink="/clientes" class="px-4">Voltar</a>
+
+        <button type="submit" mat-flat-button class="px-6">
+            <mat-icon class="!text-base mr-1">check</mat-icon>
+            {{ edicao ? 'Salvar' : 'Concluir' }}
+        </button>
+    </div>
+</form>
