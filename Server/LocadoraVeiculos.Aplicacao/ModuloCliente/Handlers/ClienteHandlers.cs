@@ -7,6 +7,7 @@ using LocadoraDeVeiculos.Dominio.ModuloAutenticacao;
 using LocadoraDeVeiculos.Dominio.ModuloCliente;
 using LocadoraDeVeiculos.Infraestrutura.Orm.Compartilhado;
 using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloCliente;
+using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloCondutor;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -212,6 +213,7 @@ public class EditarClienteCommandHandler(
 public class ExcluirClienteCommandHandler(
     AppDbContext appDbContext,
     RepositorioClienteEmOrm repositorioCliente,
+    RepositorioCondutorEmOrm repositorioCondutor,
     ILogger<ExcluirClienteCommandHandler> logger
 ) : IRequestHandler<ExcluirClienteCommand, Result<ExcluirClienteResult>>
 {
@@ -222,6 +224,10 @@ public class ExcluirClienteCommandHandler(
 
         if (cliente is null)
             return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro(command.Id));
+
+        if (await repositorioCondutor.ExisteParaClienteAsync(cliente.Id))
+            return Result.Fail(ResultadosErro.ExclusaoBloqueadaErro(
+                "Não é possível excluir um cliente que possui condutores cadastrados."));
 
         if (cliente.Tipo == TipoCliente.PessoaJuridica &&
             await repositorioCliente.ExistePessoaFisicaVinculadaAsync(cliente.Id))
