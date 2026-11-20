@@ -38,20 +38,7 @@ public class RegistrarUsuarioCommandHandler(
 
             if (!usuarioResult.Succeeded)
             {
-                var erros = usuarioResult.Errors.Select(err =>
-                {
-                    return err.Code switch
-                    {
-                        "DuplicateUserName" => "Já existe um usuário com esse nome.",
-                        "DuplicateEmail" => "Já existe um usuário com esse e-mail.",
-                        "PasswordTooShort" => "A senha é muito curta.",
-                        "PasswordRequiresNonAlphanumeric" => "A senha deve conter pelo menos um caractere especial.",
-                        "PasswordRequiresDigit" => "A senha deve conter pelo menos um número.",
-                        "PasswordRequiresUpper" => "A senha deve conter pelo menos uma letra maiúscula.",
-                        "PasswordRequiresLower" => "A senha deve conter pelo menos uma letra minúscula.",
-                        _ => err.Description
-                    };
-                });
+                var erros = ErrosDeIdentity.Traduzir(usuarioResult.Errors);
 
                 return Result.Fail(ResultadosErro.RequisicaoInvalidaErro(erros));
             }

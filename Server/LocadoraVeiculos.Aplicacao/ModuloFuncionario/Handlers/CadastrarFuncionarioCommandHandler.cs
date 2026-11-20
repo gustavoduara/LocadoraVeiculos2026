@@ -56,7 +56,7 @@ public class CadastrarFuncionarioCommandHandler(
 
             if (!resultadoCriacaoUsuario.Succeeded)
             {
-                var erros = resultadoCriacaoUsuario.Errors.Select(e => e.Description);
+                var erros = ErrosDeIdentity.Traduzir(resultadoCriacaoUsuario.Errors);
 
                 return Result.Fail(ResultadosErro.RequisicaoInvalidaErro(erros));
             }

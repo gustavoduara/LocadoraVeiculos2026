@@ -418,4 +418,39 @@ public class ModulosIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFact
         Assert.Equal(422, (await c.Api.Delete($"/api/clientes/{c.ClientePfId}")).Codigo);
         Assert.Equal(204, (await c.Api.Delete($"/api/condutores/{outroCliente.Id}")).Codigo);
     }
+
+    [Theory]
+    [InlineData("semmaiuscula1", "letra maiúscula")]
+    [InlineData("SEMMINUSCULA1", "letra minúscula")]
+    [InlineData("SemNumeros", "um número")]
+    public async Task Senha_fraca_devolve_mensagem_em_portugues_dizendo_o_que_falta(string senha, string trecho)
+    {
+        var c = await Criar(fabrica);
+
+        var funcionario = await c.Api.Post("/api/funcionarios", new
+        {
+            nomeCompleto = "Fulano de Tal",
+            cpf = Geradores.Cpf(),
+            email = Geradores.Email("fraca"),
+            senha,
+            confirmarSenha = senha,
+            salario = 1000m,
+            admissaoEmUtc = DateTime.UtcNow
+        });
+
+        Assert.Equal(400, funcionario.Codigo);
+        Assert.Contains(trecho, funcionario.Bruto);
+        Assert.DoesNotContain("Passwords must", funcionario.Bruto);
+
+        var registro = await NovaApi().Post("/api/auth/registrar", new
+        {
+            nomeCompleto = "Dono",
+            email = Geradores.Email("fraca"),
+            senha,
+            confirmarSenha = senha
+        });
+
+        Assert.Equal(400, registro.Codigo);
+        Assert.Contains(trecho, registro.Bruto);
+    }
 }
