@@ -36,6 +36,20 @@ public class AutenticarUsuarioCommandHandler(
             if (!credenciaisValidas)
                 return Result.Fail(ResultadosErro.RequisicaoInvalidaErro("Login ou senha incorretos."));
 
+            // Só depois de a senha conferir: quem não sabe a senha não descobre o tipo da conta.
+            if (command.Tipo is { } tipo)
+            {
+                bool ehCliente = await userManager.IsInRoleAsync(usuarioEncontrado, CargoUsuario.Cliente.ToString());
+
+                if (tipo == TipoDeAcesso.Locadora && ehCliente)
+                    return Result.Fail(ResultadosErro.RequisicaoInvalidaErro(
+                        "Esta conta é de cliente. Entre pela opção Cliente."));
+
+                if (tipo == TipoDeAcesso.Cliente && !ehCliente)
+                    return Result.Fail(ResultadosErro.RequisicaoInvalidaErro(
+                        "Esta conta é de locadora. Entre pela opção Locadora."));
+            }
+
             if (await userManager.IsInRoleAsync(usuarioEncontrado, CargoUsuario.Funcionario.ToString()))
             {
                 var funcionario = await repositorioFuncionario.SelecionarPorUsuarioIdAsync(usuarioEncontrado.Id);

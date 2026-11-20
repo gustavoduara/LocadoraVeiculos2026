@@ -1,6 +1,7 @@
 using LocadoraDeVeiculos.Aplicacao;
 using LocadoraDeVeiculos.Infraestrutura.Jwt;
 using LocadoraDeVeiculos.Infraestrutura.Orm;
+using LocadoraDeVeiculos.WebApi.Config.Email;
 using LocadoraDeVeiculos.WebApi.Config.Http;
 using LocadoraDeVeiculos.WebApi.Config.Identity;
 using LocadoraDeVeiculos.WebApi.Config.Orm;
@@ -23,6 +24,7 @@ public class Program
 
         builder.Services.AddSwaggerConfig();
         builder.Services.AddIdentityProviderConfig(builder.Configuration);
+        builder.Services.AddEnvioDeEmail(builder.Configuration);
 
 
         builder.Services.ConfigureOptions<CorsConfig>() .AddCors();

@@ -1,3 +1,4 @@
+using LocadoraDeVeiculos.Aplicacao.Compartilhado;
 using LocadoraDeVeiculos.Infraestrutura.Orm.Compartilhado;
 using LocadoraDeVeiculos.WebApi;
 using Microsoft.AspNetCore.Hosting;
@@ -36,6 +37,11 @@ public class ApiFactory : WebApplicationFactory<Program>
             services.RemoveAll<DbContextOptions>();
 
             services.AddDbContext<AppDbContext>(o => o.UseInMemoryDatabase(nomeBanco));
+
+            // Os e-mails (redefinição de senha) ficam guardados em memória para os testes lerem o link.
+            services.RemoveAll<IEnviadorDeEmail>();
+            services.AddSingleton<EmailsDeTeste>();
+            services.AddSingleton<IEnviadorDeEmail>(sp => sp.GetRequiredService<EmailsDeTeste>());
         });
     }
 
@@ -43,5 +49,24 @@ public class ApiFactory : WebApplicationFactory<Program>
     {
         // A API redireciona http -> https; o endereço base já é https para não haver redirecionamento.
         client.BaseAddress = new Uri("https://localhost");
+    }
+}
+
+
+/// <summary>Enviador de e-mail dos testes: guarda as mensagens em vez de enviar.</summary>
+public class EmailsDeTeste : IEnviadorDeEmail
+{
+    private readonly List<(string Para, string Assunto, string Corpo)> enviados = [];
+
+    public IReadOnlyList<(string Para, string Assunto, string Corpo)> Enviados
+    {
+        get { lock (enviados) return enviados.ToList(); }
+    }
+
+    public Task EnviarAsync(string para, string assunto, string corpoTexto, CancellationToken cancellationToken = default)
+    {
+        lock (enviados) enviados.Add((para, assunto, corpoTexto));
+
+        return Task.CompletedTask;
     }
 }

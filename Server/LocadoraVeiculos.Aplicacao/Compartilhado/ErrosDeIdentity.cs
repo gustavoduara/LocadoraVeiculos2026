@@ -17,6 +17,8 @@ public static class ErrosDeIdentity
             "PasswordRequiresDigit" => "A senha deve conter pelo menos um número.",
             "PasswordRequiresUpper" => "A senha deve conter pelo menos uma letra maiúscula.",
             "PasswordRequiresLower" => "A senha deve conter pelo menos uma letra minúscula.",
+            "InvalidToken" => "O link é inválido ou já expirou. Peça um novo.",
+            "PasswordMismatch" => "A senha atual está incorreta.",
             "PasswordRequiresUniqueChars" => "A senha deve conter mais caracteres diferentes.",
             _ => erro.Description
         });

@@ -4,6 +4,7 @@ using LocadoraDeVeiculos.WebApi.Compartilhado;
 using LocadoraDeVeiculos.WebApi.Config.Identity;
 using LocadoraDeVeiculos.WebApi.Models.ModuloAutenticacao;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LocadoraDeVeiculos.WebApi.Controllers;
@@ -46,11 +47,46 @@ public class AutenticacaoController(IMediator mediator) : MainController
     [HttpPost("autenticar")]
     public async Task<ActionResult<AccessToken>> Autenticar(AutenticarUsuarioRequest request)
     {
-        var command = new AutenticarUsuarioCommand(request.Email, request.Senha);
+        var command = new AutenticarUsuarioCommand(request.Email, request.Senha, request.Tipo);
 
         var result = await mediator.Send(command);
 
         return ProcessarResultado(result, ResponderComToken);
+    }
+
+    /// <summary>Envia o e-mail com o link para criar uma nova senha. A resposta é sempre a mesma.</summary>
+    [HttpPost("esqueci-senha")]
+    public async Task<ActionResult> EsqueciSenha(EsqueciSenhaRequest request, [FromServices] IConfiguration configuracao)
+    {
+        // APP_URL (se existir) vence: atrás de um proxy o endereço público pode ser outro.
+        string endereco = configuracao["APP_URL"] ?? $"{Request.Scheme}://{Request.Host}";
+
+        var result = await mediator.Send(new SolicitarRedefinicaoSenhaCommand(request.Email, endereco));
+
+        return ProcessarResultado(result, () => Ok(new
+        {
+            mensagem = "Se o e-mail estiver cadastrado, enviamos um link para criar uma nova senha."
+        }));
+    }
+
+    [HttpPost("redefinir-senha")]
+    public async Task<ActionResult> RedefinirSenha(RedefinirSenhaRequest request)
+    {
+        var result = await mediator.Send(new RedefinirSenhaCommand(
+            request.Email, request.Codigo, request.NovaSenha, request.ConfirmarSenha));
+
+        return ProcessarResultado(result, () => NoContent());
+    }
+
+    /// <summary>A pessoa logada (qualquer tipo de conta) troca a própria senha.</summary>
+    [Authorize]
+    [HttpPost("alterar-senha")]
+    public async Task<ActionResult> AlterarSenha(AlterarSenhaRequest request)
+    {
+        var result = await mediator.Send(new AlterarSenhaCommand(
+            request.SenhaAtual, request.NovaSenha, request.ConfirmarSenha));
+
+        return ProcessarResultado(result, () => NoContent());
     }
 
     [HttpPost("rotacionar")]

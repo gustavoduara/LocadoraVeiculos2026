@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace LocadoraDeVeiculos.Aplicacao.ModuloAutenticacao.Commands
 {
-    public record AutenticarUsuarioCommand(string Email, string Senha)
+    public record AutenticarUsuarioCommand(string Email, string Senha, TipoDeAcesso? Tipo = null)
         :IRequest<Result<(AccessToken accessToken, RefreshToken RefreshToken)>>;
     
 }

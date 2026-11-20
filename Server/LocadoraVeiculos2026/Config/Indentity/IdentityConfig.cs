@@ -30,6 +30,9 @@ public static class IdentityConfig
         .AddEntityFrameworkStores<AppDbContext>()
         .AddDefaultTokenProviders();
 
+        // O link de "esqueci minha senha" vale por 1 hora.
+        services.Configure<DataProtectionTokenProviderOptions>(o => o.TokenLifespan = TimeSpan.FromHours(1));
+
         services.AddJwtAuthentication(configuration);
     }
 
