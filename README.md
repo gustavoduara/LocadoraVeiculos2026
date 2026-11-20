@@ -61,6 +61,8 @@ Cada empresa enxerga **apenas os próprios dados** (multiempresa), e o que cada 
 | 🪪 **Condutores** | Quem dirige o veículo, ligado a um cliente. Aviso de CNH vencida e opção "cliente é condutor". |
 | 🤝 **Parceiros** | Cadastro de parceiros (só o nome). Um parceiro com cupons não pode ser excluído. |
 | 🏷️ **Cupons** | Desconto de valor fixo, com validade e parceiro. Ranking dos cupons e parceiros mais usados. |
+| 🏠 **Início** | Pesquisa de período (retirada e devolução) e vitrine da frota real: foto, preço a partir da menor diária do plano do grupo, total do período e disponibilidade. O botão Alugar leva o carro e as datas ao formulário de aluguel. |
+| 🌙 **Modo noturno** | Tema escuro em Configurações (e no menu do usuário), salvo no navegador. |
 | 🔑 **Aluguéis** | Registro com valor previsto ao vivo (diárias, taxas, seguro e caução), edição enquanto em aberto e devolução com km, combustível e multa por atraso. |
 
 Os desafios da especificação (parceiros e cupons) também estão prontos. Veja o [Roadmap](#-roadmap).

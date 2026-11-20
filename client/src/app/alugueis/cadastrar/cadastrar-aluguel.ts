@@ -33,6 +33,13 @@ export class CadastrarAluguel {
     protected readonly taxas = (this.route.snapshot.data['taxas'] ?? []) as TaxaServicoModel[];
     protected readonly cupons = (this.route.snapshot.data['cupons'] ?? []) as CupomModel[];
 
+    /** Carro e período escolhidos na vitrine do Início. */
+    protected readonly preenchimento = {
+        automovelId: this.route.snapshot.queryParamMap.get('automovelId'),
+        retirada: this.route.snapshot.queryParamMap.get('retirada'),
+        devolucao: this.route.snapshot.queryParamMap.get('devolucao'),
+    };
+
     public cadastrar(model: DadosAluguelModel) {
         this.aluguelService.cadastrar(model).subscribe({
             next: () => this.notificacaoService.sucesso('O aluguel foi registrado com sucesso!'),

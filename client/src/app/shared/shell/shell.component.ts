@@ -14,6 +14,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 
 import { UsuarioAutenticadoModel } from '../../auth/auth.models';
 import { Rodape } from '../rodape/rodape';
+import { TemaService } from '../tema/tema.service';
 
 @Component({
     selector: 'app-shell',
@@ -34,6 +35,8 @@ import { Rodape } from '../rodape/rodape';
 })
 export class ShellComponent {
     private readonly breakpointObserver = inject(BreakpointObserver);
+
+    protected readonly tema = inject(TemaService);
 
     public isHandset$: Observable<boolean> = this.breakpointObserver
         .observe([Breakpoints.XSmall, Breakpoints.Small, Breakpoints.Handset])

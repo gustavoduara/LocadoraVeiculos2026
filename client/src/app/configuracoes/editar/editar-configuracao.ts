@@ -5,10 +5,12 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { mensagemDeErro } from '../../shared/erros/mensagem-erro';
 import { NotificacaoService } from '../../shared/notificacao/notificacao.service';
+import { TemaService } from '../../shared/tema/tema.service';
 import { ConfiguracaoModel } from '../configuracao.models';
 import { ConfiguracaoService } from '../configuracao.service';
 
@@ -22,12 +24,14 @@ const validadoresPreco = [Validators.required, Validators.min(0.01), Validators.
         MatIconModule,
         MatFormFieldModule,
         MatInputModule,
+        MatSlideToggleModule,
         RouterLink,
         ReactiveFormsModule,
     ],
     templateUrl: './editar-configuracao.html',
 })
 export class EditarConfiguracao {
+    protected readonly tema = inject(TemaService);
     protected readonly formBuilder = inject(FormBuilder);
     protected readonly route = inject(ActivatedRoute);
     protected readonly configuracaoService = inject(ConfiguracaoService);

@@ -5,6 +5,7 @@ import { Router, RouterOutlet } from '@angular/router';
 import { AuthService } from './auth/auth.service';
 import { NotificacaoService } from './shared/notificacao/notificacao.service';
 import { Rodape } from './shared/rodape/rodape';
+import { TemaService } from './shared/tema/tema.service';
 import { ShellComponent } from './shared/shell/shell.component';
 
 @Component({
@@ -30,6 +31,9 @@ export class App {
   protected readonly router = inject(Router);
   protected readonly authService = inject(AuthService);
   protected readonly notificacaoService = inject(NotificacaoService);
+
+  // Só de injetar, o modo noturno salvo já é aplicado ao abrir o sistema (inclusive no login).
+  protected readonly tema = inject(TemaService);
 
   protected readonly accessToken$ = this.authService.obterAccessToken();
 

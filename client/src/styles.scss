@@ -30,3 +30,102 @@ body {
   margin: 0;
   font-family: Roboto, 'Helvetica Neue', sans-serif;
 }
+
+/* ---------- Selos de situação (claro) ---------- */
+.selo-verde {
+  background-color: #dcfce7;
+  color: #166534;
+}
+
+.selo-vermelho {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+
+/* Cores do rodapé (trocadas no modo noturno). */
+:root {
+  --rodape-fundo: #e4e9f3;
+  --rodape-texto: #475569;
+  --rodape-titulo: #1e293b;
+  --rodape-link: #1668e3;
+  --rodape-linha: rgb(148 163 184 / 0.4);
+}
+
+/* ---------- Modo noturno ---------- */
+/* O tema do Material troca sozinho com o color-scheme; abaixo ficam as cores escritas direto nos templates. */
+html.modo-noturno,
+html.modo-noturno body {
+  color-scheme: dark;
+}
+
+html.modo-noturno {
+  --rodape-fundo: var(--mat-sys-surface-container-high);
+  --rodape-texto: #b6bcc9;
+  --rodape-titulo: #eceff6;
+  --rodape-link: #8ab4f8;
+  --rodape-linha: rgb(148 163 184 / 0.25);
+
+  .text-gray-700,
+  .text-slate-800 {
+    color: #e2e5ec;
+  }
+
+  .text-gray-600,
+  .text-slate-600 {
+    color: #c3c8d3;
+  }
+
+  .text-gray-500 {
+    color: #a2a9b8;
+  }
+
+  .text-gray-400 {
+    color: #8a91a1;
+  }
+
+  .text-red-700,
+  .text-red-600 {
+    color: #ff8f86;
+  }
+
+  .text-green-700,
+  .text-green-800 {
+    color: #7ee08f;
+  }
+
+  .text-amber-800 {
+    color: #ffd27a;
+  }
+
+  .border-gray-200,
+  .border-gray-300 {
+    border-color: rgb(255 255 255 / 0.14);
+  }
+
+  .bg-gray-50,
+  .bg-gray-100 {
+    background-color: var(--mat-sys-surface-container);
+  }
+
+  .bg-red-100 {
+    background-color: #4a1d1d;
+  }
+
+  .bg-green-100 {
+    background-color: #17391f;
+  }
+
+  .bg-amber-100 {
+    background-color: #46360f;
+  }
+
+  .selo-verde {
+    background-color: #17391f;
+    color: #7ee08f;
+  }
+
+  .selo-vermelho {
+    background-color: #4a1d1d;
+    color: #ff8f86;
+  }
+}

@@ -95,6 +95,26 @@ export class AluguelForm {
         });
     }
 
+    /** Carro e datas vindos da vitrine do Início (parâmetros da URL, datas em yyyy-MM-dd). */
+    @Input() set preenchimento(
+        valor: { automovelId?: string | null; retirada?: string | null; devolucao?: string | null } | undefined,
+    ) {
+        if (!valor) return;
+
+        const dataValida = (d?: string | null) =>
+            d && /^\d{4}-\d{2}-\d{2}$/.test(d) ? isoParaDataBr(d) : null;
+
+        const automovel = this.automoveis.find((a) => a.id === valor.automovelId);
+        const retirada = dataValida(valor.retirada);
+        const devolucao = dataValida(valor.devolucao);
+
+        this.form.patchValue({
+            ...(automovel ? { grupoId: automovel.grupoVeiculosId, automovelId: automovel.id } : {}),
+            ...(retirada ? { dataSaida: retirada } : {}),
+            ...(devolucao ? { dataRetornoPrevista: devolucao } : {}),
+        });
+    }
+
     @Output() salvar = new EventEmitter<DadosAluguelModel>();
 
     protected edicao = false;

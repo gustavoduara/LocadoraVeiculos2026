@@ -1,5 +1,5 @@
 import { addDays, format } from 'date-fns';
-import { map } from 'rxjs';
+import { forkJoin, map } from 'rxjs';
 
 import { AsyncPipe, CurrencyPipe } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
@@ -13,31 +13,26 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
 
+import { AluguelModel } from '../alugueis/aluguel.models';
+import { AluguelService } from '../alugueis/aluguel.service';
 import { AuthService } from '../auth/auth.service';
-
-/** Carro de exemplo da vitrine (dados fictícios, só para visualizar o layout). */
-interface CarroExemplo {
-    nome: string;
-    categoria: string;
-    diaria: number;
-    passageiros: number;
-    cambio: 'Manual' | 'Automático';
-    malas: number;
-    cor: string;
-}
-
-const CATEGORIAS = ['Econômico', 'Compacto', 'Sedan', 'SUV', 'Utilitário'];
-
-const CARROS_EXEMPLO: CarroExemplo[] = [
-    { nome: 'Fiat Mobi', categoria: 'Econômico', diaria: 89, passageiros: 4, cambio: 'Manual', malas: 1, cor: 'from-emerald-400 to-emerald-600' },
-    { nome: 'Chevrolet Onix', categoria: 'Econômico', diaria: 109, passageiros: 5, cambio: 'Manual', malas: 2, cor: 'from-teal-400 to-teal-600' },
-    { nome: 'Hyundai HB20', categoria: 'Compacto', diaria: 129, passageiros: 5, cambio: 'Automático', malas: 2, cor: 'from-sky-400 to-sky-600' },
-    { nome: 'Toyota Corolla', categoria: 'Sedan', diaria: 219, passageiros: 5, cambio: 'Automático', malas: 3, cor: 'from-indigo-400 to-indigo-600' },
-    { nome: 'Jeep Renegade', categoria: 'SUV', diaria: 189, passageiros: 5, cambio: 'Automático', malas: 3, cor: 'from-orange-400 to-orange-600' },
-    { nome: 'Fiat Toro', categoria: 'Utilitário', diaria: 249, passageiros: 5, cambio: 'Automático', malas: 4, cor: 'from-rose-400 to-rose-600' },
-];
+import { AutomovelModel, formatarPlaca, rotuloCombustivel } from '../automoveis/automovel.models';
+import { AutomovelService } from '../automoveis/automovel.service';
+import { FotoAutomovel } from '../automoveis/foto/foto-automovel';
+import { PlanoCobrancaModel } from '../planos-cobranca/plano-cobranca.models';
+import { PlanoCobrancaService } from '../planos-cobranca/plano-cobranca.service';
+import { mensagemDeErro } from '../shared/erros/mensagem-erro';
 
 const FORMATO_ISO = 'yyyy-MM-dd';
+
+/** Um carro da frota com o preço do plano do grupo e a disponibilidade no período pesquisado. */
+interface CarroVitrine {
+    automovel: AutomovelModel;
+    /** Menor diária entre os três planos do grupo; vazio quando o grupo não tem plano de cobrança. */
+    diariaAPartirDe: number | null;
+    /** Só é preenchido depois de uma pesquisa. */
+    disponivel: boolean | null;
+}
 
 @Component({
     selector: 'app-inicio',
@@ -53,25 +48,54 @@ const FORMATO_ISO = 'yyyy-MM-dd';
         AsyncPipe,
         CurrencyPipe,
         RouterLink,
+        FotoAutomovel,
     ],
+    providers: [AutomovelService, PlanoCobrancaService, AluguelService],
     templateUrl: './inicio.html',
     styleUrl: './inicio.scss',
 })
 export class Inicio {
+    private readonly automovelService = inject(AutomovelService);
+    private readonly planoService = inject(PlanoCobrancaService);
+    private readonly aluguelService = inject(AluguelService);
+
     protected readonly usuarioAutenticado$ = inject(AuthService)
         .obterAccessToken()
         .pipe(map((x) => x?.usuarioAutenticado));
 
-    protected readonly categorias = CATEGORIAS;
+    protected readonly formatarPlaca = formatarPlaca;
+    protected readonly rotuloCombustivel = rotuloCombustivel;
+
     protected readonly hoje = format(new Date(), FORMATO_ISO);
+
+    // Dados reais da frota.
+    protected readonly carregando = signal(true);
+    protected readonly erroCarga = signal<string | null>(null);
+    private readonly automoveis = signal<AutomovelModel[]>([]);
+    private readonly planos = signal<PlanoCobrancaModel[]>([]);
+    private readonly alugueisEmAberto = signal<AluguelModel[]>([]);
 
     // Campos da pesquisa (datas em yyyy-MM-dd, o formato do input de data).
     protected readonly retirada = signal(this.hoje);
     protected readonly devolucao = signal(format(addDays(new Date(), 3), FORMATO_ISO));
-    protected readonly categoria = signal('');
+    protected readonly grupoId = signal('');
 
-    /** Resultado da última pesquisa: os cards mostram o total do período pesquisado. */
-    protected readonly pesquisa = signal<{ dias: number; categoria: string } | null>(null);
+    /** Resultado da última pesquisa: os cards mostram a disponibilidade e o total do período. */
+    protected readonly pesquisa = signal<{
+        retirada: string;
+        devolucao: string;
+        dias: number;
+        grupoId: string;
+    } | null>(null);
+
+    /** Grupos de veículos que têm automóveis (para o filtro de categoria). */
+    protected readonly grupos = computed(() => {
+        const vistos = new Map<string, string>();
+
+        for (const a of this.automoveis()) vistos.set(a.grupoVeiculosId, a.nomeGrupo);
+
+        return [...vistos].map(([id, nome]) => ({ id, nome })).sort((a, b) => a.nome.localeCompare(b.nome));
+    });
 
     protected readonly erro = computed(() => {
         if (!this.retirada() || !this.devolucao()) return 'Informe as duas datas.';
@@ -81,11 +105,61 @@ export class Inicio {
         return null;
     });
 
-    protected readonly carros = computed(() => {
-        const filtro = this.pesquisa()?.categoria;
+    protected readonly carros = computed<CarroVitrine[]>(() => {
+        const busca = this.pesquisa();
+        const menorDiariaPorGrupo = new Map(
+            this.planos().map((p) => [
+                p.grupoVeiculosId,
+                Math.min(p.diario.precoDiaria, p.controlado.precoDiaria, p.livre.precoDiaria),
+            ]),
+        );
 
-        return filtro ? CARROS_EXEMPLO.filter((c) => c.categoria === filtro) : CARROS_EXEMPLO;
+        const lista = this.automoveis()
+            .filter((a) => !busca?.grupoId || a.grupoVeiculosId === busca.grupoId)
+            .map<CarroVitrine>((automovel) => ({
+                automovel,
+                diariaAPartirDe: menorDiariaPorGrupo.get(automovel.grupoVeiculosId) ?? null,
+                disponivel: busca ? this.estaDisponivel(automovel.id, busca.retirada, busca.devolucao) : null,
+            }));
+
+        // Depois de pesquisar, os disponíveis vêm primeiro.
+        return busca ? lista.sort((a, b) => Number(b.disponivel) - Number(a.disponivel)) : lista;
     });
+
+    protected readonly totalDisponiveis = computed(() => this.carros().filter((c) => c.disponivel).length);
+
+    constructor() {
+        forkJoin({
+            automoveis: this.automovelService.selecionarTodos(),
+            planos: this.planoService.selecionarTodos(),
+            alugueis: this.aluguelService.selecionarTodos('EmAberto'),
+        }).subscribe({
+            next: ({ automoveis, planos, alugueis }) => {
+                this.automoveis.set(automoveis);
+                this.planos.set(planos);
+                this.alugueisEmAberto.set(alugueis);
+                this.carregando.set(false);
+            },
+            error: (err) => {
+                this.erroCarga.set(mensagemDeErro(err, 'Não foi possível carregar a frota.'));
+                this.carregando.set(false);
+            },
+        });
+    }
+
+    /**
+     * Mesma regra do servidor: o carro está ocupado por um aluguel em aberto cujo período se sobrepõe ao pedido.
+     * Um aluguel vencido e ainda não devolvido continua ocupando o carro até hoje.
+     */
+    private estaDisponivel(automovelId: string, retirada: string, devolucao: string): boolean {
+        return !this.alugueisEmAberto().some((a) => {
+            if (a.automovelId !== automovelId) return false;
+
+            const fimEfetivo = a.dataRetornoPrevista >= this.hoje ? a.dataRetornoPrevista : this.hoje;
+
+            return a.dataSaida <= devolucao && fimEfetivo >= retirada;
+        });
+    }
 
     protected atualizarRetirada(valor: string): void {
         this.retirada.set(valor);
@@ -103,11 +177,25 @@ export class Inicio {
             Math.round((Date.parse(this.devolucao()) - Date.parse(this.retirada())) / 86_400_000),
         );
 
-        this.pesquisa.set({ dias, categoria: this.categoria() });
+        this.pesquisa.set({
+            retirada: this.retirada(),
+            devolucao: this.devolucao(),
+            dias,
+            grupoId: this.grupoId(),
+        });
     }
 
     protected limpar(): void {
         this.pesquisa.set(null);
-        this.categoria.set('');
+        this.grupoId.set('');
+    }
+
+    /** Dados que levam o carro e as datas escolhidos para o formulário de aluguel. */
+    protected parametrosDoAluguel(carro: CarroVitrine): Record<string, string> {
+        const busca = this.pesquisa();
+
+        return busca
+            ? { automovelId: carro.automovel.id, retirada: busca.retirada, devolucao: busca.devolucao }
+            : { automovelId: carro.automovel.id };
     }
 }

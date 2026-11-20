@@ -190,6 +190,10 @@
               Meu Perfil
             </a>
           }
+          <button mat-menu-item style="min-width: 160px" (click)="tema.alternar()">
+            <mat-icon>{{ tema.noturno() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+            {{ tema.noturno() ? 'Modo claro' : 'Modo noturno' }}
+          </button>
           <button mat-menu-item style="min-width: 160px" (click)="logoutRequisitado.emit()">
             <mat-icon>arrow_backwards</mat-icon>
             Logout

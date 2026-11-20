@@ -15,10 +15,10 @@ interface LinkRodape {
     selector: 'app-rodape',
     imports: [MatIconModule, RouterLink],
     template: `
-        <footer class="mt-12 rounded-t-[32px] bg-[#e4e9f3] px-6 pb-6 pt-10 text-sm text-slate-600">
+        <footer class="mt-12 rounded-t-[32px] bg-[var(--rodape-fundo)] px-6 pb-6 pt-10 text-sm text-[color:var(--rodape-texto)]">
             <div class="mx-auto max-w-screen-xl">
                 <!-- Marca -->
-                <div class="flex items-center gap-2 text-slate-800">
+                <div class="flex items-center gap-2 text-[color:var(--rodape-titulo)]">
                     <mat-icon class="material-icons-outlined">car_rental</mat-icon>
                     <span class="text-xl font-semibold">Locadora de Veículos</span>
                 </div>
@@ -31,7 +31,7 @@ interface LinkRodape {
                 <div class="mt-8 grid grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-4">
                     @if (cargo()) {
                     <nav aria-label="Operação">
-                        <h3 class="mb-3 font-semibold text-slate-800">Operação</h3>
+                        <h3 class="mb-3 font-semibold text-[color:var(--rodape-titulo)]">Operação</h3>
                         <ul class="space-y-2">
                             @for (link of operacao; track link.rota) {
                             <li><a class="link-rodape" [routerLink]="link.rota">{{ link.rotulo }}</a></li>
@@ -40,7 +40,7 @@ interface LinkRodape {
                     </nav>
 
                     <nav aria-label="Gestão">
-                        <h3 class="mb-3 font-semibold text-slate-800">{{ cargo() === 'Empresa' ? 'Gestão' : 'Conta' }}</h3>
+                        <h3 class="mb-3 font-semibold text-[color:var(--rodape-titulo)]">{{ cargo() === 'Empresa' ? 'Gestão' : 'Conta' }}</h3>
                         <ul class="space-y-2">
                             @if (cargo() === 'Empresa') { @for (link of gestao; track link.rota) {
                             <li><a class="link-rodape" [routerLink]="link.rota">{{ link.rotulo }}</a></li>
@@ -52,7 +52,7 @@ interface LinkRodape {
                     }
 
                     <nav aria-label="Contato">
-                        <h3 class="mb-3 font-semibold text-slate-800">Contato</h3>
+                        <h3 class="mb-3 font-semibold text-[color:var(--rodape-titulo)]">Contato</h3>
                         <ul class="space-y-2">
                             <li>
                                 <a class="link-rodape" [href]="'tel:' + telefoneLink">{{ telefone }}</a>
@@ -70,7 +70,7 @@ interface LinkRodape {
                     </nav>
 
                     <nav aria-label="Projeto">
-                        <h3 class="mb-3 font-semibold text-slate-800">Projeto</h3>
+                        <h3 class="mb-3 font-semibold text-[color:var(--rodape-titulo)]">Projeto</h3>
                         <ul class="space-y-2">
                             <li>
                                 <a class="link-rodape" [href]="perfilGithub" target="_blank" rel="noopener noreferrer"
@@ -97,12 +97,12 @@ interface LinkRodape {
 
                 <!-- Linha final -->
                 <div
-                    class="mt-8 flex flex-col gap-2 border-t border-slate-400/40 pt-5 text-xs md:flex-row md:items-center md:justify-between"
+                    class="mt-8 flex flex-col gap-2 border-t border-[color:var(--rodape-linha)] pt-5 text-xs md:flex-row md:items-center md:justify-between"
                 >
                     <p>
                         © {{ ano }} Locadora de Veículos · v{{ versao }} · Desenvolvido por
                         <a
-                            class="font-medium text-slate-800 hover:underline"
+                            class="font-medium text-[color:var(--rodape-titulo)] hover:underline"
                             [href]="perfilGithub"
                             target="_blank"
                             rel="noopener noreferrer"
@@ -116,7 +116,7 @@ interface LinkRodape {
     `,
     styles: `
         .link-rodape {
-            color: #1668e3;
+            color: var(--rodape-link);
         }
         .link-rodape:hover {
             text-decoration: underline;

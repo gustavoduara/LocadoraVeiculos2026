@@ -58,4 +58,21 @@
             </mat-card-actions>
         </form>
     </mat-card>
+
+    <!-- Aparência: vale na hora e fica guardada neste navegador -->
+    <mat-card class="p-4 rounded-2xl shadow-sm mt-6">
+        <mat-card-header>
+            <mat-card-title class="text-lg font-medium">Aparência</mat-card-title>
+            <mat-card-subtitle>Escolha o visual do sistema. A escolha fica salva neste navegador.</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content class="mt-4">
+            <mat-slide-toggle [checked]="tema.noturno()" (change)="tema.definir($event.checked)">
+                <span class="inline-flex items-center gap-2">
+                    <mat-icon>{{ tema.noturno() ? 'dark_mode' : 'light_mode' }}</mat-icon>
+                    Modo noturno
+                </span>
+            </mat-slide-toggle>
+        </mat-card-content>
+    </mat-card>
 </section>
