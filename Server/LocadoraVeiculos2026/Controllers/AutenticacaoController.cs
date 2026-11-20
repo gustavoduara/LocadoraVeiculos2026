@@ -5,13 +5,16 @@ using LocadoraDeVeiculos.WebApi.Config.Identity;
 using LocadoraDeVeiculos.WebApi.Models.ModuloAutenticacao;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using LocadoraDeVeiculos.WebApi.Config.Seguranca;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace LocadoraDeVeiculos.WebApi.Controllers;
 
 [Route("api/auth")]
 public class AutenticacaoController(IMediator mediator) : MainController
 {
+    [EnableRateLimiting(SegurancaConfig.PoliticaDeCadastro)]
     [HttpPost("registrar")]
     public async Task<ActionResult<AccessToken>> Registrar(RegistrarUsuarioRequest request)
     {
@@ -28,6 +31,7 @@ public class AutenticacaoController(IMediator mediator) : MainController
     }
 
     /// <summary>Conta de cliente: quem procura e aluga carros no catálogo (não é uma locadora).</summary>
+    [EnableRateLimiting(SegurancaConfig.PoliticaDeCadastro)]
     [HttpPost("registrar-cliente")]
     public async Task<ActionResult<AccessToken>> RegistrarCliente(RegistrarUsuarioRequest request)
     {
@@ -44,6 +48,7 @@ public class AutenticacaoController(IMediator mediator) : MainController
         return ProcessarResultado(result, ResponderComToken);
     }
 
+    [EnableRateLimiting(SegurancaConfig.PoliticaDeLogin)]
     [HttpPost("autenticar")]
     public async Task<ActionResult<AccessToken>> Autenticar(AutenticarUsuarioRequest request)
     {
@@ -55,6 +60,7 @@ public class AutenticacaoController(IMediator mediator) : MainController
     }
 
     /// <summary>Envia o e-mail com o link para criar uma nova senha. A resposta é sempre a mesma.</summary>
+    [EnableRateLimiting(SegurancaConfig.PoliticaDeRecuperacao)]
     [HttpPost("esqueci-senha")]
     public async Task<ActionResult> EsqueciSenha(EsqueciSenhaRequest request, [FromServices] IConfiguration configuracao)
     {
@@ -69,6 +75,7 @@ public class AutenticacaoController(IMediator mediator) : MainController
         }));
     }
 
+    [EnableRateLimiting(SegurancaConfig.PoliticaDeRecuperacao)]
     [HttpPost("redefinir-senha")]
     public async Task<ActionResult> RedefinirSenha(RedefinirSenhaRequest request)
     {

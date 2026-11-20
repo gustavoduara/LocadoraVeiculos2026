@@ -5,6 +5,7 @@ using LocadoraDeVeiculos.WebApi.Config.Email;
 using LocadoraDeVeiculos.WebApi.Config.Http;
 using LocadoraDeVeiculos.WebApi.Config.Identity;
 using LocadoraDeVeiculos.WebApi.Config.Orm;
+using LocadoraDeVeiculos.WebApi.Config.Seguranca;
 using LocadoraDeVeiculos.WebApi.Config.Swagger;
 using System.Text.Json.Serialization;
 namespace LocadoraDeVeiculos.WebApi;
@@ -25,6 +26,8 @@ public class Program
         builder.Services.AddSwaggerConfig();
         builder.Services.AddIdentityProviderConfig(builder.Configuration);
         builder.Services.AddEnvioDeEmail(builder.Configuration);
+        builder.Services.AddLimiteDeTentativas(builder.Configuration);
+        builder.Services.AddChavesPersistentes(builder.Configuration);
 
 
         builder.Services.ConfigureOptions<CorsConfig>() .AddCors();
@@ -62,6 +65,7 @@ public class Program
         app.UseRouting();
 
         app.UseCors();
+        app.UseRateLimiter();
         app.UseAuthentication();
         app.UseAuthorization();
 

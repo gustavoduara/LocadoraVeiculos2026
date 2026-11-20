@@ -41,7 +41,8 @@ Confira os preços atuais no portal antes de criar. Para uma demonstração, F1 
 | `ASPNETCORE_ENVIRONMENT` | `Production` |
 
 4. Em **Configurações > Configuração geral**, ative **Somente HTTPS**.
-5. **E-mail do "esqueci minha senha"** (opcional, mas sem isto o link não chega a ninguém: ele só vai para o log do app). Adicione também:
+5. **Chaves de proteção** (recomendado): adicione `DATA_PROTECTION_PATH` = `/home/chaves-protecao`. A pasta `/home` do App Service é permanente, então os links de "esqueci minha senha" já enviados continuam valendo depois de um reinício. Os limites de tentativas (login, cadastro e recuperação de senha, por endereço) já vêm ligados e podem ser ajustados com `LIMITE_LOGIN_POR_MINUTO` (padrão 10), `LIMITE_RECUPERACAO_POR_15_MINUTOS` (5) e `LIMITE_CADASTRO_POR_HORA` (10).
+6. **E-mail do "esqueci minha senha"** (opcional, mas sem isto o link não chega a ninguém: ele só vai para o log do app). Adicione também:
 
 | Nome | Valor |
 |---|---|
