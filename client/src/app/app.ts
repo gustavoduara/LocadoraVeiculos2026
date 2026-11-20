@@ -20,6 +20,9 @@ import { ShellComponent } from './shared/shell/shell.component';
         <router-outlet></router-outlet>
       </app-shell>
     } @else {
+      <header class="marca-entrada">
+        <img src="img/serradrive-logo.png" alt="SerraDrive - Locadora de Veículos" />
+      </header>
       <main class="container-fluid py-3">
         <router-outlet></router-outlet>
       </main>

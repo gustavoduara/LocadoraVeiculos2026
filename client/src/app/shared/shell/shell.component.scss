@@ -9,11 +9,51 @@
 
     padding: 0 10px;
 
-    background-color: var(--mat-sys-surface-container-low);
+    // Menu em verde-floresta (cor da identidade), nos dois modos. O logo foi feito para fundo escuro.
+    background-color: var(--menu-fundo);
+    color: #e6efe8;
+
+    --mat-sidenav-container-background-color: var(--menu-fundo);
+    --mat-sidenav-container-text-color: #e6efe8;
+    --mat-toolbar-container-text-color: #e6efe8;
+    --mat-list-list-item-label-text-color: #e6efe8;
+    --mat-list-list-item-hover-label-text-color: #ffffff;
+    --mat-list-list-item-focus-label-text-color: #ffffff;
+    --mat-list-list-item-leading-icon-color: #b9d1c0;
+    --mat-list-list-item-hover-leading-icon-color: #ffffff;
+    --mat-list-list-item-focus-leading-icon-color: #ffffff;
+    --mat-list-list-item-hover-state-layer-color: #ffffff;
+    --mat-list-list-item-hover-state-layer-opacity: 0.08;
+    --mat-list-list-item-focus-state-layer-color: #ffffff;
+    --mat-list-list-item-focus-state-layer-opacity: 0.12;
 }
 
 .sidenav .mat-toolbar {
     background: inherit;
+    height: auto;
+    min-height: 72px;
+}
+
+.marca-menu {
+    display: flex;
+    align-items: center;
+
+    img {
+        display: block;
+        height: 46px;
+        width: auto;
+    }
+}
+
+// Item da página atual: faixa clara e filete laranja na lateral.
+.nav-link-active {
+    background-color: rgb(255 255 255 / 0.12) !important;
+    box-shadow: inset 3px 0 0 var(--mat-sys-tertiary-brand, #f47b20);
+}
+
+.marca-topo-celular {
+    font-size: 1.25rem;
+    font-weight: 500;
 }
 
 .mat-toolbar.mat-primary {

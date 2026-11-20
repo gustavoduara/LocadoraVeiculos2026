@@ -18,10 +18,7 @@ interface LinkRodape {
         <footer class="mt-12 rounded-t-[32px] bg-[var(--rodape-fundo)] px-6 pb-6 pt-10 text-sm text-[color:var(--rodape-texto)]">
             <div class="mx-auto max-w-screen-xl">
                 <!-- Marca -->
-                <div class="flex items-center gap-2 text-[color:var(--rodape-titulo)]">
-                    <mat-icon class="material-icons-outlined">car_rental</mat-icon>
-                    <span class="text-xl font-semibold">Locadora de Veículos</span>
-                </div>
+                <img class="h-14 w-auto" src="img/serradrive-logo.png" alt="SerraDrive - Locadora de Veículos" />
                 <p class="mt-2 max-w-xl">
                     Gestão de frota, clientes e aluguéis em um só lugar, com cálculo automático de diárias,
                     taxas, seguro, cupons e devolução.
@@ -100,7 +97,7 @@ interface LinkRodape {
                     class="mt-8 flex flex-col gap-2 border-t border-[color:var(--rodape-linha)] pt-5 text-xs md:flex-row md:items-center md:justify-between"
                 >
                     <p>
-                        © {{ ano }} Locadora de Veículos · v{{ versao }} · Desenvolvido por
+                        © {{ ano }} SerraDrive · v{{ versao }} · Desenvolvido por
                         <a
                             class="font-medium text-[color:var(--rodape-titulo)] hover:underline"
                             [href]="perfilGithub"

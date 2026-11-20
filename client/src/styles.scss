@@ -11,6 +11,49 @@ html {
     ));
 }
 
+/* ---------- Identidade SerraDrive: paleta "Floresta profunda" ---------- */
+/* Os tokens do Material trocam entre claro e escuro por conta do color-scheme (light-dark). */
+html {
+  --mat-sys-primary: light-dark(#1f5a38, #8fd05a);
+  --mat-sys-on-primary: light-dark(#ffffff, #0f2e1a);
+  --mat-sys-primary-container: light-dark(#c9e8d3, #1f5a38);
+  --mat-sys-on-primary-container: light-dark(#0b2a18, #d4f0dc);
+
+  --mat-sys-secondary: light-dark(#4f6b58, #b7ccbd);
+  --mat-sys-on-secondary: light-dark(#ffffff, #22352a);
+  --mat-sys-secondary-container: light-dark(#d3e8d9, #384b3f);
+  --mat-sys-on-secondary-container: light-dark(#0e2416, #d3e8d9);
+
+  /* Laranja: destaque (preços, filete do menu, chamadas). */
+  --mat-sys-tertiary: light-dark(#c95a0c, #ff9a3d);
+  --mat-sys-on-tertiary: light-dark(#ffffff, #4a2300);
+  --mat-sys-tertiary-container: light-dark(#ffdcc2, #6a3400);
+  --mat-sys-on-tertiary-container: light-dark(#3a1800, #ffdcc2);
+  --mat-sys-tertiary-brand: #f47b20;
+
+  --mat-sys-background: light-dark(#f4f7f4, #141815);
+  --mat-sys-on-background: light-dark(#181d1a, #e1e6e1);
+  --mat-sys-surface: light-dark(#f4f7f4, #141815);
+  --mat-sys-on-surface: light-dark(#181d1a, #e1e6e1);
+  --mat-sys-surface-variant: light-dark(#dce5de, #414943);
+  --mat-sys-on-surface-variant: light-dark(#414943, #c1c9c2);
+  --mat-sys-outline: light-dark(#717972, #8b938c);
+  --mat-sys-outline-variant: light-dark(#c1c9c2, #414943);
+
+  --mat-sys-surface-container-lowest: light-dark(#ffffff, #0f1310);
+  --mat-sys-surface-container-low: light-dark(#eef2ee, #1a1f1b);
+  --mat-sys-surface-container: light-dark(#e9eee9, #1e2420);
+  --mat-sys-surface-container-high: light-dark(#e3e9e4, #282e29);
+  --mat-sys-surface-container-highest: light-dark(#dde3de, #333a35);
+
+  /* Menu lateral e rodapé: verde-floresta nos dois modos. */
+  --menu-fundo: #1f3d2b;
+}
+
+html.modo-noturno {
+  --menu-fundo: #16281d;
+}
+
 body {
   color-scheme: light;
 
@@ -44,11 +87,11 @@ body {
 
 /* Cores do rodapé (trocadas no modo noturno). */
 :root {
-  --rodape-fundo: #e4e9f3;
-  --rodape-texto: #475569;
-  --rodape-titulo: #1e293b;
-  --rodape-link: #1668e3;
-  --rodape-linha: rgb(148 163 184 / 0.4);
+  --rodape-fundo: var(--menu-fundo);
+  --rodape-texto: #c3d3c8;
+  --rodape-titulo: #f2f6f3;
+  --rodape-link: #9bd66a;
+  --rodape-linha: rgb(255 255 255 / 0.16);
 }
 
 /* ---------- Modo noturno ---------- */
@@ -59,11 +102,6 @@ html.modo-noturno body {
 }
 
 html.modo-noturno {
-  --rodape-fundo: var(--mat-sys-surface-container-high);
-  --rodape-texto: #b6bcc9;
-  --rodape-titulo: #eceff6;
-  --rodape-link: #8ab4f8;
-  --rodape-linha: rgb(148 163 184 / 0.25);
 
   .text-gray-700,
   .text-slate-800 {
@@ -127,5 +165,25 @@ html.modo-noturno {
   .selo-vermelho {
     background-color: #4a1d1d;
     color: #ff8f86;
+  }
+}
+
+
+.text-destaque {
+  color: var(--mat-sys-tertiary);
+}
+
+/* Faixa com o logo nas telas de login e registro (o logo é claro, feito para fundo escuro). */
+.marca-entrada {
+  display: flex;
+  justify-content: center;
+  padding: 18px 16px;
+  background-color: var(--menu-fundo);
+
+  img {
+    display: block;
+    height: 56px;
+    width: auto;
+    max-width: 100%;
   }
 }
