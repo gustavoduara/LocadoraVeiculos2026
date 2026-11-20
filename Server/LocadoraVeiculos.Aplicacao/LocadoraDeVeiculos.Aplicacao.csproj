@@ -15,6 +15,9 @@
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
   </ItemGroup>
 	<ItemGroup>
+		<InternalsVisibleTo Include="LocadoraDeVeiculos.Testes" />
+	</ItemGroup>
+	<ItemGroup>
 		<ProjectReference Include="..\LocadoraDeVeiculos.Infraestrutura.jwt\LocadoraDeVeiculos.Infraestrutura.Jwt.csproj" />
 		<ProjectReference Include="..\LocadoraVeiculos.Infraestrutura.Orm\LocadoraDeVeiculos.Infraestrutura.Orm.csproj" />
 		<ProjectReference Include="..\LocadoraVeiculos.Dominio\LocadoraDeVeiculos.Dominio.csproj" />
