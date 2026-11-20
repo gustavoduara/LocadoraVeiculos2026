@@ -64,7 +64,8 @@ Cada empresa enxerga **apenas os próprios dados** (multiempresa), e o que cada 
 | 🤝 **Parceiros** | Cadastro de parceiros (só o nome). Um parceiro com cupons não pode ser excluído. |
 | 🏷️ **Cupons** | Desconto de valor fixo, com validade e parceiro. Ranking dos cupons e parceiros mais usados. |
 | 🔐 **Entrada e senhas** | O login pergunta primeiro se a pessoa é **cliente** ou **locadora** (empresa ou funcionário) e recusa a conta do lado errado com uma mensagem clara. Há "Esqueci minha senha" (link por e-mail, válido por 1 hora e de uso único) e "Alterar senha" para qualquer conta logada. |
-| 🔎 **Catálogo (conta de cliente)** | A pessoa cria uma conta de cliente e procura carros de **todas as locadoras**: por período (só os livres), texto, categoria, combustível, ano, preço da diária e locadora, com ordenação e paginação. Mostra foto, locadora, preço e total do período. A reserva online é a próxima etapa. |
+| 🔎 **Catálogo (conta de cliente)** | A pessoa cria uma conta de cliente e procura carros de **todas as locadoras**: por período (só os livres), texto, categoria, combustível, ano, preço da diária e locadora, com ordenação e paginação. Mostra foto, locadora, preço e total do período. Do carro, o cliente escolhe plano e seguro e pede a reserva. |
+| 📅 **Reserva online** | O cliente preenche **Meus dados** (CPF, RG, CNH, telefone, endereço), vê o valor previsto na hora e envia o pedido. A locadora **aprova** (o aluguel é criado sozinho, com o cliente e o condutor) ou **recusa** com um motivo. O cliente acompanha em **Meus pedidos**, pode cancelar enquanto está pendente e, aprovada, vê o telefone da locadora. |
 | 🏠 **Início** | Pesquisa de período (retirada e devolução) e vitrine da frota real: foto, preço a partir da menor diária do plano do grupo, total do período e disponibilidade. O botão Alugar leva o carro e as datas ao formulário de aluguel. |
 | 🌙 **Modo noturno** | Tema escuro em Configurações (e no menu do usuário), salvo no navegador. |
 | 🔑 **Aluguéis** | Registro com valor previsto ao vivo (diárias, taxas, seguro e caução), edição enquanto em aberto e devolução com km, combustível e multa por atraso. |
@@ -76,7 +77,7 @@ Os desafios da especificação (parceiros e cupons) também estão prontos. Veja
 ## 📏 Regras de negócio
 
 - **Multiempresa:** todos os dados pertencem a uma empresa, e uma empresa nunca vê os dados de outra. O isolamento é aplicado automaticamente em todas as consultas.
-- **Três perfis de acesso:** a locadora (Empresa), o Funcionário e o **Cliente** (conta aberta ao público, só usa o catálogo). A tabela abaixo mostra os dois primeiros; o Cliente não acessa nenhuma rota de gestão, e a locadora e o funcionário não acessam o catálogo (para uma locadora não ver a frota da outra).
+- **Três perfis de acesso:** a locadora (Empresa), o Funcionário e o **Cliente** (conta aberta ao público: catálogo, Meus dados e reservas). A tabela abaixo mostra os dois primeiros; o Cliente não acessa nenhuma rota de gestão, e a locadora e o funcionário não acessam o catálogo (para uma locadora não ver a frota da outra).
 
   | Ação | Empresa (administrador) | Funcionário |
   |---|:---:|:---:|
@@ -90,6 +91,8 @@ Os desafios da especificação (parceiros e cupons) também estão prontos. Veja
   | Registrar, editar e devolver aluguéis | ✅ | ✅ |
   | Buscar carros no catálogo (todas as locadoras) | ❌ | ❌ |
   | Parceiros e cupons (cadastro e ranking) | ✅ | ❌ (só lê, para escolher o cupom) |
+  | Responder reservas (aprovar / recusar) | ✅ | ✅ |
+  | Nome e telefone da locadora (Configurações) | ✅ | ❌ |
 
 - **Funcionário desativado:** perde a sessão imediatamente (os tokens são revogados) e não consegue entrar até ser reativado.
 - **Perfil próprio:** o funcionário altera só nome e CPF. Salário e data de admissão são definidos pelo administrador.
@@ -264,7 +267,9 @@ Todas as rotas (exceto autenticação) exigem o cabeçalho `Authorization: Beare
 | | `POST` · `PUT {id}` · `DELETE {id}` | Empresa |
 | **Cupons** | `GET /api/cupons` · `GET {id}` | Empresa e Funcionário |
 | | `POST` · `PUT {id}` · `DELETE {id}` · `GET /api/cupons/mais-utilizados` | Empresa |
-| **Catálogo** | `GET /api/catalogo` (filtros por query string) · `GET /api/catalogo/filtros` · `GET /api/catalogo/{id}/foto` | Cliente |
+| **Catálogo** | `GET /api/catalogo` (filtros por query string) · `GET /api/catalogo/filtros` · `GET /api/catalogo/{id}` (detalhe com planos e seguros) · `GET /api/catalogo/{id}/foto` | Cliente |
+| **Meus dados e reservas (cliente)** | `GET · PUT /api/meus-dados` · `POST /api/minhas-reservas/calcular` · `GET · POST /api/minhas-reservas` · `POST {id}/cancelar` | Cliente |
+| **Reservas (locadora)** | `GET /api/reservas?status=` · `GET /api/reservas/pendentes/total` · `POST {id}/aprovar` · `POST {id}/recusar` | Empresa e Funcionário |
 | **Aluguéis** | `GET /api/alugueis?status=` · `POST` · `GET · PUT · DELETE {id}`<br>`POST /api/alugueis/calcular`<br>`POST {id}/devolucao` · `POST {id}/devolucao/calcular` | Empresa e Funcionário |
 
 A documentação interativa completa está no Swagger.
