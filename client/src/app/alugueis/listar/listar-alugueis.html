@@ -1,0 +1,110 @@
+<section class="mx-auto max-w-screen-xl px-4">
+    <div class="py-6">
+        <h2 class="text-2xl font-semibold">Aluguéis</h2>
+
+        <div class="mt-4 flex flex-col sm:flex-row sm:items-center gap-3">
+            <a mat-flat-button class="flex items-center justify-center gap-2 h-10" routerLink="cadastrar">
+                <mat-icon class="!text-base">add</mat-icon>
+                Registrar aluguel
+            </a>
+
+            <mat-form-field class="w-full sm:w-64" subscriptSizing="dynamic">
+                <mat-label>Situação</mat-label>
+                <mat-select [value]="statusFiltro()" (selectionChange)="filtrar($event.value)">
+                    <mat-option [value]="null">Todos</mat-option>
+                    <mat-option value="EmAberto">Em aberto</mat-option>
+                    <mat-option value="Concluido">Concluídos</mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+        <hr class="my-6 border-muted/30" />
+
+        @if (alugueis().length === 0) {
+        <p class="text-gray-600">Nenhum aluguel encontrado.</p>
+        }
+
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            @for (aluguel of alugueis(); track aluguel.id) {
+            <mat-card class="p-3 rounded-2xl shadow-sm">
+                <mat-card-header class="pb-2">
+                    <mat-card-title class="text-lg font-medium">{{ aluguel.descricaoVeiculo }}</mat-card-title>
+                    <mat-card-subtitle>{{ aluguel.nomeGrupo }}</mat-card-subtitle>
+                </mat-card-header>
+
+                <mat-card-content class="mt-2 text-sm space-y-1">
+                    <p>
+                        <span
+                            class="rounded-full px-2 py-0.5 text-xs font-medium"
+                            [class]="aluguel.status === 'EmAberto' ? 'bg-amber-100 text-amber-800' : 'bg-green-100 text-green-800'"
+                        >
+                            {{ rotuloStatus(aluguel.status) }}
+                        </span>
+                        @if (aluguel.devolucao?.final?.atrasado) {
+                        <span class="ml-1 rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">
+                            Devolvido com atraso
+                        </span>
+                        }
+                    </p>
+                    <p><span class="font-medium">Cliente:</span> {{ aluguel.nomeCliente }}</p>
+                    <p><span class="font-medium">Condutor:</span> {{ aluguel.nomeCondutor }}</p>
+                    <p>
+                        <span class="font-medium">Período:</span>
+                        {{ dataBr(aluguel.dataSaida) }} a {{ dataBr(aluguel.dataRetornoPrevista) }}
+                        ({{ aluguel.previsto.dias }} {{ aluguel.previsto.dias === 1 ? 'dia' : 'dias' }})
+                    </p>
+                    <p><span class="font-medium">Plano:</span> {{ rotuloPlano(aluguel.tipoPlano) }}</p>
+                    <p><span class="font-medium">Seguro:</span> {{ rotuloSeguro(aluguel.tipoSeguro) }}</p>
+                    @if (aluguel.taxas.length > 0) {
+                    <p>
+                        <span class="font-medium">Taxas:</span>
+                        @for (taxa of aluguel.taxas; track taxa.taxaServicoId; let ultima = $last) {
+                        {{ taxa.nome }}{{ ultima ? '' : ', ' }}
+                        }
+                    </p>
+                    }
+
+                    @if (aluguel.devolucao; as devolucao) {
+                    <div class="mt-2 rounded-lg bg-gray-50 p-2">
+                        <p>
+                            <span class="font-medium">Devolução:</span> {{ dataBr(devolucao.dataDevolucao) }} ·
+                            {{ devolucao.final.kmRodados }} km rodados
+                        </p>
+                        @if (devolucao.final.valorKm > 0) {
+                        <p>Km: {{ devolucao.final.valorKm | currency: 'BRL' }}</p>
+                        }
+                        @if (devolucao.final.valorCombustivel > 0) {
+                        <p>Combustível: {{ devolucao.final.valorCombustivel | currency: 'BRL' }}</p>
+                        }
+                        @if (devolucao.final.valorMulta > 0) {
+                        <p>Multa por atraso: {{ devolucao.final.valorMulta | currency: 'BRL' }}</p>
+                        }
+                        <p class="font-semibold">Total final: {{ devolucao.final.valorFinal | currency: 'BRL' }}</p>
+                    </div>
+                    } @else {
+                    <p class="font-semibold">
+                        Total previsto: {{ aluguel.previsto.valorTotalPrevisto | currency: 'BRL' }}
+                    </p>
+                    }
+                </mat-card-content>
+
+                <mat-card-actions align="end" class="flex items-center justify-end gap-2 pt-2">
+                    @if (aluguel.status === 'EmAberto') {
+                    <a [routerLink]="['devolucao', aluguel.id]" mat-stroked-button class="flex items-center gap-1">
+                        <mat-icon class="!text-base">assignment_return</mat-icon>
+                        Devolução
+                    </a>
+                    <a [routerLink]="['editar', aluguel.id]" mat-icon-button aria-label="Editar">
+                        <mat-icon>edit</mat-icon>
+                    </a>
+                    } @else {
+                    <a [routerLink]="['excluir', aluguel.id]" mat-icon-button aria-label="Excluir">
+                        <mat-icon>delete</mat-icon>
+                    </a>
+                    }
+                </mat-card-actions>
+            </mat-card>
+            }
+        </div>
+    </div>
+</section>

@@ -45,6 +45,8 @@ export class EditarConfiguracao {
         precoGas: [this.valorInicial(this.atual?.precoGas), validadoresPreco],
         precoDiesel: [this.valorInicial(this.atual?.precoDiesel), validadoresPreco],
         precoAlcool: [this.valorInicial(this.atual?.precoAlcool), validadoresPreco],
+        seguroClienteDiaria: [this.valorInicial(this.atual?.seguroClienteDiaria), validadoresPreco],
+        seguroTerceirosDiaria: [this.valorInicial(this.atual?.seguroTerceirosDiaria), validadoresPreco],
     });
 
     protected readonly combustiveis = [
@@ -52,6 +54,11 @@ export class EditarConfiguracao {
         { campo: 'precoGas', rotulo: 'Gás' },
         { campo: 'precoDiesel', rotulo: 'Diesel' },
         { campo: 'precoAlcool', rotulo: 'Álcool' },
+    ];
+
+    protected readonly seguros = [
+        { campo: 'seguroClienteDiaria', rotulo: 'Seguro para o cliente (por dia)' },
+        { campo: 'seguroTerceirosDiaria', rotulo: 'Seguro para terceiros (por dia)' },
     ];
 
     protected erroDo(campo: string): string | null {

@@ -1,0 +1,83 @@
+<section class="mx-auto max-w-4xl px-4 py-6">
+    <h2 class="text-2xl font-semibold">Devolução do Veículo</h2>
+    <hr class="my-4 border-muted/30" />
+
+    <mat-card class="p-4 rounded-2xl shadow-sm">
+        <mat-card-content>
+            <div class="mb-4 text-sm">
+                <p class="text-lg font-medium">{{ aluguel.descricaoVeiculo }}</p>
+                <p>{{ aluguel.nomeCliente }} · condutor {{ aluguel.nomeCondutor }}</p>
+                <p>
+                    {{ dataBr(aluguel.dataSaida) }} a {{ dataBr(aluguel.dataRetornoPrevista) }} ·
+                    {{ rotuloPlano(aluguel.tipoPlano) }} · km inicial {{ aluguel.kmInicial }}
+                </p>
+            </div>
+
+            <form [formGroup]="form" (ngSubmit)="devolver()" class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <mat-form-field>
+                        <mat-label>Data de devolução</mat-label>
+                        <input matInput formControlName="dataDevolucao" mask="00/00/0000"
+                            [dropSpecialCharacters]="false" placeholder="dd/mm/aaaa" />
+                    </mat-form-field>
+
+                    <mat-form-field>
+                        <mat-label>Quilometragem atual</mat-label>
+                        <input matInput type="number" formControlName="kmFinal" [min]="aluguel.kmInicial" />
+                        @if (erroKm; as erro) { <mat-error>{{ erro }}</mat-error> }
+                    </mat-form-field>
+                </div>
+
+                <mat-checkbox formControlName="tanqueCheio">
+                    Tanque cheio
+                    <span class="block text-xs text-gray-500">
+                        Se desmarcado, o combustível faltante é cobrado pelo preço configurado.
+                    </span>
+                </mat-checkbox>
+
+                <div class="rounded-2xl border border-muted/30 p-4 text-sm">
+                    <h3 class="text-base font-medium mb-2">Valor final</h3>
+
+                    @if (erroSimulacao(); as erro) {
+                    <p class="text-red-700">{{ erro }}</p>
+                    } @else if (simulacao(); as s) {
+                    <dl class="grid grid-cols-2 gap-y-1 max-w-sm">
+                        <dt>Dias de aluguel</dt>
+                        <dd class="text-right">{{ s.dias }}</dd>
+                        <dt>Km rodados</dt>
+                        <dd class="text-right">{{ s.kmRodados }}</dd>
+                        <dt>Caução</dt>
+                        <dd class="text-right">{{ s.valorCaucao | currency: 'BRL' }}</dd>
+                        <dt>Diárias</dt>
+                        <dd class="text-right">{{ s.valorDiarias | currency: 'BRL' }}</dd>
+                        <dt>Quilometragem</dt>
+                        <dd class="text-right">{{ s.valorKm | currency: 'BRL' }}</dd>
+                        <dt>Taxas e serviços</dt>
+                        <dd class="text-right">{{ s.valorTaxas | currency: 'BRL' }}</dd>
+                        <dt>Seguro</dt>
+                        <dd class="text-right">{{ s.valorSeguro | currency: 'BRL' }}</dd>
+                        <dt>Combustível</dt>
+                        <dd class="text-right">{{ s.valorCombustivel | currency: 'BRL' }}</dd>
+                        <dt [class.text-red-700]="s.atrasado">Multa por atraso (10%)</dt>
+                        <dd class="text-right" [class.text-red-700]="s.atrasado">
+                            {{ s.valorMulta | currency: 'BRL' }}
+                        </dd>
+                        <dt class="font-semibold pt-1">Total final</dt>
+                        <dd class="text-right font-semibold pt-1">{{ s.valorFinal | currency: 'BRL' }}</dd>
+                    </dl>
+                    } @else {
+                    <p class="text-gray-600">Informe a data e a quilometragem para ver o valor.</p>
+                    }
+                </div>
+
+                <div class="flex justify-end gap-3 pt-2">
+                    <a mat-stroked-button routerLink="/alugueis">Voltar</a>
+                    <button type="submit" mat-flat-button color="primary" class="inline-flex items-center gap-2 px-5">
+                        <mat-icon>check</mat-icon>
+                        <span>Registrar devolução</span>
+                    </button>
+                </div>
+            </form>
+        </mat-card-content>
+    </mat-card>
+</section>

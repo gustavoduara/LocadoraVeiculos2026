@@ -82,6 +82,13 @@ const routes: Routes = [
     canMatch: [usuarioAutenticadoGuard, cargoGuard('Empresa', 'Funcionario')],
   },
 
+  // Aluguéis (registro, edição e devolução): operação diária, liberada para administrador e funcionários.
+  {
+    path: 'alugueis',
+    loadChildren: () => import('./alugueis/aluguel.routes').then((r) => r.aluguelRoutes),
+    canMatch: [usuarioAutenticadoGuard, cargoGuard('Empresa', 'Funcionario')],
+  },
+
   // Catálogo de taxas e serviços (GPS, cadeirinha...): somente o administrador da empresa gerencia.
   {
     path: 'taxas-servicos',

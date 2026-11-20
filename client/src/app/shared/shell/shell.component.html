@@ -84,6 +84,16 @@
         Condutores
       </a>
 
+      <a
+        mat-list-item
+        [routerLink]="['/alugueis']"
+        routerLinkActive="nav-link-active"
+        class="my-1"
+      >
+        <mat-icon class="material-icons-outlined" matListItemIcon>key</mat-icon>
+        Aluguéis
+      </a>
+
       @if (usuarioAutenticado?.cargo === 'Empresa') {
         <a
           mat-list-item
