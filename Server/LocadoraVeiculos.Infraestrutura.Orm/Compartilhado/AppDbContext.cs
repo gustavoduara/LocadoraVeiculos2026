@@ -3,6 +3,8 @@ using LocadoraDeVeiculos.Dominio.ModuloAluguel;
 using LocadoraDeVeiculos.Dominio.ModuloAutomovel;
 using LocadoraDeVeiculos.Dominio.ModuloCliente;
 using LocadoraDeVeiculos.Dominio.ModuloCondutor;
+using LocadoraDeVeiculos.Dominio.ModuloCupom;
+using LocadoraDeVeiculos.Dominio.ModuloParceiro;
 using LocadoraDeVeiculos.Dominio.ModuloConfiguracao;
 using LocadoraDeVeiculos.Dominio.ModuloFuncionario;
 using LocadoraDeVeiculos.Dominio.ModuloGrupoVeiculos;
@@ -28,6 +30,8 @@ public class AppDbContext(
     public DbSet<Cliente> Clientes { get; set; }
     public DbSet<Condutor> Condutores { get; set; }
     public DbSet<Aluguel> Alugueis { get; set; }
+    public DbSet<Parceiro> Parceiros { get; set; }
+    public DbSet<Cupom> Cupons { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -36,6 +40,12 @@ public class AppDbContext(
         {
             // Query Filters
             modelBuilder.Entity<Aluguel>()
+                        .HasQueryFilter(f => f.EmpresaId == tenantProvider.EmpresaId.GetValueOrDefault() && !f.Excluido);
+
+            modelBuilder.Entity<Parceiro>()
+                        .HasQueryFilter(f => f.EmpresaId == tenantProvider.EmpresaId.GetValueOrDefault() && !f.Excluido);
+
+            modelBuilder.Entity<Cupom>()
                         .HasQueryFilter(f => f.EmpresaId == tenantProvider.EmpresaId.GetValueOrDefault() && !f.Excluido);
 
             modelBuilder.Entity<Condutor>()

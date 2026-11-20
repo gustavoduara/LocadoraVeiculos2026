@@ -1,5 +1,6 @@
 using LocadoraDeVeiculos.Dominio.ModuloAluguel;
 using LocadoraDeVeiculos.Dominio.ModuloCliente;
+using LocadoraDeVeiculos.Dominio.ModuloCupom;
 using LocadoraDeVeiculos.Dominio.ModuloTaxaServico;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -30,6 +31,9 @@ public class MapeadorAluguelEmOrm : IEntityTypeConfiguration<Aluguel>
         builder.Property(a => a.SeguroPrecoDiaria).HasColumnType("decimal(18,2)").IsRequired();
         builder.Property(a => a.ValorCaucao).HasColumnType("decimal(18,2)").IsRequired();
 
+        builder.Property(a => a.CupomNome).HasColumnType("nvarchar(50)");
+        builder.Property(a => a.CupomValor).HasColumnType("decimal(18,2)").IsRequired();
+
         builder.Property(a => a.Status).IsRequired();
         builder.Property(a => a.DataDevolucao).HasColumnType("date");
         builder.Property(a => a.PrecoCombustivelPorLitro).HasColumnType("decimal(18,2)");
@@ -45,6 +49,7 @@ public class MapeadorAluguelEmOrm : IEntityTypeConfiguration<Aluguel>
         builder.HasOne<Cliente>().WithMany().HasForeignKey(a => a.ClienteId).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne(a => a.Automovel).WithMany().HasForeignKey(a => a.AutomovelId).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne(a => a.PlanoCobranca).WithMany().HasForeignKey(a => a.PlanoCobrancaId).OnDelete(DeleteBehavior.Restrict);
+        builder.HasOne<Cupom>().WithMany().HasForeignKey(a => a.CupomId).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne(a => a.Funcionario).WithMany().HasForeignKey(a => a.FuncionarioId).OnDelete(DeleteBehavior.Restrict);
         builder.HasOne(a => a.Empresa).WithMany().HasForeignKey(a => a.EmpresaId).OnDelete(DeleteBehavior.Restrict);
 

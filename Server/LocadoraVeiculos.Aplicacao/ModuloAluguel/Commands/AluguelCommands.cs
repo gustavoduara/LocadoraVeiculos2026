@@ -16,7 +16,8 @@ public record DadosAluguelDto(
     DateOnly DataRetornoPrevista,
     int KmInicial,
     TipoSeguro TipoSeguro,
-    IReadOnlyList<Guid> TaxasIds
+    IReadOnlyList<Guid> TaxasIds,
+    Guid? CupomId = null
 );
 
 public record AluguelTaxaDto(Guid TaxaServicoId, string Nome, decimal PrecoUnitario, TipoCobrancaTaxa TipoCobranca, decimal Valor);
@@ -40,7 +41,9 @@ public record AluguelDto(
     IReadOnlyList<AluguelTaxaDto> Taxas,
     StatusAluguel Status,
     DetalhamentoPrevisto Previsto,
-    DevolucaoDto? Devolucao
+    DevolucaoDto? Devolucao,
+    Guid? CupomId = null,
+    string? NomeCupom = null
 );
 
 /// <summary>Resultado de uma simulação de preço (nada é gravado).</summary>

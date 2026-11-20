@@ -49,7 +49,9 @@ internal static class AluguelMapeamento
             a.TaxasParaDto(),
             a.Status,
             a.CalcularPrevisto(),
-            devolucao
+            devolucao,
+            a.CupomId,
+            a.CupomNome
         );
     }
 }

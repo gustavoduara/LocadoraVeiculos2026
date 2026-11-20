@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LocadoraDeVeiculos.Infraestrutura.Orm.ModuloAluguel;
 
+/// <summary>Uma utilização de cupom em um aluguel.</summary>
+public record UsoDeCupom(Guid CupomId, string NomeCupom, decimal ValorCupom);
+
 public class RepositorioAluguelEmOrm : RepositorioBaseEmOrm<Aluguel>
 {
     private readonly AppDbContext dbContext;
@@ -68,6 +71,21 @@ public class RepositorioAluguelEmOrm : RepositorioBaseEmOrm<Aluguel>
 
     public async Task<bool> ExisteEmAbertoParaPlanoAsync(Guid planoCobrancaId) =>
         await dbContext.Alugueis.AnyAsync(a => a.PlanoCobrancaId == planoCobrancaId && a.Status == StatusAluguel.EmAberto);
+
+    public async Task<bool> ExisteEmAbertoParaCupomAsync(Guid cupomId) =>
+        await dbContext.Alugueis.AnyAsync(a => a.CupomId == cupomId && a.Status == StatusAluguel.EmAberto);
+
+    /// <summary>O cliente só pode usar o mesmo cupom uma vez (aluguéis excluídos não contam).</summary>
+    public async Task<bool> ClienteJaUsouCupomAsync(Guid clienteId, Guid cupomId, Guid? ignorarAluguelId = null) =>
+        await dbContext.Alugueis.AnyAsync(a =>
+            a.ClienteId == clienteId && a.CupomId == cupomId && (ignorarAluguelId == null || a.Id != ignorarAluguelId));
+
+    /// <summary>Cupons usados em aluguéis (nome e valor copiados no aluguel), para o ranking.</summary>
+    public async Task<List<UsoDeCupom>> SelecionarUsosDeCuponsAsync() =>
+        await dbContext.Alugueis
+            .Where(a => a.CupomId != null)
+            .Select(a => new UsoDeCupom(a.CupomId!.Value, a.CupomNome ?? string.Empty, a.CupomValor))
+            .ToListAsync();
 
     public async Task<bool> ExisteEmAbertoParaTaxaAsync(Guid taxaServicoId) =>
         await dbContext.Alugueis.AnyAsync(a =>

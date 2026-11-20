@@ -8,12 +8,14 @@ using LocadoraDeVeiculos.Dominio.ModuloAutenticacao;
 using LocadoraDeVeiculos.Dominio.ModuloAutomovel;
 using LocadoraDeVeiculos.Dominio.ModuloConfiguracao;
 using LocadoraDeVeiculos.Dominio.ModuloCondutor;
+using LocadoraDeVeiculos.Dominio.ModuloCupom;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoCobranca;
 using LocadoraDeVeiculos.Dominio.ModuloTaxaServico;
 using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloAluguel;
 using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloAutomovel;
 using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloConfiguracao;
 using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloCondutor;
+using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloCupom;
 using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloPlanoCobranca;
 using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloTaxaServico;
 
@@ -33,6 +35,7 @@ public class AluguelServico(
     RepositorioTaxaServicoEmOrm repositorioTaxa,
     RepositorioConfiguracaoEmOrm repositorioConfiguracao,
     RepositorioAluguelEmOrm repositorioAluguel,
+    RepositorioCupomEmOrm repositorioCupom,
     ITenantProvider tenantProvider
 )
 {
@@ -80,6 +83,23 @@ public class AluguelServico(
                     "O valor diário do seguro escolhido ainda não foi configurado. Defina-o em Configurações."));
         }
 
+        DateOnly hoje = DateOnly.FromDateTime(DateTime.UtcNow);
+
+        Cupom? cupom = null;
+
+        if (dados.CupomId is not null)
+        {
+            cupom = await repositorioCupom.SelecionarPorIdAsync(dados.CupomId.Value);
+
+            if (cupom is null)
+                return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro(dados.CupomId.Value));
+
+            // Só cupons ativos entram em um aluguel; quem já usa o cupom pode manter ao editar, mesmo vencido.
+            if (!cupom.EstaAtivo(hoje) && !await AluguelJaUsaCupomAsync(ignorarAluguelId, cupom.Id))
+                return Result.Fail(ResultadosErro.RequisicaoInvalidaErro(
+                    $"O cupom \"{cupom.Nome}\" expirou em {cupom.DataValidade:dd/MM/yyyy}."));
+        }
+
         Condutor? condutor = null;
 
         if (!apenasPreco)
@@ -94,7 +114,11 @@ public class AluguelServico(
                 return Result.Fail(ResultadosErro.RequisicaoInvalidaErro(
                     $"A CNH do condutor vence em {condutor.ValidadeCnh:dd/MM/yyyy}, antes do retorno previsto do aluguel."));
 
-            DateOnly hoje = DateOnly.FromDateTime(DateTime.UtcNow);
+            // Cada cliente usa um mesmo cupom uma única vez (o próprio aluguel, ao ser editado, não conta).
+            if (cupom is not null &&
+                await repositorioAluguel.ClienteJaUsouCupomAsync(condutor.ClienteId, cupom.Id, ignorarAluguelId))
+                return Result.Fail(ResultadosErro.RegistroDuplicadoErro(
+                    $"O cliente já utilizou o cupom \"{cupom.Nome}\". Cada cupom só pode ser usado uma vez por cliente."));
 
             if (await repositorioAluguel.ExisteConflitoDeDisponibilidadeAsync(
                     automovel.Id, dados.DataSaida, dados.DataRetornoPrevista, hoje, ignorarAluguelId))
@@ -120,6 +144,9 @@ public class AluguelServico(
             TipoSeguro = dados.TipoSeguro,
             SeguroPrecoDiaria = precoSeguro,
             ValorCaucao = Aluguel.ValorCaucaoPadrao,
+            CupomId = cupom?.Id,
+            CupomNome = cupom?.Nome,
+            CupomValor = cupom?.Valor ?? 0m,
             Taxas = taxas
                 .Select(t => new AluguelTaxa(t.Id, t.Nome, t.Preco, t.TipoCobranca))
                 .ToList()
@@ -145,6 +172,16 @@ public class AluguelServico(
         }
 
         return Result.Ok(aluguel);
+    }
+
+    private async Task<bool> AluguelJaUsaCupomAsync(Guid? aluguelId, Guid cupomId)
+    {
+        if (aluguelId is null)
+            return false;
+
+        Aluguel? existente = await repositorioAluguel.SelecionarPorIdAsync(aluguelId.Value);
+
+        return existente?.CupomId == cupomId;
     }
 
     /// <summary>

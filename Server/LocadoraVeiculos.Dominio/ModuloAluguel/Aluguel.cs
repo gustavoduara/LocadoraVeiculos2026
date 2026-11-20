@@ -13,6 +13,7 @@ public record DetalhamentoPrevisto(
     decimal ValorDiarias,
     decimal ValorTaxas,
     decimal ValorSeguro,
+    decimal ValorDesconto,
     decimal ValorTotalPrevisto
 );
 
@@ -28,6 +29,7 @@ public record DetalhamentoFinal(
     decimal ValorSeguro,
     decimal ValorCombustivel,
     decimal ValorMulta,
+    decimal ValorDesconto,
     decimal ValorFinal
 );
 
@@ -88,6 +90,11 @@ public class Aluguel : EntidadeBase<Aluguel>
 
     public List<AluguelTaxa> Taxas { get; set; } = [];
 
+    // ---- cupom de desconto (valor copiado do cupom no momento do registro)
+    public Guid? CupomId { get; set; }
+    public string? CupomNome { get; set; }
+    public decimal CupomValor { get; set; }
+
     // ---- situação e devolução
     public StatusAluguel Status { get; set; } = StatusAluguel.EmAberto;
     public DateOnly? DataDevolucao { get; set; }
@@ -119,15 +126,28 @@ public class Aluguel : EntidadeBase<Aluguel>
 
     public decimal ValorSeguro => Arredondar(SeguroPrecoDiaria * Dias);
 
-    /// <summary>Caução + diárias do plano + taxas + seguro. Km rodados, combustível e multa só entram na devolução.</summary>
-    public DetalhamentoPrevisto CalcularPrevisto() => new(
-        Dias,
-        ValorCaucao,
-        ValorDiarias,
-        ValorTaxas,
-        ValorSeguro,
-        ValorCaucao + ValorDiarias + ValorTaxas + ValorSeguro
-    );
+    /// <summary>
+    /// Desconto do cupom: valor fixo abatido do que foi consumido, limitado a esse consumo
+    /// (a caução não recebe desconto, pois é devolvida ao cliente).
+    /// </summary>
+    private decimal CalcularDesconto(decimal consumo) => Math.Min(CupomValor, consumo);
+
+    /// <summary>Caução + diárias do plano + taxas + seguro − desconto. Km rodados, combustível e multa só entram na devolução.</summary>
+    public DetalhamentoPrevisto CalcularPrevisto()
+    {
+        decimal consumo = ValorDiarias + ValorTaxas + ValorSeguro;
+        decimal desconto = CalcularDesconto(consumo);
+
+        return new(
+            Dias,
+            ValorCaucao,
+            ValorDiarias,
+            ValorTaxas,
+            ValorSeguro,
+            desconto,
+            ValorCaucao + consumo - desconto
+        );
+    }
 
     /// <summary>
     /// Simula a devolução sem alterar o aluguel.
@@ -162,6 +182,8 @@ public class Aluguel : EntidadeBase<Aluguel>
             ? 0m
             : Arredondar(capacidadeTanqueLitros * precoCombustivelPorLitro);
 
+        decimal desconto = CalcularDesconto(consumo);
+
         return new DetalhamentoFinal(
             Dias,
             kmRodados,
@@ -173,7 +195,8 @@ public class Aluguel : EntidadeBase<Aluguel>
             ValorSeguro,
             combustivel,
             multa,
-            ValorCaucao + consumo + combustivel + multa
+            desconto,
+            ValorCaucao + consumo - desconto + combustivel + multa
         );
     }
 
@@ -234,6 +257,10 @@ public class Aluguel : EntidadeBase<Aluguel>
 
         TipoSeguro = editado.TipoSeguro;
         SeguroPrecoDiaria = editado.SeguroPrecoDiaria;
+
+        CupomId = editado.CupomId;
+        CupomNome = editado.CupomNome;
+        CupomValor = editado.CupomValor;
 
         Taxas.Clear();
 

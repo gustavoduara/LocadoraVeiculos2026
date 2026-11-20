@@ -13,7 +13,8 @@ public record DadosAluguelRequest(
     DateOnly DataRetornoPrevista,
     int KmInicial,
     TipoSeguro TipoSeguro,
-    List<Guid>? TaxasIds
+    List<Guid>? TaxasIds,
+    Guid? CupomId = null
 );
 
 public record CadastrarAluguelResponse(Guid Id);
@@ -32,6 +33,7 @@ public static class AluguelRequestExtensoes
         r.DataRetornoPrevista,
         r.KmInicial,
         r.TipoSeguro,
-        r.TaxasIds ?? []
+        r.TaxasIds ?? [],
+        r.CupomId
     );
 }

@@ -242,4 +242,71 @@ public class AluguelTestes
 
         Assert.Equal(esperado, taxa.ValorPara(dias));
     }
+
+    // ---------------- cupom de desconto ----------------
+
+    [Fact]
+    public void Cupom_abate_valor_fixo_do_previsto_sem_tocar_na_caucao()
+    {
+        var aluguel = Criar();
+        aluguel.CupomValor = 100m;
+
+        var previsto = aluguel.CalcularPrevisto();
+
+        Assert.Equal(100m, previsto.ValorDesconto);
+        Assert.Equal(1550m, previsto.ValorTotalPrevisto); // 1650 - 100
+    }
+
+    [Fact]
+    public void Cupom_maior_que_o_consumo_e_limitado_e_a_caucao_continua_inteira()
+    {
+        var aluguel = Criar(TipoPlano.Livre, dias: 1, seguro: 0m, comTaxas: false);
+        aluguel.CupomValor = 5000m;
+
+        var previsto = aluguel.CalcularPrevisto();
+
+        Assert.Equal(300m, previsto.ValorDesconto);
+        Assert.Equal(1000m, previsto.ValorTotalPrevisto);
+    }
+
+    [Fact]
+    public void Cupom_tambem_abate_o_valor_final_mas_nao_a_multa_nem_o_combustivel()
+    {
+        var aluguel = Criar(TipoPlano.Controlado, dias: 2, seguro: 0m, comTaxas: false);
+        aluguel.CupomValor = 50m;
+
+        // Sem cupom: 1000 + 650 + 330 + 65 = 2045. Com cupom de 50: 1995.
+        var final = aluguel.CalcularFinal(Saida.AddDays(3), 300 + 1000, tanqueCheio: false, 5.5m, 60);
+
+        Assert.Equal(50m, final.ValorDesconto);
+        Assert.Equal(65m, final.ValorMulta);
+        Assert.Equal(330m, final.ValorCombustivel);
+        Assert.Equal(1995m, final.ValorFinal);
+    }
+
+    [Fact]
+    public void Aluguel_sem_cupom_nao_tem_desconto()
+    {
+        var aluguel = Criar();
+
+        Assert.Equal(0m, aluguel.CalcularPrevisto().ValorDesconto);
+        Assert.Equal(0m, aluguel.CalcularFinal(Saida.AddDays(3), 1000, true, 0m, 0).ValorDesconto);
+    }
+
+    [Fact]
+    public void AtualizarRegistro_copia_o_cupom()
+    {
+        var aluguel = Criar();
+        var editado = Criar();
+        var cupom = Guid.NewGuid();
+        editado.CupomId = cupom;
+        editado.CupomNome = "PROMO10";
+        editado.CupomValor = 10m;
+
+        aluguel.AtualizarRegistro(editado);
+
+        Assert.Equal(cupom, aluguel.CupomId);
+        Assert.Equal("PROMO10", aluguel.CupomNome);
+        Assert.Equal(10m, aluguel.CupomValor);
+    }
 }
