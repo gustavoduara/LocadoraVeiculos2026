@@ -67,3 +67,32 @@ public record FiltrosDoCatalogoResult(
 public record FotoDoCatalogoQuery(Guid AutomovelId) : IRequest<Result<FotoDoCatalogoResult>>;
 
 public record FotoDoCatalogoResult(byte[] Conteudo, string TipoConteudo);
+
+public record PlanoDiarioOpcaoDto(decimal PrecoDiaria, decimal PrecoPorKm);
+
+public record PlanoControladoOpcaoDto(int KmDisponiveisPorDia, decimal PrecoDiaria, decimal PrecoPorKmExtrapolado);
+
+public record PlanoLivreOpcaoDto(decimal PrecoDiaria);
+
+/// <summary>O que o cliente precisa para escolher como reservar: o carro, os 3 planos e os seguros que a locadora oferece.</summary>
+public record CarroDetalheDto(
+    Guid Id,
+    Guid LocadoraId,
+    string Locadora,
+    string Marca,
+    string Modelo,
+    string Cor,
+    int Ano,
+    TipoCombustivel Combustivel,
+    string Categoria,
+    bool TemFoto,
+    PlanoDiarioOpcaoDto? Diario,
+    PlanoControladoOpcaoDto? Controlado,
+    PlanoLivreOpcaoDto? Livre,
+    /// <summary>Vazio quando a locadora não oferece esse seguro.</summary>
+    decimal? SeguroClienteDiaria,
+    decimal? SeguroTerceirosDiaria,
+    decimal ValorCaucao
+);
+
+public record DetalharCarroQuery(Guid AutomovelId) : IRequest<Result<CarroDetalheDto>>;

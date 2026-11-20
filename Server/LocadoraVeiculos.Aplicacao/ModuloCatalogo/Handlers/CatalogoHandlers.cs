@@ -3,6 +3,7 @@ using LocadoraDeVeiculos.Aplicacao.Compartilhado;
 using LocadoraDeVeiculos.Aplicacao.ModuloCatalogo.Commands;
 using LocadoraDeVeiculos.Dominio.ModuloAluguel;
 using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloCatalogo;
+using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloReserva;
 using MediatR;
 
 namespace LocadoraDeVeiculos.Aplicacao.ModuloCatalogo.Handlers;
@@ -167,5 +168,45 @@ public class FotoDoCatalogoQueryHandler(
             return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro(query.AutomovelId));
 
         return Result.Ok(new FotoDoCatalogoResult(foto.Conteudo, foto.TipoConteudo));
+    }
+}
+
+public class DetalharCarroQueryHandler(
+    RepositorioReservaEmOrm repositorioReserva,
+    RepositorioCatalogoEmOrm repositorioCatalogo
+) : IRequestHandler<DetalharCarroQuery, Result<CarroDetalheDto>>
+{
+    public async Task<Result<CarroDetalheDto>> Handle(DetalharCarroQuery query, CancellationToken cancellationToken)
+    {
+        CarroReservavel? carro = await repositorioReserva.SelecionarCarroAsync(query.AutomovelId);
+
+        if (carro is null)
+            return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro(query.AutomovelId));
+
+        CarroDoCatalogo? basico = (await repositorioCatalogo.SelecionarCarrosAsync()).FirstOrDefault(c => c.Id == query.AutomovelId);
+
+        if (basico is null)
+            return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro(query.AutomovelId));
+
+        var plano = carro.Plano;
+        var configuracao = carro.Configuracao;
+
+        return Result.Ok(new CarroDetalheDto(
+            basico.Id,
+            basico.LocadoraId,
+            basico.Locadora,
+            basico.Marca,
+            basico.Modelo,
+            basico.Cor,
+            basico.Ano,
+            basico.TipoCombustivel,
+            basico.Categoria,
+            basico.TemFoto,
+            plano is null ? null : new PlanoDiarioOpcaoDto(plano.DiarioPrecoDiaria, plano.DiarioPrecoPorKm),
+            plano is null ? null : new PlanoControladoOpcaoDto(plano.ControladoKmDisponiveis, plano.ControladoPrecoDiaria, plano.ControladoPrecoPorKmExtrapolado),
+            plano is null ? null : new PlanoLivreOpcaoDto(plano.LivrePrecoDiaria),
+            configuracao is { SeguroClienteDiaria: > 0 } ? configuracao.SeguroClienteDiaria : null,
+            configuracao is { SeguroTerceirosDiaria: > 0 } ? configuracao.SeguroTerceirosDiaria : null,
+            Aluguel.ValorCaucaoPadrao));
     }
 }

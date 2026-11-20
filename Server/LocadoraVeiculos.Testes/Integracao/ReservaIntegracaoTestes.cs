@@ -120,6 +120,30 @@ public class ReservaIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFact
         Assert.Equal(403, (await locadora.Api.Get("/api/meus-dados")).Codigo);
     }
 
+    [Fact]
+    public async Task Detalhe_do_carro_mostra_os_planos_e_so_os_seguros_que_a_locadora_oferece()
+    {
+        var c = await Criar(fabrica);
+        var carro = await c.NovoAutomovel();
+        var (cliente, _, _) = await NovoCliente(comDados: false);
+
+        var r = await cliente.Get($"/api/catalogo/{carro}");
+
+        Assert.Equal(200, r.Codigo);
+        Assert.Equal(150m, r.Corpo.GetProperty("diario").GetProperty("precoDiaria").GetDecimal());
+        Assert.Equal(100, r.Corpo.GetProperty("controlado").GetProperty("kmDisponiveisPorDia").GetInt32());
+        Assert.Equal(300m, r.Corpo.GetProperty("livre").GetProperty("precoDiaria").GetDecimal());
+        Assert.Equal(30m, r.Corpo.GetProperty("seguroClienteDiaria").GetDecimal());
+        Assert.Equal(1000m, r.Corpo.GetProperty("valorCaucao").GetDecimal());
+
+        // Carro de grupo sem plano: sem opções de plano. E carro inexistente: 404.
+        var semPlano = await c.NovoAutomovel(grupo: c.GrupoSemPlanoId);
+        var detalheSemPlano = await cliente.Get($"/api/catalogo/{semPlano}");
+        Assert.Equal(System.Text.Json.JsonValueKind.Null, detalheSemPlano.Corpo.GetProperty("diario").ValueKind);
+        Assert.Equal(404, (await cliente.Get($"/api/catalogo/{Guid.NewGuid()}")).Codigo);
+        Assert.Equal(403, (await c.Api.Get($"/api/catalogo/{carro}")).Codigo);
+    }
+
     // ---------------- pedido de reserva ----------------
 
     [Fact]

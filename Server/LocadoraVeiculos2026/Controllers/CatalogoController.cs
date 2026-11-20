@@ -51,6 +51,15 @@ public sealed class CatalogoController(IMediator mediator) : MainController
         return ProcessarResultado(result, (valor) => Ok(valor));
     }
 
+    /// <summary>Detalhe de um carro: os 3 planos e os seguros que a locadora oferece (para escolher como reservar).</summary>
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<CarroDetalheDto>> Detalhar(Guid id, CancellationToken cancellationToken)
+    {
+        Result<CarroDetalheDto> result = await mediator.Send(new DetalharCarroQuery(id), cancellationToken);
+
+        return ProcessarResultado(result, (valor) => Ok(valor));
+    }
+
     [HttpGet("{id:guid}/foto")]
     public async Task<ActionResult> Foto(Guid id, CancellationToken cancellationToken)
     {
