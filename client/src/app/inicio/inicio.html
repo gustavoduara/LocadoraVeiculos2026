@@ -27,3 +27,124 @@
         </div>
     </mat-card-content>
 </mat-card>
+
+<!-- Pesquisa de período -->
+<mat-card class="mt-6">
+    <mat-card-content class="p-4">
+        <h3 class="text-xl font-medium">Quando você quer alugar?</h3>
+        <p class="text-sm text-gray-600">Escolha o período e veja o valor estimado de cada modelo.</p>
+
+        <form class="mt-4 grid grid-cols-1 gap-4 md:grid-cols-12 md:items-start" (submit)="$event.preventDefault(); pesquisar()">
+            <mat-form-field class="md:col-span-3">
+                <mat-label>Retirada</mat-label>
+                <input
+                    matInput
+                    type="date"
+                    name="retirada"
+                    [min]="hoje"
+                    [value]="retirada()"
+                    (input)="atualizarRetirada($any($event.target).value)"
+                />
+            </mat-form-field>
+
+            <mat-form-field class="md:col-span-3">
+                <mat-label>Devolução</mat-label>
+                <input
+                    matInput
+                    type="date"
+                    name="devolucao"
+                    [min]="retirada()"
+                    [value]="devolucao()"
+                    (input)="devolucao.set($any($event.target).value)"
+                />
+            </mat-form-field>
+
+            <mat-form-field class="md:col-span-3">
+                <mat-label>Categoria</mat-label>
+                <mat-select [value]="categoria()" (selectionChange)="categoria.set($event.value)">
+                    <mat-option value="">Todas</mat-option>
+                    @for (item of categorias; track item) {
+                    <mat-option [value]="item">{{ item }}</mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+
+            <div class="flex gap-2 md:col-span-3 md:pt-1">
+                <button type="submit" mat-flat-button class="h-12 flex-1" [disabled]="erro() !== null">
+                    <mat-icon>search</mat-icon>
+                    Pesquisar
+                </button>
+
+                @if (pesquisa()) {
+                <button type="button" mat-stroked-button class="h-12" (click)="limpar()">Limpar</button>
+                }
+            </div>
+        </form>
+
+        @if (erro(); as mensagem) {
+        <p class="text-sm text-red-700">{{ mensagem }}</p>
+        }
+    </mat-card-content>
+</mat-card>
+
+<!-- Vitrine de exemplo -->
+<section class="mt-8">
+    <div class="flex flex-wrap items-end justify-between gap-2">
+        <div>
+            <h3 class="text-xl font-medium">
+                @if (pesquisa(); as p) { {{ carros().length }} {{ carros().length === 1 ? 'modelo' : 'modelos' }}
+                para {{ p.dias }} {{ p.dias === 1 ? 'diária' : 'diárias' }} } @else { Modelos em destaque }
+            </h3>
+            <p class="text-xs text-gray-500">
+                Exemplos ilustrativos, com valores fictícios, só para visualizar o layout.
+            </p>
+        </div>
+    </div>
+
+    @if (carros().length === 0) {
+    <p class="mt-4 text-gray-600">Nenhum modelo nesta categoria.</p>
+    }
+
+    <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        @for (carro of carros(); track carro.nome) {
+        <mat-card class="overflow-hidden rounded-2xl shadow-sm">
+            <div class="flex h-36 items-center justify-center bg-gradient-to-br text-white" [class]="carro.cor">
+                <mat-icon class="!h-20 !w-20 !text-[80px]" aria-hidden="true">directions_car</mat-icon>
+            </div>
+
+            <mat-card-content class="p-4">
+                <p class="text-xs font-medium uppercase tracking-wide text-gray-500">{{ carro.categoria }}</p>
+                <h4 class="text-lg font-semibold">{{ carro.nome }}</h4>
+
+                <ul class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
+                    <li class="flex items-center gap-1">
+                        <mat-icon class="!h-5 !w-5 !text-[18px]">person</mat-icon>{{ carro.passageiros }}
+                    </li>
+                    <li class="flex items-center gap-1">
+                        <mat-icon class="!h-5 !w-5 !text-[18px]">luggage</mat-icon>{{ carro.malas }}
+                    </li>
+                    <li class="flex items-center gap-1">
+                        <mat-icon class="!h-5 !w-5 !text-[18px]">settings</mat-icon>{{ carro.cambio }}
+                    </li>
+                </ul>
+
+                <div class="mt-4 flex items-end justify-between gap-3">
+                    <div>
+                        <p class="text-xl font-semibold text-primary">
+                            {{ carro.diaria | currency: 'BRL' }}<span class="text-sm font-normal text-gray-500"> /dia</span>
+                        </p>
+                        @if (pesquisa(); as p) {
+                        <p class="text-xs text-gray-600">
+                            {{ carro.diaria * p.dias | currency: 'BRL' }} em {{ p.dias }}
+                            {{ p.dias === 1 ? 'diária' : 'diárias' }}
+                        </p>
+                        }
+                    </div>
+
+                    <a mat-stroked-button routerLink="/alugueis/cadastrar">Alugar</a>
+                </div>
+            </mat-card-content>
+        </mat-card>
+        }
+    </div>
+</section>
