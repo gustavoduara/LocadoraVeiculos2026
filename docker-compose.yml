@@ -1,7 +1,7 @@
-# Sobe o sistema completo: SQL Server + API + front.
+# Sobe o sistema completo: SQL Server + aplicação (API e front na mesma imagem).
 #   1. copie .env.example para .env e preencha os valores
 #   2. docker compose up --build
-# Front em http://localhost:4200 · API em http://localhost:9050 (Swagger em /swagger)
+# Acesse http://localhost:8080 (Swagger em /swagger, só com ASPNETCORE_ENVIRONMENT=Development)
 services:
   banco:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -17,28 +17,21 @@ services:
       retries: 10
       start_period: 20s
 
-  api:
-    build: ./Server
+  app:
+    build: .
     depends_on:
       banco:
         condition: service_healthy
     environment:
-      # Em Development a API aplica as migrations ao subir e expõe o Swagger.
-      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_ENVIRONMENT: Production
+      APLICAR_MIGRACOES: "true"
       SQL_CONNECTION_STRING: Server=banco;Database=LocadoraVeiculos2026DB;User Id=sa;Password=${SQL_SA_PASSWORD};TrustServerCertificate=True
       JWT_GENERATION_KEY: ${JWT_GENERATION_KEY}
-      JWT_AUDIENCE_DOMAIN: http://localhost:4200
-      CORS_ALLOWED_ORIGINS: http://localhost:4200
+      JWT_AUDIENCE_DOMAIN: http://localhost:8080
+      CORS_ALLOWED_ORIGINS: http://localhost:8080
       LUCKYPENNY_LICENSE_KEY: ${LUCKYPENNY_LICENSE_KEY}
     ports:
-      - "9050:8080"
-
-  front:
-    build: ./client
-    depends_on:
-      - api
-    ports:
-      - "4200:80"
+      - "8080:8080"
 
 volumes:
   dados-sql:

@@ -130,7 +130,7 @@ Os desafios da especificação (parceiros e cupons) também estão prontos. Veja
 
 **DevOps**
 - GitHub Actions (build e testes com cobertura a cada *push*)
-- Docker e Docker Compose (SQL Server + API + front)
+- Docker e Docker Compose (SQL Server + aplicação) e publicação na Azure (App Service + Azure SQL, veja [docs/PUBLICAR-AZURE.md](docs/PUBLICAR-AZURE.md))
 
 ---
 
@@ -222,7 +222,7 @@ cp .env.example .env   # preencha a senha do banco, a chave JWT e a licença do 
 docker compose up --build
 ```
 
-Front em **http://localhost:4200** · API em **http://localhost:9050** (Swagger em `/swagger`).
+Acesse **http://localhost:8080**: a API serve também o front, na mesma imagem e no mesmo endereço.
 
 ### Testes
 
@@ -275,7 +275,8 @@ LocadoraVeiculos2026/
 │   ├── LocadoraDeVeiculos.Infraestrutura.jwt/ # Geração de tokens
 │   └── LocadoraVeiculos.Testes/             #   Testes unitários e de integração
 ├── .github/workflows/ci.yml                 # Pipeline de CI
-├── docker-compose.yml                       # SQL Server + API + front
+├── Dockerfile · docker-compose.yml          # Imagem única (API + front) e SQL Server
+├── docs/PUBLICAR-AZURE.md                   # Passo a passo para publicar na Azure
 └── client/                                  # Front-end (Angular 20)
     └── src/app/
         ├── auth/                            #   Login, registro, interceptor e guards
@@ -306,6 +307,7 @@ LocadoraVeiculos2026/
 - [x] Aluguéis e devolução (caução, seguro e multa por atraso)
 - [x] Testes automatizados (unitários e de integração, ~89% de cobertura)
 - [x] Pipeline de CI (GitHub Actions) e *containers* (Docker Compose)
+- [x] Preparado para publicar na Azure (guia e *workflow* de deploy)
 - [x] Parceiros e cupons de desconto (com ranking dos mais utilizados)
 
 ---

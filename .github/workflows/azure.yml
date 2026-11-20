@@ -1,0 +1,44 @@
+name: Publicar na Azure
+
+# Só roda quando você pede (Actions > Publicar na Azure > Run workflow), depois de seguir docs/PUBLICAR-AZURE.md.
+on:
+  workflow_dispatch:
+
+jobs:
+  publicar:
+    name: Build e deploy no App Service
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Compilar o front
+        working-directory: client
+        run: |
+          npm ci
+          npx ng build --configuration production
+
+      - name: Publicar a API
+        run: dotnet publish Server/LocadoraVeiculos2026/LocadoraDeVeiculos.WebApi.csproj --configuration Release --output ./publicacao
+
+      - name: Juntar o front à API (pasta wwwroot)
+        run: |
+          mkdir -p publicacao/wwwroot
+          cp -r client/dist/*/browser/. publicacao/wwwroot/
+
+      - name: Enviar para o App Service
+        uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: ./publicacao

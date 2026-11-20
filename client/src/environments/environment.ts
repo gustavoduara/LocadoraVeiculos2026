@@ -1,4 +1,5 @@
 export const environment = {
     production: true,
-    apiUrl: 'http://localhost:9050/api',
+    // Publicado, a API serve o front: mesma origem, então o endereço é relativo.
+    apiUrl: '/api',
 };  

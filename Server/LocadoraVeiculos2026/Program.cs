@@ -33,20 +33,41 @@ public class Program
 
         var app = builder.Build();
 
-        if (app.Environment.IsDevelopment())
-        {
+        // Em produção as migrations só rodam quando pedido (APLICAR_MIGRACOES=true), ex.: no primeiro deploy.
+        if (app.Environment.IsDevelopment() || app.Configuration.GetValue<bool>("APLICAR_MIGRACOES"))
             app.AplicarMigracoesOrm();
 
+        if (app.Environment.IsDevelopment())
+        {
             app.UseSwagger();
             app.UseSwaggerUI();
         }
 
         app.UseHttpsRedirection();
+
+        // Publicado, o front Angular (pasta wwwroot) é servido pela própria API: uma só origem,
+        // sem CORS e com o cookie de renovação da sessão no mesmo endereço.
+        var servirFront = File.Exists(Path.Combine(app.Environment.WebRootPath ?? string.Empty, "index.html"));
+
+        if (servirFront)
+        {
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
+        }
+
+        // Roteamento explícito DEPOIS dos arquivos estáticos: com o roteamento implícito (no começo do pipeline)
+        // a rota de fallback já seria escolhida e o index.html engoliria os .js e .css.
+        app.UseRouting();
+
         app.UseCors();
         app.UseAuthentication();
         app.UseAuthorization();
 
         app.MapControllers();
+
+        // Rotas do Angular (ex.: /alugueis) voltam para o index.html; rotas /api desconhecidas continuam 404.
+        if (servirFront)
+            app.MapFallbackToFile("{*path:regex(^(?!api/).*$)}", "index.html");
 
         app.Run();
     }

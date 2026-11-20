@@ -52,10 +52,11 @@ npx ng ...           # `ng` não está no PATH global
 # Testes (Server) — não precisam de SQL Server nem de LocalDB
 dotnet test Server/LocadoraVeiculos.Testes
 dotnet test Server/LocadoraVeiculos.Testes --collect:"XPlat Code Coverage"   # ~89%, migrations excluídas (coverlet.runsettings)
-# Docker (SQL Server + API + front): copiar .env.example para .env e preencher
+# Docker (SQL Server + app): copiar .env.example para .env e preencher; abre em http://localhost:8080
 docker compose up --build
 ```
 Projeto de testes `Server/LocadoraVeiculos.Testes` (xUnit): `Dominio/` e `Aplicacao/` = unitários (regras de preço do `Aluguel`, validadores `internal` via `InternalsVisibleTo`, `DocumentosUtil`); `Integracao/` = `ApiFactory` (`WebApplicationFactory<Program>`, ambiente `Testing`, EF InMemory no lugar do SQL Server, chaves de teste fixas) + `Cenario` (empresa com cadastros prontos e geradores de CPF/CNPJ) + `ClienteApi`. Limitação do InMemory: unicidade sem diferenciar maiúsculas depende do collation do SQL Server, então não é testada. CI em `.github/workflows/ci.yml` (build + testes com cobertura + build do Angular). O front ainda não tem testes (`ng test`).
+Publicação: a API serve o front Angular (pasta `wwwroot`, ver `Program.cs`: `UseStaticFiles` + `UseRouting` explícito DEPOIS + `MapFallbackToFile` que ignora `/api`), então é uma só origem e o `apiUrl` de produção é `/api`. Em produção as migrations só rodam com `APLICAR_MIGRACOES=true`. `Dockerfile` na raiz gera a imagem única; `.github/workflows/azure.yml` (manual) faz deploy no App Service; guia em `docs/PUBLICAR-AZURE.md`. Verificado localmente (publish + wwwroot + Production + LocalDB isolado): SPA, .js/.css, 404 em /api desconhecida, registro e 401 sem token. O Docker e o deploy na Azure ainda não foram executados.
 
 ## Armadilhas conhecidas (2026-11-14)
 1. Já corrigidos: `launchSettings.json` (perfil `https [Dev]` → `https://localhost:9099;http://localhost:9050`), `appsettings.json` (config válida), `environment.development.ts` (`https://localhost:9099/api`) e dependência circular Orm→Aplicacao no `.sln`.
