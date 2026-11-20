@@ -24,6 +24,10 @@ public class RegistrarUsuarioCommandHandler(
 
         try
         {
+            // Só os cargos de conta aberta ao público: a locadora (Empresa) e o cliente do catálogo.
+            if (command.Cargo is not (CargoUsuario.Empresa or CargoUsuario.Cliente))
+                return Result.Fail(ResultadosErro.RequisicaoInvalidaErro("O tipo de conta informado é inválido."));
+
             if (!command.Senha.Equals(command.ConfirmarSenha))
                 return Result.Fail(ResultadosErro.RequisicaoInvalidaErro("A confirmação de senha falhou."));
 
@@ -43,7 +47,7 @@ public class RegistrarUsuarioCommandHandler(
                 return Result.Fail(ResultadosErro.RequisicaoInvalidaErro(erros));
             }
 
-            var cargoStr = CargoUsuario.Empresa.ToString();
+            var cargoStr = command.Cargo.ToString();
 
             var resultadoBuscaCargo = await roleManager.FindByNameAsync(cargoStr);
 

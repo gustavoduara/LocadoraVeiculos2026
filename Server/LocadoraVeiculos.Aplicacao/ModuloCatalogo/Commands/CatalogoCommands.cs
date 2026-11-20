@@ -1,0 +1,69 @@
+using FluentResults;
+using LocadoraDeVeiculos.Dominio.Compartilhado;
+using MediatR;
+
+namespace LocadoraDeVeiculos.Aplicacao.ModuloCatalogo.Commands;
+
+public enum OrdenacaoCatalogo
+{
+    MenorPreco,
+    MaiorPreco,
+    MaisNovo,
+    Marca
+}
+
+/// <summary>Tudo é opcional: sem filtros, devolve a frota inteira de todas as locadoras.</summary>
+public record PesquisarCatalogoQuery(
+    DateOnly? Retirada,
+    DateOnly? Devolucao,
+    string? Texto,
+    string? Categoria,
+    TipoCombustivel? Combustivel,
+    int? AnoMinimo,
+    decimal? DiariaMaxima,
+    Guid? LocadoraId,
+    bool ApenasDisponiveis,
+    OrdenacaoCatalogo Ordenacao,
+    int Pagina,
+    int TamanhoPagina
+) : IRequest<Result<CatalogoResult>>;
+
+public record CarroCatalogoDto(
+    Guid Id,
+    Guid LocadoraId,
+    string Locadora,
+    string Marca,
+    string Modelo,
+    string Cor,
+    int Ano,
+    TipoCombustivel Combustivel,
+    string Categoria,
+    bool TemFoto,
+    decimal? DiariaAPartirDe,
+    /// <summary>Diárias do período × menor diária (sem km, taxas, seguro e caução). Só com datas.</summary>
+    decimal? TotalDoPeriodo,
+    /// <summary>Só é informado quando a pesquisa tem datas.</summary>
+    bool? Disponivel
+);
+
+public record CatalogoResult(
+    IReadOnlyList<CarroCatalogoDto> Registros,
+    int Total,
+    int Pagina,
+    int TamanhoPagina,
+    int? Dias
+);
+
+public record FiltrosDoCatalogoQuery() : IRequest<Result<FiltrosDoCatalogoResult>>;
+
+public record LocadoraFiltroDto(Guid Id, string Nome);
+
+public record FiltrosDoCatalogoResult(
+    IReadOnlyList<string> Categorias,
+    IReadOnlyList<string> Marcas,
+    IReadOnlyList<LocadoraFiltroDto> Locadoras
+);
+
+public record FotoDoCatalogoQuery(Guid AutomovelId) : IRequest<Result<FotoDoCatalogoResult>>;
+
+public record FotoDoCatalogoResult(byte[] Conteudo, string TipoConteudo);

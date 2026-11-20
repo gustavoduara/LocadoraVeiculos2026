@@ -26,6 +26,23 @@ public class AutenticacaoController(IMediator mediator) : MainController
         return ProcessarResultado(result, ResponderComToken);
     }
 
+    /// <summary>Conta de cliente: quem procura e aluga carros no catálogo (não é uma locadora).</summary>
+    [HttpPost("registrar-cliente")]
+    public async Task<ActionResult<AccessToken>> RegistrarCliente(RegistrarUsuarioRequest request)
+    {
+        var command = new RegistrarUsuarioCommand(
+            request.NomeCompleto,
+            request.Email,
+            request.Senha,
+            request.ConfirmarSenha,
+            CargoUsuario.Cliente
+        );
+
+        var result = await mediator.Send(command);
+
+        return ProcessarResultado(result, ResponderComToken);
+    }
+
     [HttpPost("autenticar")]
     public async Task<ActionResult<AccessToken>> Autenticar(AutenticarUsuarioRequest request)
     {

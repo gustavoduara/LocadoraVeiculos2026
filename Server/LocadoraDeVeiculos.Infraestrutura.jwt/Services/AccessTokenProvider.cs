@@ -59,6 +59,12 @@ public class AccessTokenProvider
 
             empresaId = funcionario.EmpresaId;
         }
+        else if (cargoDoUsuarioStr == CargoUsuario.Cliente.ToString())
+        {
+            // O cliente do catálogo não pertence a uma locadora: não leva a claim de empresa
+            // (assim os filtros por empresa nunca devolvem dados de nenhuma locadora para ele).
+            empresaId = null;
+        }
         else
         {
             empresaId = usuario.Id;
@@ -70,9 +76,11 @@ public class AccessTokenProvider
             new Claim(JwtRegisteredClaimNames.UniqueName, usuario.UserName!),
             new Claim(JwtRegisteredClaimNames.Email, usuario.Email!),
             new Claim(JwtRegisteredClaimNames.Jti, usuario.AccessTokenVersionId.ToString()),
-            new Claim(ClaimTypes.Role, cargoDoUsuarioStr),
-            new Claim("EmpresaId", empresaId.Value.ToString())
+            new Claim(ClaimTypes.Role, cargoDoUsuarioStr)
         };
+
+        if (empresaId is not null)
+            claims.Add(new Claim("EmpresaId", empresaId.Value.ToString()));
 
         var expiracaoJwt = DateTime.UtcNow.AddMinutes(15);
 

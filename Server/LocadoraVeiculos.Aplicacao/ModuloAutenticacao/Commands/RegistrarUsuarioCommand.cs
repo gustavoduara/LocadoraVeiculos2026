@@ -7,7 +7,8 @@ namespace LocadoraDeVeiculos.Aplicacao.ModuloAutenticacao.Commands
         string NomeCompleto,
         string Email,
         string Senha,
-        string ConfirmarSenha
+        string ConfirmarSenha,
+        CargoUsuario Cargo = CargoUsuario.Empresa
         )
         
         : IRequest<Result<(AccessToken AccessToken, RefreshToken RefreshToken)>>;
