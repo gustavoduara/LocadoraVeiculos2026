@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  server:
+    name: Server (.NET 8)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: Server
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restaurar dependências
+        run: dotnet restore LocadoraVeiculos2026.sln
+
+      - name: Compilar
+        run: dotnet build LocadoraVeiculos2026.sln --configuration Release --no-restore
+
+      - name: Testes com cobertura
+        run: >
+          dotnet test LocadoraVeiculos.Testes
+          --configuration Release --no-build
+          --collect:"XPlat Code Coverage"
+          --results-directory ./resultados
+
+      - name: Resumo da cobertura
+        if: always()
+        run: |
+          arquivo=$(find resultados -name coverage.cobertura.xml | head -n 1)
+          if [ -n "$arquivo" ]; then
+            taxa=$(grep -o 'line-rate="[0-9.]*"' "$arquivo" | head -n 1 | grep -o '[0-9.]*')
+            echo "### Cobertura de linhas: $(awk "BEGIN {printf \"%.1f\", $taxa * 100}")%" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Guardar relatório de cobertura
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cobertura-server
+          path: Server/resultados/**/coverage.cobertura.xml
+
+  client:
+    name: Client (Angular)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Compilar
+        run: npx ng build --configuration production
