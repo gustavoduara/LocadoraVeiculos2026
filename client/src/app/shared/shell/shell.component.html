@@ -20,11 +20,17 @@
         </button>
       }
 
-      <a routerLink="/inicio" class="marca-menu" aria-label="SerraDrive, ir para o início">
+      <a [routerLink]="usuarioAutenticado?.cargo === 'Cliente' ? '/catalogo' : '/inicio'" class="marca-menu" aria-label="SerraDrive, ir para o início">
         <img src="img/serradrive-logo.png" alt="SerraDrive - Locadora de Veículos" />
       </a>
     </mat-toolbar>
     <mat-nav-list>
+      @if (usuarioAutenticado?.cargo === 'Cliente') {
+        <a mat-list-item [routerLink]="['/catalogo']" routerLinkActive="nav-link-active" class="my-1">
+          <mat-icon class="material-icons-outlined" matListItemIcon>search</mat-icon>
+          Buscar carros
+        </a>
+      } @else {
       @for (item of itensNavbar; track $index) {
         <a mat-list-item [routerLink]="item.link" routerLinkActive="nav-link-active" class="my-1">
           <mat-icon class="material-icons-outlined" matListItemIcon>{{ item.icone }}</mat-icon>
@@ -156,6 +162,7 @@
           Meu Perfil
         </a>
       }
+          }
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content>

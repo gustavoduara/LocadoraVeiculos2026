@@ -12,6 +12,7 @@ import { mensagemDeErro } from '../../shared/erros/mensagem-erro';
 import { LoginModel } from '../auth.models';
 import { AuthService } from '../auth.service';
 import { BotaoVerSenha } from '../../shared/senha/botao-ver-senha';
+import { rotaInicial } from '../rota-inicial';
 
 @Component({
     selector: 'app-login',
@@ -52,9 +53,9 @@ export class Login {
         const loginModel: LoginModel = this.loginForm.value;
 
         this.authService.login(loginModel).subscribe({
-            next: () => {
+            next: (token) => {
                 this.notificacaoService.sucesso('Login realizado com sucesso!');
-                this.router.navigate(['/inicio']);
+                this.router.navigate([rotaInicial(token.usuarioAutenticado.cargo)]);
             },
             error: (err) => {
                 const mensagem = mensagemDeErro(err, 'Falha ao autenticar. Verifique suas credenciais.');

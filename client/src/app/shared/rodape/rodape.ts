@@ -26,7 +26,14 @@ interface LinkRodape {
 
                 <!-- Colunas -->
                 <div class="mt-8 grid grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-4">
-                    @if (cargo()) {
+                    @if (cargo() === 'Cliente') {
+                    <nav aria-label="Cliente">
+                        <h3 class="mb-3 font-semibold text-[color:var(--rodape-titulo)]">Para você</h3>
+                        <ul class="space-y-2">
+                            <li><a class="link-rodape" routerLink="/catalogo">Buscar carros</a></li>
+                        </ul>
+                    </nav>
+                    } @else if (cargo()) {
                     <nav aria-label="Operação">
                         <h3 class="mb-3 font-semibold text-[color:var(--rodape-titulo)]">Operação</h3>
                         <ul class="space-y-2">

@@ -4,6 +4,7 @@ import { inject } from '@angular/core';
 import { CanMatchFn, Router } from '@angular/router';
 
 import { AuthService } from './auth.service';
+import { rotaInicial } from './rota-inicial';
 
 /** Permite a rota apenas para usuários com um dos cargos informados (ex.: 'Empresa', 'Funcionario'). */
 export const cargoGuard = (...cargosPermitidos: string[]): CanMatchFn => {
@@ -16,7 +17,7 @@ export const cargoGuard = (...cargosPermitidos: string[]): CanMatchFn => {
             map((token) =>
                 token && cargosPermitidos.includes(token.usuarioAutenticado.cargo)
                     ? true
-                    : router.createUrlTree(['/inicio']),
+                    : router.createUrlTree([rotaInicial(token?.usuarioAutenticado.cargo)]),
             ),
         );
     };

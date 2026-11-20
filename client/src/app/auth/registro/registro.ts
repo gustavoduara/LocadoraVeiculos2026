@@ -1,4 +1,3 @@
-import { NgxMaskDirective } from 'ngx-mask';
 import { PartialObserver } from 'rxjs';
 
 import { Component, inject } from '@angular/core';
@@ -8,12 +7,13 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { mensagemDeErro } from '../../shared/erros/mensagem-erro';
 import { NotificacaoService } from '../../shared/notificacao/notificacao.service';
 import { AccessTokenModel, RegistroModel } from '../auth.models';
 import { AuthService } from '../auth.service';
+import { rotaInicial } from '../rota-inicial';
 import { compararConfirmacaoSenha } from '../validators/comparar-confirmacao-senha-validator';
 import { BotaoVerSenha } from '../../shared/senha/botao-ver-senha';
 
@@ -28,7 +28,6 @@ import { BotaoVerSenha } from '../../shared/senha/botao-ver-senha';
         RouterLink,
         ReactiveFormsModule,
         BotaoVerSenha,
-        NgxMaskDirective,
     ],
     templateUrl: './registro.html',
 })
@@ -37,6 +36,9 @@ export class Registro {
     protected readonly router = inject(Router);
     protected readonly authService = inject(AuthService);
     protected readonly notificacaoService = inject(NotificacaoService);
+
+    /** A mesma tela serve às duas contas: a rota /auth/registro-cliente marca `tipo: 'cliente'`. */
+    protected readonly ehCliente = inject(ActivatedRoute).snapshot.data['tipo'] === 'cliente';
 
     protected readonly registroForm: FormGroup = this.formBuilder.group(
         {
@@ -68,13 +70,17 @@ export class Registro {
         if (this.registroForm.invalid) return;
 
         const registroModel: RegistroModel = this.registroForm.value;
+        const cliente = this.ehCliente;
 
         const registroObserver: PartialObserver<AccessTokenModel> = {
             error: (err) =>
                 this.notificacaoService.erro(mensagemDeErro(err, 'Não foi possível criar a conta.')),
-            complete: () => this.router.navigate(['/inicio']),
+            complete: () => this.router.navigate([rotaInicial(cliente ? 'Cliente' : 'Empresa')]),
         };
 
-        this.authService.registro(registroModel).subscribe(registroObserver);
+        (cliente
+            ? this.authService.registroCliente(registroModel)
+            : this.authService.registro(registroModel)
+        ).subscribe(registroObserver);
     }
 }

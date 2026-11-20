@@ -9,6 +9,7 @@ import { CanActivateFn, provideRouter, Router, Routes } from '@angular/router';
 import { provideAuth } from './auth/auth.provider';
 import { AuthService } from './auth/auth.service';
 import { cargoGuard } from './auth/cargo.guard';
+import { rotaInicial } from './auth/rota-inicial';
 import { provideNotifications } from './shared/notificacao/notificacao.provider';
 
 const usuarioDesconhecidoGuard: CanActivateFn = () => {
@@ -17,7 +18,9 @@ const usuarioDesconhecidoGuard: CanActivateFn = () => {
 
   return authService.obterAccessToken().pipe(
     take(1),
-    map((token) => (!token ? true : router.createUrlTree(['/inicio']))),
+    map((token) =>
+      !token ? true : router.createUrlTree([rotaInicial(token.usuarioAutenticado.cargo)]),
+    ),
   );
 };
 
@@ -127,7 +130,14 @@ const routes: Routes = [
   {
     path: 'inicio',
     loadComponent: () => import('./inicio/inicio').then((c) => c.Inicio),
-    canMatch: [usuarioAutenticadoGuard],
+    canMatch: [usuarioAutenticadoGuard, cargoGuard('Empresa', 'Funcionario')],
+  },
+
+  // Catálogo: o cliente procura carros de todas as locadoras.
+  {
+    path: 'catalogo',
+    loadChildren: () => import('./catalogo/catalogo.routes').then((r) => r.catalogoRoutes),
+    canMatch: [usuarioAutenticadoGuard, cargoGuard('Cliente')],
   },
 ];
 

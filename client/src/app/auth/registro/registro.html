@@ -1,17 +1,19 @@
 <section class="flex justify-center">
     <div class="w-full max-w-xl lg:max-w-md xl:max-w-sm py-10">
-        <h2 class="text-2xl font-medium">Registro de Usuário</h2>
+        <h2 class="text-2xl font-medium">{{ ehCliente ? 'Criar conta de cliente' : 'Cadastro de locadora' }}</h2>
         <hr class="my-4" />
 
         <mat-card class="p-4">
             <form [formGroup]="registroForm" (ngSubmit)="registro()">
                 <mat-card-header>
-                    <mat-card-title>Preencha o formulário de registro</mat-card-title>
+                    <mat-card-title>
+                        {{ ehCliente ? 'Crie sua conta para procurar e alugar carros' : 'Preencha o formulário de registro' }}
+                    </mat-card-title>
                 </mat-card-header>
 
                 <mat-card-content class="mt-8">
                     <mat-form-field class="w-full">
-                        <mat-label>Nome Completo</mat-label>
+                        <mat-label>{{ ehCliente ? 'Seu nome completo' : 'Nome da locadora ou do responsável' }}</mat-label>
                         <input matInput formControlName="nomeCompleto" type="text" autocomplete="name" />
 
                         @if (nomeCompleto?.errors?.['required']) {
@@ -24,8 +26,7 @@
 
                     <mat-form-field class="w-full mt-2">
                         <mat-label>Email</mat-label>
-                        <input matInput formControlName="email" type="email" autocomplete="email" mask="A*@A*.SSS"
-                            [dropSpecialCharacters]="false" />
+                        <input matInput formControlName="email" type="email" autocomplete="email" />
 
                         @if (email?.errors?.['required']) {
                         <mat-error>O email é obrigatório.</mat-error>
@@ -73,5 +74,13 @@
                 </mat-card-actions>
             </form>
         </mat-card>
+
+        <p class="mt-4 text-center text-sm text-gray-600">
+            @if (ehCliente) { Tem uma locadora?
+            <a class="font-medium text-primary hover:underline" routerLink="/auth/registro">Cadastre sua empresa</a>
+            } @else { Quer só procurar e alugar um carro?
+            <a class="font-medium text-primary hover:underline" routerLink="/auth/registro-cliente">Crie uma conta de cliente</a>
+            }
+        </p>
     </div>
 </section>

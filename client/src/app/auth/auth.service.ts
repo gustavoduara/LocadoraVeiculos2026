@@ -35,6 +35,13 @@ export class AuthService {
             .pipe(tap((token) => this.accessTokenSubject$.next(token)));
     }
 
+    /** Conta de cliente: quem procura e aluga carros no catálogo (não é uma locadora). */
+    public registroCliente(registroModel: RegistroModel): Observable<AccessTokenModel> {
+        return this.http
+            .post<AccessTokenModel>(`${this.apiUrl}/registrar-cliente`, registroModel)
+            .pipe(tap((token) => this.accessTokenSubject$.next(token)));
+    }
+
     public login(loginModel: LoginModel): Observable<AccessTokenModel> {
         const urlCompleto = `${this.apiUrl}/autenticar`;
 

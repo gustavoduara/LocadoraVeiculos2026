@@ -1,0 +1,258 @@
+<section class="mx-auto max-w-screen-xl px-4 py-6">
+    <h2 class="text-2xl font-semibold">Encontre seu carro</h2>
+    <p class="text-sm text-gray-600">
+        Procure entre os carros de todas as locadoras. A reserva online ainda está chegando: por enquanto você vê o que está
+        livre e quanto custa.
+    </p>
+
+    <!-- Filtros -->
+    <mat-card class="mt-4 rounded-2xl shadow-sm">
+        <mat-card-content class="p-4">
+            <form
+                class="grid grid-cols-1 gap-x-4 gap-y-1 sm:grid-cols-2 lg:grid-cols-4"
+                (submit)="$event.preventDefault(); pesquisar()"
+            >
+                <mat-form-field class="lg:col-span-2">
+                    <mat-label>O que você procura?</mat-label>
+                    <mat-icon matPrefix>search</mat-icon>
+                    <input
+                        matInput
+                        name="texto"
+                        placeholder="Marca, modelo, cor..."
+                        [value]="texto()"
+                        (input)="texto.set($any($event.target).value)"
+                    />
+                </mat-form-field>
+
+                <mat-form-field>
+                    <mat-label>Retirada</mat-label>
+                    <input
+                        matInput
+                        type="date"
+                        name="retirada"
+                        [min]="hoje"
+                        [value]="retirada()"
+                        (input)="atualizarRetirada($any($event.target).value)"
+                    />
+                </mat-form-field>
+
+                <mat-form-field>
+                    <mat-label>Devolução</mat-label>
+                    <input
+                        matInput
+                        type="date"
+                        name="devolucao"
+                        [min]="retirada() || hoje"
+                        [value]="devolucao()"
+                        (input)="devolucao.set($any($event.target).value)"
+                    />
+                </mat-form-field>
+
+                <mat-form-field>
+                    <mat-label>Categoria</mat-label>
+                    <mat-select [value]="categoria()" (selectionChange)="categoria.set($event.value)">
+                        <mat-option value="">Todas</mat-option>
+                        @for (item of opcoes().categorias; track item) {
+                        <mat-option [value]="item">{{ item }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field>
+                    <mat-label>Combustível</mat-label>
+                    <mat-select [value]="combustivel()" (selectionChange)="combustivel.set($event.value)">
+                        <mat-option value="">Qualquer</mat-option>
+                        @for (item of combustiveis; track item.valor) {
+                        <mat-option [value]="item.valor">{{ item.rotulo }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field>
+                    <mat-label>Ano a partir de</mat-label>
+                    <input
+                        matInput
+                        type="number"
+                        name="anoMinimo"
+                        min="1990"
+                        placeholder="Ex.: 2022"
+                        [value]="anoMinimo()"
+                        (input)="anoMinimo.set($any($event.target).value)"
+                    />
+                </mat-form-field>
+
+                <mat-form-field>
+                    <mat-label>Diária até</mat-label>
+                    <span matTextPrefix>R$&nbsp;</span>
+                    <input
+                        matInput
+                        type="number"
+                        name="diariaMaxima"
+                        min="0"
+                        step="10"
+                        [value]="diariaMaxima()"
+                        (input)="diariaMaxima.set($any($event.target).value)"
+                    />
+                </mat-form-field>
+
+                <mat-form-field class="lg:col-span-2">
+                    <mat-label>Locadora</mat-label>
+                    <mat-select [value]="locadoraId()" (selectionChange)="locadoraId.set($event.value)">
+                        <mat-option value="">Todas as locadoras</mat-option>
+                        @for (item of opcoes().locadoras; track item.id) {
+                        <mat-option [value]="item.id">{{ item.nome }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field class="lg:col-span-2">
+                    <mat-label>Ordenar por</mat-label>
+                    <mat-select [value]="ordenacao()" (selectionChange)="ordenacao.set($event.value)">
+                        @for (item of ordenacoes; track item.valor) {
+                        <mat-option [value]="item.valor">{{ item.rotulo }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+
+                <div class="flex flex-wrap items-center gap-3 sm:col-span-2 lg:col-span-4">
+                    <mat-checkbox
+                        [checked]="mostrarIndisponiveis()"
+                        (change)="mostrarIndisponiveis.set($event.checked)"
+                        [disabled]="!retirada()"
+                    >
+                        Mostrar também os indisponíveis no período
+                    </mat-checkbox>
+
+                    <span class="flex-1"></span>
+
+                    @if (!retirada()) {
+                    <button type="button" mat-button (click)="sugerirPeriodo()">
+                        <mat-icon>event</mat-icon>
+                        Próximos 3 dias
+                    </button>
+                    }
+
+                    @if (filtrosAtivos()) {
+                    <button type="button" mat-stroked-button (click)="limpar()">Limpar filtros</button>
+                    }
+
+                    <button type="submit" mat-flat-button class="h-11 px-6" [disabled]="erroDeDatas() !== null">
+                        <mat-icon>search</mat-icon>
+                        Pesquisar
+                    </button>
+                </div>
+            </form>
+
+            @if (erroDeDatas(); as mensagem) {
+            <p class="mt-2 text-sm text-red-700">{{ mensagem }}</p>
+            }
+        </mat-card-content>
+    </mat-card>
+
+    <!-- Resultado -->
+    <div class="mt-6">
+        @if (erroBusca(); as mensagem) {
+        <p class="text-red-700">{{ mensagem }}</p>
+        } @else if (resultado(); as r) {
+        <h3 class="text-lg font-medium">
+            {{ r.total }} {{ r.total === 1 ? 'carro encontrado' : 'carros encontrados' }}
+            @if (r.dias) { <span class="font-normal text-gray-600"> para {{ r.dias }} {{ r.dias === 1 ? 'diária' : 'diárias' }}</span> }
+        </h3>
+        <p class="text-xs text-gray-500">
+            Preços a partir da menor diária do plano de cada locadora. Km rodados, taxas, seguro e caução são cobrados à parte.
+        </p>
+
+        @if (r.total === 0 && !carregando()) {
+        <mat-card class="mt-4 p-6 text-center">
+            <mat-icon class="mx-auto !h-10 !w-10 !text-[40px] text-gray-400">search_off</mat-icon>
+            <p class="mt-2 font-medium">Nenhum carro encontrado</p>
+            <p class="text-sm text-gray-600">Tente outras datas ou tire alguns filtros.</p>
+            @if (filtrosAtivos()) {
+            <button type="button" mat-stroked-button class="mx-auto mt-3" (click)="limpar()">Limpar filtros</button>
+            }
+        </mat-card>
+        }
+
+        <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3" [class.opacity-60]="carregando()">
+            @for (carro of r.registros; track carro.id) {
+            <mat-card class="overflow-hidden rounded-2xl shadow-sm" [class.opacity-60]="carro.disponivel === false">
+                <div class="relative h-44">
+                    <app-foto-catalogo
+                        class="h-44"
+                        [carroId]="carro.id"
+                        [temFoto]="carro.temFoto"
+                        [descricao]="'Foto de ' + carro.marca + ' ' + carro.modelo"
+                    />
+
+                    @if (carro.disponivel === false) {
+                    <span class="selo-vermelho absolute right-3 top-3 rounded-full px-3 py-1 text-xs font-medium">
+                        Indisponível no período
+                    </span>
+                    } @else if (carro.disponivel) {
+                    <span class="selo-verde absolute right-3 top-3 rounded-full px-3 py-1 text-xs font-medium">
+                        Disponível
+                    </span>
+                    }
+                </div>
+
+                <mat-card-content class="p-4">
+                    <p class="text-xs font-medium uppercase tracking-wide text-gray-500">{{ carro.categoria }}</p>
+                    <h4 class="text-lg font-semibold">{{ carro.marca }} {{ carro.modelo }}</h4>
+
+                    <ul class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
+                        <li class="flex items-center gap-1">
+                            <mat-icon class="!h-5 !w-5 !text-[18px]">palette</mat-icon>{{ carro.cor }}
+                        </li>
+                        <li class="flex items-center gap-1">
+                            <mat-icon class="!h-5 !w-5 !text-[18px]">event</mat-icon>{{ carro.ano }}
+                        </li>
+                        <li class="flex items-center gap-1">
+                            <mat-icon class="!h-5 !w-5 !text-[18px]">local_gas_station</mat-icon>
+                            {{ rotuloCombustivel(carro.combustivel) }}
+                        </li>
+                    </ul>
+
+                    <p class="mt-2 flex items-center gap-1 text-sm text-gray-600">
+                        <mat-icon class="!h-5 !w-5 !text-[18px]">storefront</mat-icon>{{ carro.locadora }}
+                    </p>
+
+                    <div class="mt-4">
+                        @if (carro.diariaAPartirDe !== null) {
+                        <p class="text-xs text-gray-500">a partir de</p>
+                        <p class="text-xl font-semibold text-destaque">
+                            {{ carro.diariaAPartirDe | currency: 'BRL'
+                            }}<span class="text-sm font-normal text-gray-500"> /dia</span>
+                        </p>
+                        @if (carro.totalDoPeriodo !== null && r.dias) {
+                        <p class="text-xs text-gray-600">
+                            {{ carro.totalDoPeriodo | currency: 'BRL' }} em {{ r.dias }}
+                            {{ r.dias === 1 ? 'diária' : 'diárias' }}
+                        </p>
+                        }
+                        } @else {
+                        <p class="text-sm text-gray-500">Preço sob consulta</p>
+                        }
+                    </div>
+                </mat-card-content>
+            </mat-card>
+            }
+        </div>
+
+        @if (totalDePaginas() > 1) {
+        <div class="mt-6 flex items-center justify-center gap-3">
+            <button mat-stroked-button [disabled]="r.pagina <= 1" (click)="irParaPagina(r.pagina - 1)">
+                <mat-icon>chevron_left</mat-icon>
+                Anterior
+            </button>
+            <span class="text-sm text-gray-600">Página {{ r.pagina }} de {{ totalDePaginas() }}</span>
+            <button mat-stroked-button [disabled]="r.pagina >= totalDePaginas()" (click)="irParaPagina(r.pagina + 1)">
+                Próxima
+                <mat-icon iconPositionEnd>chevron_right</mat-icon>
+            </button>
+        </div>
+        }
+        } @else {
+        <p class="text-gray-600">Carregando os carros...</p>
+        }
+    </div>
+</section>
