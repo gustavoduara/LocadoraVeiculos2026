@@ -14,6 +14,8 @@ public class MapeadorConfiguracaoEmOrm : IEntityTypeConfiguration<Configuracao>
         builder.Property(c => c.PrecoGas).HasColumnType("decimal(18,2)").IsRequired();
         builder.Property(c => c.PrecoDiesel).HasColumnType("decimal(18,2)").IsRequired();
         builder.Property(c => c.PrecoAlcool).HasColumnType("decimal(18,2)").IsRequired();
+        builder.Property(c => c.SeguroClienteDiaria).HasColumnType("decimal(18,2)").IsRequired();
+        builder.Property(c => c.SeguroTerceirosDiaria).HasColumnType("decimal(18,2)").IsRequired();
 
         builder.HasOne(c => c.Empresa)
                .WithMany()

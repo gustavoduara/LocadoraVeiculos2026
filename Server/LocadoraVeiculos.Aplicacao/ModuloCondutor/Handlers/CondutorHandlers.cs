@@ -8,6 +8,7 @@ using LocadoraDeVeiculos.Dominio.ModuloCliente;
 using LocadoraDeVeiculos.Dominio.ModuloCondutor;
 using LocadoraDeVeiculos.Infraestrutura.Orm.Compartilhado;
 using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloCliente;
+using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloAluguel;
 using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloCondutor;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -118,7 +119,6 @@ public class EditarCondutorCommandHandler(
             return Result.Fail(ResultadosErro.RegistroDuplicadoErro(
                 "Já existe um condutor com este CPF cadastrado para este cliente."));
 
-        // Quando existirem Aluguéis, bloquear aqui a edição de condutor em aluguel não concluído, se a regra se aplicar.
 
         try
         {
@@ -151,6 +151,7 @@ public class EditarCondutorCommandHandler(
 public class ExcluirCondutorCommandHandler(
     AppDbContext appDbContext,
     RepositorioCondutorEmOrm repositorioCondutor,
+    RepositorioAluguelEmOrm repositorioAluguel,
     ILogger<ExcluirCondutorCommandHandler> logger
 ) : IRequestHandler<ExcluirCondutorCommand, Result<ExcluirCondutorResult>>
 {
@@ -162,7 +163,10 @@ public class ExcluirCondutorCommandHandler(
         if (condutor is null)
             return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro(command.Id));
 
-        // Quando existirem Aluguéis, bloquear aqui a exclusão de condutor em aluguel não concluído.
+        if (await repositorioAluguel.ExisteEmAbertoParaCondutorAsync(condutor.Id))
+            return Result.Fail(ResultadosErro.ExclusaoBloqueadaErro(
+                "Não é possível excluir um condutor relacionado a um aluguel ainda não concluído."));
+
 
         try
         {

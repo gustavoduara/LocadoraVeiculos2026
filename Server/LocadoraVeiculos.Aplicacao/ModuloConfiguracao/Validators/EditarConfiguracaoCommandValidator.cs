@@ -11,6 +11,8 @@ public class EditarConfiguracaoCommandValidator : AbstractValidator<EditarConfig
         RuleFor(p => p.PrecoGas).PrecoDeCombustivel();
         RuleFor(p => p.PrecoDiesel).PrecoDeCombustivel();
         RuleFor(p => p.PrecoAlcool).PrecoDeCombustivel();
+        RuleFor(p => p.SeguroClienteDiaria).PrecoDeCombustivel();
+        RuleFor(p => p.SeguroTerceirosDiaria).PrecoDeCombustivel();
     }
 }
 

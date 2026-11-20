@@ -48,6 +48,14 @@ public abstract class ResultadosErro
     }
 
 
+    /// <summary>Edição ou outra operação (que não seja exclusão) barrada por uma regra de negócio.</summary>
+    public static Error OperacaoBloqueadaErro(string mensagemErro)
+    {
+        return new Error("Operação bloqueada")
+            .CausedBy(mensagemErro)
+            .WithMetadata("TipoErro", "OperacaoBloqueada");
+    }
+
     public static Error ExcecaoInternaErro(Exception ex)
     {
         return new Error("Ocorreu um erro interno do servidor")

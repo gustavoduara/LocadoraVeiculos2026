@@ -8,6 +8,7 @@ using LocadoraDeVeiculos.Dominio.ModuloGrupoVeiculos;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoCobranca;
 using LocadoraDeVeiculos.Infraestrutura.Orm.Compartilhado;
 using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloGrupoVeiculos;
+using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloAluguel;
 using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloPlanoCobranca;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -137,6 +138,7 @@ public class EditarPlanoCobrancaCommandHandler(
 public class ExcluirPlanoCobrancaCommandHandler(
     AppDbContext appDbContext,
     RepositorioPlanoCobrancaEmOrm repositorioPlano,
+    RepositorioAluguelEmOrm repositorioAluguel,
     ILogger<ExcluirPlanoCobrancaCommandHandler> logger
 ) : IRequestHandler<ExcluirPlanoCobrancaCommand, Result<ExcluirPlanoCobrancaResult>>
 {
@@ -148,7 +150,10 @@ public class ExcluirPlanoCobrancaCommandHandler(
         if (plano is null)
             return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro(command.Id));
 
-        // Quando existirem Automóveis e Aluguéis, bloquear aqui a exclusão de plano em uso.
+        if (await repositorioAluguel.ExisteEmAbertoParaPlanoAsync(plano.Id))
+            return Result.Fail(ResultadosErro.ExclusaoBloqueadaErro(
+                "Não é possível excluir um plano de cobrança utilizado em um aluguel ainda não concluído."));
+
 
         try
         {

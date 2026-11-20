@@ -23,12 +23,14 @@ public class SelecionarConfiguracaoQueryHandler(
 
         // Empresa que ainda não configurou: devolve zeros em vez de erro.
         SelecionarConfiguracaoResult result = configuracao is null
-            ? new(0m, 0m, 0m, 0m)
+            ? new(0m, 0m, 0m, 0m, 0m, 0m)
             : new(
                 configuracao.PrecoGasolina,
                 configuracao.PrecoGas,
                 configuracao.PrecoDiesel,
-                configuracao.PrecoAlcool
+                configuracao.PrecoAlcool,
+                configuracao.SeguroClienteDiaria,
+                configuracao.SeguroTerceirosDiaria
             );
 
         return Result.Ok(result);
@@ -62,7 +64,9 @@ public class EditarConfiguracaoCommandHandler(
                 command.PrecoGasolina,
                 command.PrecoGas,
                 command.PrecoDiesel,
-                command.PrecoAlcool
+                command.PrecoAlcool,
+                command.SeguroClienteDiaria,
+                command.SeguroTerceirosDiaria
             );
 
             Configuracao? existente = await repositorioConfiguracao.SelecionarDaEmpresaAsync();
@@ -79,7 +83,9 @@ public class EditarConfiguracaoCommandHandler(
                 command.PrecoGasolina,
                 command.PrecoGas,
                 command.PrecoDiesel,
-                command.PrecoAlcool
+                command.PrecoAlcool,
+                command.SeguroClienteDiaria,
+                command.SeguroTerceirosDiaria
             ));
         }
         catch (Exception ex)

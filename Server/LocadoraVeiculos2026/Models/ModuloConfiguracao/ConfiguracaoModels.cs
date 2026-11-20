@@ -4,12 +4,16 @@ public record EditarConfiguracaoRequest(
     decimal PrecoGasolina,
     decimal PrecoGas,
     decimal PrecoDiesel,
-    decimal PrecoAlcool
+    decimal PrecoAlcool,
+    decimal SeguroClienteDiaria,
+    decimal SeguroTerceirosDiaria
 );
 
 public record ConfiguracaoResponse(
     decimal PrecoGasolina,
     decimal PrecoGas,
     decimal PrecoDiesel,
-    decimal PrecoAlcool
+    decimal PrecoAlcool,
+    decimal SeguroClienteDiaria,
+    decimal SeguroTerceirosDiaria
 );

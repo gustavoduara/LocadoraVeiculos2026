@@ -20,6 +20,13 @@ public class RepositorioTaxaServicoEmOrm : RepositorioBaseEmOrm<TaxaServico>
             .ToListAsync();
     }
 
+    public async Task<List<TaxaServico>> SelecionarPorIdsAsync(IReadOnlyCollection<Guid> ids)
+    {
+        return await dbContext.TaxasServicos
+            .Where(t => ids.Contains(t.Id))
+            .ToListAsync();
+    }
+
     /// <summary>Usa a collation do banco (sem diferenciar maiúsculas/minúsculas), igual ao índice único.</summary>
     public async Task<bool> ExisteNomeAsync(string nome, Guid? ignorarId = null)
     {

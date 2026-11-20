@@ -7,6 +7,7 @@ using LocadoraDeVeiculos.Dominio.ModuloAutenticacao;
 using LocadoraDeVeiculos.Dominio.ModuloAutomovel;
 using LocadoraDeVeiculos.Dominio.ModuloGrupoVeiculos;
 using LocadoraDeVeiculos.Infraestrutura.Orm.Compartilhado;
+using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloAluguel;
 using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloAutomovel;
 using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloGrupoVeiculos;
 using MediatR;
@@ -115,6 +116,7 @@ public class EditarAutomovelCommandHandler(
     RepositorioAutomovelEmOrm repositorioAutomovel,
     RepositorioGrupoVeiculosEmOrm repositorioGrupo,
     ITenantProvider tenantProvider,
+    RepositorioAluguelEmOrm repositorioAluguel,
     IValidator<EditarAutomovelCommand> validator,
     ILogger<EditarAutomovelCommandHandler> logger
 ) : IRequestHandler<EditarAutomovelCommand, Result<EditarAutomovelResult>>
@@ -146,7 +148,10 @@ public class EditarAutomovelCommandHandler(
         if (await repositorioAutomovel.ExistePlacaAsync(placa, ignorarId: automovel.Id))
             return Result.Fail(ResultadosErro.RegistroDuplicadoErro("Já existe um automóvel cadastrado com esta placa."));
 
-        // Quando existirem Aluguéis, bloquear aqui a edição de automóvel em aluguel não concluído.
+        if (await repositorioAluguel.ExisteEmAbertoParaAutomovelAsync(automovel.Id))
+            return Result.Fail(ResultadosErro.OperacaoBloqueadaErro(
+                "Não é possível editar um automóvel em um aluguel ainda não concluído."));
+
 
         try
         {
@@ -189,6 +194,7 @@ public class EditarAutomovelCommandHandler(
 public class ExcluirAutomovelCommandHandler(
     AppDbContext appDbContext,
     RepositorioAutomovelEmOrm repositorioAutomovel,
+    RepositorioAluguelEmOrm repositorioAluguel,
     ILogger<ExcluirAutomovelCommandHandler> logger
 ) : IRequestHandler<ExcluirAutomovelCommand, Result<ExcluirAutomovelResult>>
 {
@@ -200,7 +206,10 @@ public class ExcluirAutomovelCommandHandler(
         if (automovel is null)
             return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro(command.Id));
 
-        // Quando existirem Aluguéis, bloquear aqui a exclusão de automóvel em aluguel não concluído.
+        if (await repositorioAluguel.ExisteEmAbertoParaAutomovelAsync(automovel.Id))
+            return Result.Fail(ResultadosErro.ExclusaoBloqueadaErro(
+                "Não é possível excluir um automóvel em um aluguel ainda não concluído."));
+
 
         try
         {

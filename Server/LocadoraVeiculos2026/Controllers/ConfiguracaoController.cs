@@ -26,7 +26,9 @@ public sealed class ConfiguracaoController(IMediator mediator) : MainController
                 valor.PrecoGasolina,
                 valor.PrecoGas,
                 valor.PrecoDiesel,
-                valor.PrecoAlcool
+                valor.PrecoAlcool,
+                valor.SeguroClienteDiaria,
+                valor.SeguroTerceirosDiaria
             )));
     }
 
@@ -42,7 +44,9 @@ public sealed class ConfiguracaoController(IMediator mediator) : MainController
             request.PrecoGasolina,
             request.PrecoGas,
             request.PrecoDiesel,
-            request.PrecoAlcool
+            request.PrecoAlcool,
+            request.SeguroClienteDiaria,
+            request.SeguroTerceirosDiaria
         );
 
         Result<EditarConfiguracaoResult> result = await mediator.Send(command, cancellationToken);
@@ -52,7 +56,9 @@ public sealed class ConfiguracaoController(IMediator mediator) : MainController
                 valor.PrecoGasolina,
                 valor.PrecoGas,
                 valor.PrecoDiesel,
-                valor.PrecoAlcool
+                valor.PrecoAlcool,
+                valor.SeguroClienteDiaria,
+                valor.SeguroTerceirosDiaria
             )));
     }
 }

@@ -13,6 +13,8 @@ public static class DependencyInjection
         
         services.AddValidatorsFromAssembly(assembly);
 
+        services.AddScoped<ModuloAluguel.AluguelServico>();
+
         var licenseKey = configuration["LUCKYPENNY_LICENSE_KEY"];
 
         if (string.IsNullOrWhiteSpace(licenseKey))

@@ -7,6 +7,7 @@ using LocadoraDeVeiculos.Dominio.ModuloAutenticacao;
 using LocadoraDeVeiculos.Dominio.ModuloCliente;
 using LocadoraDeVeiculos.Infraestrutura.Orm.Compartilhado;
 using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloCliente;
+using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloAluguel;
 using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloCondutor;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -185,7 +186,6 @@ public class EditarClienteCommandHandler(
             return Result.Fail(ResultadosErro.RegistroDuplicadoErro("Já existe um cliente cadastrado com este CNPJ."));
         }
 
-        // Quando existirem Aluguéis, bloquear aqui a edição de cliente em aluguel não concluído, se a regra se aplicar.
 
         try
         {
@@ -213,6 +213,7 @@ public class EditarClienteCommandHandler(
 public class ExcluirClienteCommandHandler(
     AppDbContext appDbContext,
     RepositorioClienteEmOrm repositorioCliente,
+    RepositorioAluguelEmOrm repositorioAluguel,
     RepositorioCondutorEmOrm repositorioCondutor,
     ILogger<ExcluirClienteCommandHandler> logger
 ) : IRequestHandler<ExcluirClienteCommand, Result<ExcluirClienteResult>>
@@ -236,7 +237,10 @@ public class ExcluirClienteCommandHandler(
                 "Não é possível excluir uma pessoa jurídica que possui pessoas físicas vinculadas."));
         }
 
-        // Quando existirem Aluguéis, bloquear aqui a exclusão de cliente em aluguel não concluído.
+        if (await repositorioAluguel.ExisteEmAbertoParaClienteAsync(cliente.Id))
+            return Result.Fail(ResultadosErro.ExclusaoBloqueadaErro(
+                "Não é possível excluir um cliente relacionado a um aluguel ainda não concluído."));
+
 
         try
         {

@@ -6,6 +6,7 @@ using LocadoraDeVeiculos.Aplicacao.ModuloTaxaServico.Commands;
 using LocadoraDeVeiculos.Dominio.ModuloAutenticacao;
 using LocadoraDeVeiculos.Dominio.ModuloTaxaServico;
 using LocadoraDeVeiculos.Infraestrutura.Orm.Compartilhado;
+using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloAluguel;
 using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloTaxaServico;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -70,6 +71,7 @@ public class EditarTaxaServicoCommandHandler(
     AppDbContext appDbContext,
     RepositorioTaxaServicoEmOrm repositorioTaxa,
     ITenantProvider tenantProvider,
+    RepositorioAluguelEmOrm repositorioAluguel,
     IValidator<EditarTaxaServicoCommand> validator,
     ILogger<EditarTaxaServicoCommandHandler> logger
 ) : IRequestHandler<EditarTaxaServicoCommand, Result<EditarTaxaServicoResult>>
@@ -96,7 +98,10 @@ public class EditarTaxaServicoCommandHandler(
         if (await repositorioTaxa.ExisteNomeAsync(nome, ignorarId: taxa.Id))
             return Result.Fail(ResultadosErro.RegistroDuplicadoErro("Já existe uma taxa ou serviço com este nome."));
 
-        // Quando existirem Aluguéis, bloquear aqui a edição de taxa usada em aluguel não concluído.
+        if (await repositorioAluguel.ExisteEmAbertoParaTaxaAsync(taxa.Id))
+            return Result.Fail(ResultadosErro.OperacaoBloqueadaErro(
+                "Não é possível editar uma taxa ou serviço usado em um aluguel ainda não concluído."));
+
 
         try
         {
@@ -125,6 +130,7 @@ public class EditarTaxaServicoCommandHandler(
 public class ExcluirTaxaServicoCommandHandler(
     AppDbContext appDbContext,
     RepositorioTaxaServicoEmOrm repositorioTaxa,
+    RepositorioAluguelEmOrm repositorioAluguel,
     ILogger<ExcluirTaxaServicoCommandHandler> logger
 ) : IRequestHandler<ExcluirTaxaServicoCommand, Result<ExcluirTaxaServicoResult>>
 {
@@ -136,7 +142,10 @@ public class ExcluirTaxaServicoCommandHandler(
         if (taxa is null)
             return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro(command.Id));
 
-        // Quando existirem Aluguéis, bloquear aqui a exclusão de taxa usada em aluguel não concluído.
+        if (await repositorioAluguel.ExisteEmAbertoParaTaxaAsync(taxa.Id))
+            return Result.Fail(ResultadosErro.ExclusaoBloqueadaErro(
+                "Não é possível excluir uma taxa ou serviço usado em um aluguel ainda não concluído."));
+
 
         try
         {

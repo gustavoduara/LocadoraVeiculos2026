@@ -5,6 +5,7 @@ using LocadoraDeVeiculos.Dominio.ModuloAutenticacao;
 using LocadoraDeVeiculos.Dominio.ModuloFuncionario;
 using LocadoraDeVeiculos.Infraestrutura.Jwt.Services;
 using LocadoraDeVeiculos.Infraestrutura.Orm.Compartilhado;
+using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloAluguel;
 using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloFuncionario;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
@@ -16,6 +17,7 @@ public class ExcluirFuncionarioCommandHandler(
     AppDbContext dbContext,
     RepositorioFuncionarioEmOrm repositorioFuncionario,
     RefreshTokenProvider refreshTokenProvider,
+    RepositorioAluguelEmOrm repositorioAluguel,
     UserManager<Usuario> userManager,
     ILogger<ExcluirFuncionarioCommandHandler> logger
 ) : IRequestHandler<ExcluirFuncionarioCommand, Result<ExcluirFuncionarioResult>>
@@ -29,6 +31,10 @@ public class ExcluirFuncionarioCommandHandler(
 
             if (funcionario is null)
                 return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro(command.Id));
+
+            if (await repositorioAluguel.ExisteEmAbertoParaFuncionarioAsync(funcionario.Id))
+                return Result.Fail(ResultadosErro.ExclusaoBloqueadaErro(
+                    "Não é possível excluir um funcionário relacionado a aluguéis em aberto."));
 
             Usuario? usuario = await userManager.FindByIdAsync(funcionario.UsuarioId.ToString());
 
