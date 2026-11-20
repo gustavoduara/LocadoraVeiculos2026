@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
+import { mensagemDeErro } from '../../shared/erros/mensagem-erro';
 import { NotificacaoService } from '../../shared/notificacao/notificacao.service';
 import { DetalhesFuncionarioModel } from '../funcionario.models';
 import { FuncionarioService } from '../funcionario.service';
@@ -43,7 +44,8 @@ export class ExcluirFuncionario {
     public excluir() {
         const exclusaoObserver: Observer<null> = {
             next: () => this.notificacaoService.sucesso(`O registro foi excluído com sucesso!`),
-            error: (err) => this.notificacaoService.erro(err),
+            error: (err) =>
+                this.notificacaoService.erro(mensagemDeErro(err, 'Não foi possível excluir o funcionário.')),
             complete: () => this.router.navigate(['/funcionarios']),
         };
 

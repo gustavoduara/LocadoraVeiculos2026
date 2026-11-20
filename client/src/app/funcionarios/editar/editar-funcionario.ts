@@ -12,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
+import { mensagemDeErro } from '../../shared/erros/mensagem-erro';
 import { NotificacaoService } from '../../shared/notificacao/notificacao.service';
 import {
     DetalhesFuncionarioModel,
@@ -85,7 +86,8 @@ export class EditarFuncionario {
                 this.notificacaoService.sucesso(
                     `O funcionário "${funcionarioModel.nomeCompleto}" foi editado com sucesso!`,
                 ),
-            error: (err) => this.notificacaoService.erro(err),
+            error: (err) =>
+                this.notificacaoService.erro(mensagemDeErro(err, 'Não foi possível editar o funcionário.')),
             complete: () => this.router.navigate(['/funcionarios']),
         };
 

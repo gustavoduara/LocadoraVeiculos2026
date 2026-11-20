@@ -12,6 +12,7 @@ import { MatInputModule } from '@angular/material/input';
 import { Router, RouterLink } from '@angular/router';
 
 import { compararConfirmacaoSenha } from '../../auth/validators/comparar-confirmacao-senha-validator';
+import { mensagemDeErro } from '../../shared/erros/mensagem-erro';
 import { NotificacaoService } from '../../shared/notificacao/notificacao.service';
 import {
     CadastrarFuncionarioModel,
@@ -93,7 +94,8 @@ export class CadastrarFuncionario {
                 this.notificacaoService.sucesso(
                     `O funcionário "${funcionarioModel.nomeCompleto}" foi cadastrado com sucesso!`,
                 ),
-            error: (err) => this.notificacaoService.erro(err),
+            error: (err) =>
+                this.notificacaoService.erro(mensagemDeErro(err, 'Não foi possível cadastrar o funcionário.')),
             complete: () => this.router.navigate(['/funcionarios']),
         };
 

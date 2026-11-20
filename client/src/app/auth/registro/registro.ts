@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { Router, RouterLink } from '@angular/router';
 
+import { mensagemDeErro } from '../../shared/erros/mensagem-erro';
 import { NotificacaoService } from '../../shared/notificacao/notificacao.service';
 import { AccessTokenModel, RegistroModel } from '../auth.models';
 import { AuthService } from '../auth.service';
@@ -67,7 +68,8 @@ export class Registro {
         const registroModel: RegistroModel = this.registroForm.value;
 
         const registroObserver: PartialObserver<AccessTokenModel> = {
-            error: (err) => this.notificacaoService.erro(err),
+            error: (err) =>
+                this.notificacaoService.erro(mensagemDeErro(err, 'Não foi possível criar a conta.')),
             complete: () => this.router.navigate(['/inicio']),
         };
 
