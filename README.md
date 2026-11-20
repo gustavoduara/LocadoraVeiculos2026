@@ -1,6 +1,8 @@
 <div align="center">
 
-# 🚗 Locadora de Veículos
+<img src="docs/serradrive-banner.png" alt="SerraDrive - Locadora de Veículos" width="560" />
+
+# SerraDrive
 
 **Sistema web para gestão de locadoras de veículos**
 Funcionários, frota, clientes, condutores, planos de cobrança e aluguéis com devolução, com acesso por perfil e dados isolados por empresa.
