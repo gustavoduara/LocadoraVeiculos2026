@@ -205,6 +205,6 @@
       <ng-content></ng-content>
     </div>
 
-    <app-rodape />
+    <app-rodape [cargo]="usuarioAutenticado?.cargo ?? null" />
   </mat-sidenav-content>
 </mat-sidenav-container>
