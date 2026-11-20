@@ -540,6 +540,9 @@ namespace LocadoraDeVeiculos.Infraestrutura.Orm.Migrations
                     b.Property<DateTimeOffset?>("ExcluidoEmUtc")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("NomeFantasia")
+                        .HasColumnType("nvarchar(100)");
+
                     b.Property<decimal>("PrecoAlcool")
                         .HasColumnType("decimal(18,2)");
 
@@ -557,6 +560,9 @@ namespace LocadoraDeVeiculos.Infraestrutura.Orm.Migrations
 
                     b.Property<decimal>("SeguroTerceirosDiaria")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Telefone")
+                        .HasColumnType("nvarchar(20)");
 
                     b.HasKey("Id");
 
@@ -720,6 +726,58 @@ namespace LocadoraDeVeiculos.Infraestrutura.Orm.Migrations
                     b.ToTable("Parceiros");
                 });
 
+            modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloPerfilCliente.PerfilCliente", b =>
+                {
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("AtualizadoEmUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Bairro")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Cidade")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Cnh")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(11)");
+
+                    b.Property<string>("Cpf")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(14)");
+
+                    b.Property<string>("Estado")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(2)");
+
+                    b.Property<string>("Numero")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("Rg")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Rua")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("Telefone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateOnly>("ValidadeCnh")
+                        .HasColumnType("date");
+
+                    b.HasKey("UsuarioId");
+
+                    b.ToTable("PerfisClientes");
+                });
+
             modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloPlanoCobranca.PlanoCobranca", b =>
                 {
                     b.Property<Guid>("Id")
@@ -768,6 +826,141 @@ namespace LocadoraDeVeiculos.Infraestrutura.Orm.Migrations
                         .HasFilter("[Excluido] = 0");
 
                     b.ToTable("PlanosCobranca");
+                });
+
+            modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloReserva.Reserva", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("AluguelId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AutomovelId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ClienteBairro")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ClienteCidade")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("ClienteCnh")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(11)");
+
+                    b.Property<string>("ClienteCpf")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(14)");
+
+                    b.Property<string>("ClienteEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("ClienteEstado")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(2)");
+
+                    b.Property<string>("ClienteNome")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("ClienteNumero")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<string>("ClienteRg")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("ClienteRua")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("ClienteTelefone")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateOnly>("ClienteValidadeCnh")
+                        .HasColumnType("date");
+
+                    b.Property<DateTimeOffset>("CriadoEmUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DescricaoVeiculo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<DateOnly>("Devolucao")
+                        .HasColumnType("date");
+
+                    b.Property<int>("Dias")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("EmpresaId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Excluido")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("ExcluidoEmUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("MotivoRecusa")
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("NomeGrupo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("NomeLocadora")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<DateTimeOffset?>("RespondidaEmUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateOnly>("Retirada")
+                        .HasColumnType("date");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TipoPlano")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TipoSeguro")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("UsuarioClienteId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<decimal>("ValorCaucao")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("ValorDiarias")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("ValorSeguro")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("ValorTotalPrevisto")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AluguelId");
+
+                    b.HasIndex("AutomovelId");
+
+                    b.HasIndex("EmpresaId", "Status");
+
+                    b.HasIndex("UsuarioClienteId", "Status");
+
+                    b.ToTable("Reservas");
                 });
 
             modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloTaxaServico.TaxaServico", b =>
@@ -1105,6 +1298,15 @@ namespace LocadoraDeVeiculos.Infraestrutura.Orm.Migrations
                     b.Navigation("Empresa");
                 });
 
+            modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloPerfilCliente.PerfilCliente", b =>
+                {
+                    b.HasOne("LocadoraDeVeiculos.Dominio.ModuloAutenticacao.Usuario", null)
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloPlanoCobranca.PlanoCobranca", b =>
                 {
                     b.HasOne("LocadoraDeVeiculos.Dominio.ModuloAutenticacao.Usuario", "Empresa")
@@ -1122,6 +1324,30 @@ namespace LocadoraDeVeiculos.Infraestrutura.Orm.Migrations
                     b.Navigation("Empresa");
 
                     b.Navigation("GrupoVeiculos");
+                });
+
+            modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloReserva.Reserva", b =>
+                {
+                    b.HasOne("LocadoraDeVeiculos.Dominio.ModuloAluguel.Aluguel", null)
+                        .WithMany()
+                        .HasForeignKey("AluguelId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("LocadoraDeVeiculos.Dominio.ModuloAutomovel.Automovel", "Automovel")
+                        .WithMany()
+                        .HasForeignKey("AutomovelId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("LocadoraDeVeiculos.Dominio.ModuloAutenticacao.Usuario", "Empresa")
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Automovel");
+
+                    b.Navigation("Empresa");
                 });
 
             modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloTaxaServico.TaxaServico", b =>

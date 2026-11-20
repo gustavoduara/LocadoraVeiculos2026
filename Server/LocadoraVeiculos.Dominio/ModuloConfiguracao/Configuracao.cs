@@ -19,6 +19,12 @@ public class Configuracao : EntidadeBase<Configuracao>
     /// <summary>Valor por dia do seguro para terceiros. Zero = ainda não configurado.</summary>
     public decimal SeguroTerceirosDiaria { get; set; }
 
+    /// <summary>Nome da locadora mostrado aos clientes (no catálogo e nas reservas). Vazio = usa o nome da conta.</summary>
+    public string? NomeFantasia { get; set; }
+
+    /// <summary>Telefone de contato da locadora, informado ao cliente quando a reserva é aprovada.</summary>
+    public string? Telefone { get; set; }
+
     protected Configuracao() { }
 
     public Configuracao(
@@ -57,6 +63,12 @@ public class Configuracao : EntidadeBase<Configuracao>
         TipoSeguro.Terceiros => SeguroTerceirosDiaria,
         _ => throw new ArgumentOutOfRangeException(nameof(seguro), seguro, null)
     };
+
+    public void AtualizarDadosDaLocadora(string? nomeFantasia, string? telefone)
+    {
+        NomeFantasia = string.IsNullOrWhiteSpace(nomeFantasia) ? null : nomeFantasia.Trim();
+        Telefone = string.IsNullOrWhiteSpace(telefone) ? null : telefone.Trim();
+    }
 
     public override void AtualizarRegistro(Configuracao registroEditado)
     {

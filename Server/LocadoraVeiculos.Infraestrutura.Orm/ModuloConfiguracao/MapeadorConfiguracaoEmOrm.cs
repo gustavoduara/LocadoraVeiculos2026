@@ -17,6 +17,9 @@ public class MapeadorConfiguracaoEmOrm : IEntityTypeConfiguration<Configuracao>
         builder.Property(c => c.SeguroClienteDiaria).HasColumnType("decimal(18,2)").IsRequired();
         builder.Property(c => c.SeguroTerceirosDiaria).HasColumnType("decimal(18,2)").IsRequired();
 
+        builder.Property(c => c.NomeFantasia).HasColumnType("nvarchar(100)");
+        builder.Property(c => c.Telefone).HasColumnType("nvarchar(20)");
+
         builder.HasOne(c => c.Empresa)
                .WithMany()
                .HasForeignKey(c => c.EmpresaId)

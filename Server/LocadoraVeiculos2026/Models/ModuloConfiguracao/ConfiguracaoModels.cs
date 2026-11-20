@@ -9,6 +9,8 @@ public record EditarConfiguracaoRequest(
     decimal SeguroTerceirosDiaria
 );
 
+public record EditarDadosDaLocadoraRequest(string? NomeFantasia, string? Telefone);
+
 public record ConfiguracaoResponse(
     decimal PrecoGasolina,
     decimal PrecoGas,

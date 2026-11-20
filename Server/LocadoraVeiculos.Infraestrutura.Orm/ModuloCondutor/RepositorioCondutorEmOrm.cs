@@ -35,6 +35,11 @@ public class RepositorioCondutorEmOrm : RepositorioBaseEmOrm<Condutor>
         return await SelecionarTodosAsync(null);
     }
 
+    public async Task<Condutor?> SelecionarPorCpfNoClienteAsync(Guid clienteId, string cpf)
+    {
+        return await dbContext.Condutores.FirstOrDefaultAsync(c => c.ClienteId == clienteId && c.Cpf == cpf);
+    }
+
     public async Task<bool> ExisteCpfNoClienteAsync(Guid clienteId, string cpf, Guid? ignorarId = null)
     {
         return await dbContext.Condutores

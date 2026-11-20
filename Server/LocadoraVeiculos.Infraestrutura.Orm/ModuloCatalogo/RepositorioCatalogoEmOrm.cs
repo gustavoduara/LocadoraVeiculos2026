@@ -110,12 +110,28 @@ public class RepositorioCatalogoEmOrm(AppDbContext dbContext)
         return foto is null ? null : new FotoDoCarro(foto.Foto!, foto.FotoTipoConteudo ?? "application/octet-stream");
     }
 
+    public async Task<string> SelecionarNomeDaLocadoraAsync(Guid empresaId)
+    {
+        var nomes = await NomesDasLocadorasAsync([empresaId]);
+
+        return nomes.GetValueOrDefault(empresaId, "Locadora");
+    }
+
     private async Task<Dictionary<Guid, string>> NomesDasLocadorasAsync(IReadOnlyCollection<Guid> empresaIds)
     {
-        // A locadora é a conta "Empresa": o id da empresa é o id do usuário; o nome é o nome da conta.
-        return await dbContext.Users
+        // A locadora é a conta "Empresa": o id da empresa é o id do usuário. O nome é o nome fantasia (se a locadora
+        // informou) ou, senão, o nome da conta.
+        var nomesDasContas = await dbContext.Users
             .AsNoTracking()
             .Where(u => empresaIds.Contains(u.Id))
             .ToDictionaryAsync(u => u.Id, u => u.FullName);
+
+        var fantasias = await dbContext.Configuracoes
+            .IgnoreQueryFilters()
+            .AsNoTracking()
+            .Where(c => !c.Excluido && empresaIds.Contains(c.EmpresaId) && c.NomeFantasia != null)
+            .ToDictionaryAsync(c => c.EmpresaId, c => c.NomeFantasia!);
+
+        return nomesDasContas.ToDictionary(n => n.Key, n => fantasias.GetValueOrDefault(n.Key, n.Value));
     }
 }

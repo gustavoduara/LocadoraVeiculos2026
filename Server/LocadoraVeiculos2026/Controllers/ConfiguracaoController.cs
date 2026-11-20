@@ -32,6 +32,27 @@ public sealed class ConfiguracaoController(IMediator mediator) : MainController
             )));
     }
 
+    /// <summary>Nome fantasia e telefone da locadora (aparecem para os clientes no catálogo e nas reservas).</summary>
+    [Authorize(Roles = "Empresa,Funcionario")]
+    [HttpGet("locadora")]
+    public async Task<ActionResult<DadosDaLocadoraDto>> SelecionarDadosDaLocadora(CancellationToken cancellationToken)
+    {
+        Result<DadosDaLocadoraDto> result = await mediator.Send(new SelecionarDadosDaLocadoraQuery(), cancellationToken);
+
+        return ProcessarResultado(result, (valor) => Ok(valor));
+    }
+
+    [Authorize(Roles = "Empresa")]
+    [HttpPut("locadora")]
+    public async Task<ActionResult<DadosDaLocadoraDto>> EditarDadosDaLocadora(
+        EditarDadosDaLocadoraRequest request, CancellationToken cancellationToken)
+    {
+        Result<DadosDaLocadoraDto> result = await mediator.Send(
+            new EditarDadosDaLocadoraCommand(request.NomeFantasia, request.Telefone), cancellationToken);
+
+        return ProcessarResultado(result, (valor) => Ok(valor));
+    }
+
     /// <summary>Somente o administrador da empresa altera os preços.</summary>
     [Authorize(Roles = "Empresa")]
     [HttpPut]

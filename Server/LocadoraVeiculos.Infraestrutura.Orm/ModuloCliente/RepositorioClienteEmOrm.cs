@@ -35,6 +35,11 @@ public class RepositorioClienteEmOrm : RepositorioBaseEmOrm<Cliente>
         return await SelecionarTodosAsync(null);
     }
 
+    public async Task<Cliente?> SelecionarPorCpfAsync(string cpf)
+    {
+        return await dbContext.Clientes.FirstOrDefaultAsync(c => c.Cpf == cpf);
+    }
+
     public async Task<bool> ExisteCpfAsync(string cpf, Guid? ignorarId = null)
     {
         return await dbContext.Clientes
