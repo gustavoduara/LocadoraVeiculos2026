@@ -37,7 +37,8 @@
 
                     <mat-form-field class="w-full mt-2">
                         <mat-label>Senha</mat-label>
-                        <input matInput formControlName="senha" type="password" autocomplete="new-password" />
+                        <input #campoSenha matInput formControlName="senha" type="password" autocomplete="new-password" />
+                        <app-botao-ver-senha matSuffix [campo]="campoSenha" />
 
                         @if (senha?.errors?.['required']) {
                         <mat-error>A senha é obrigatória.</mat-error>
@@ -49,7 +50,8 @@
 
                     <mat-form-field class="w-full mt-2">
                         <mat-label>Confirmação de Senha</mat-label>
-                        <input formControlName="confirmarSenha" matInput type="password" autocomplete="new-password" />
+                        <input #campoConfirmacao formControlName="confirmarSenha" matInput type="password" autocomplete="new-password" />
+                        <app-botao-ver-senha matSuffix [campo]="campoConfirmacao" />
 
                         @if (confirmarSenha?.errors?.['required']) {
                         <mat-error>A confirmação de senha é obrigatória.</mat-error>

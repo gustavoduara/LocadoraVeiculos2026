@@ -19,6 +19,7 @@ import {
     CadastrarFuncionarioResponseModel,
 } from '../funcionario.models';
 import { FuncionarioService } from '../funcionario.service';
+import { BotaoVerSenha } from '../../shared/senha/botao-ver-senha';
 
 @Component({
     selector: 'app-cadastrar-funcionario',
@@ -30,6 +31,7 @@ import { FuncionarioService } from '../funcionario.service';
         MatInputModule,
         RouterLink,
         ReactiveFormsModule,
+        BotaoVerSenha,
         NgxMaskDirective,
     ],
     templateUrl: './cadastrar-funcionario.html',

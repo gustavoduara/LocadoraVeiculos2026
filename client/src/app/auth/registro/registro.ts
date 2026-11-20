@@ -15,6 +15,7 @@ import { NotificacaoService } from '../../shared/notificacao/notificacao.service
 import { AccessTokenModel, RegistroModel } from '../auth.models';
 import { AuthService } from '../auth.service';
 import { compararConfirmacaoSenha } from '../validators/comparar-confirmacao-senha-validator';
+import { BotaoVerSenha } from '../../shared/senha/botao-ver-senha';
 
 @Component({
     selector: 'app-registro',
@@ -26,6 +27,7 @@ import { compararConfirmacaoSenha } from '../validators/comparar-confirmacao-sen
         MatInputModule,
         RouterLink,
         ReactiveFormsModule,
+        BotaoVerSenha,
         NgxMaskDirective,
     ],
     templateUrl: './registro.html',

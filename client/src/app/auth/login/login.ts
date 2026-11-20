@@ -11,6 +11,7 @@ import { NotificacaoService } from '../../shared/notificacao/notificacao.service
 import { mensagemDeErro } from '../../shared/erros/mensagem-erro';
 import { LoginModel } from '../auth.models';
 import { AuthService } from '../auth.service';
+import { BotaoVerSenha } from '../../shared/senha/botao-ver-senha';
 
 @Component({
     selector: 'app-login',
@@ -22,6 +23,7 @@ import { AuthService } from '../auth.service';
         MatInputModule,
         RouterLink,
         ReactiveFormsModule,
+        BotaoVerSenha,
     ],
     templateUrl: './login.html',
 })

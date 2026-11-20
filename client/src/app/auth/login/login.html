@@ -24,7 +24,8 @@
 
                     <mat-form-field class="w-full mt-4">
                         <mat-label>Senha</mat-label>
-                        <input matInput formControlName="senha" type="password" autocomplete="current-password" />
+                        <input #campoSenha matInput formControlName="senha" type="password" autocomplete="current-password" />
+                        <app-botao-ver-senha matSuffix [campo]="campoSenha" />
 
                         @if (senha?.errors?.['required']) {
                         <mat-error>A senha é obrigatória.</mat-error>
