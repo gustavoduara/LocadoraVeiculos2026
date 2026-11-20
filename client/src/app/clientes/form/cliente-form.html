@@ -28,7 +28,7 @@
 
         <mat-form-field>
             <mat-label>Telefone</mat-label>
-            <input matInput formControlName="telefone" mask="(00) 0000-00009" [dropSpecialCharacters]="false"
+            <input matInput formControlName="telefone" mask="(00) 0000-0000||(00) 00000-0000" [dropSpecialCharacters]="false"
                 placeholder="(00) 00000-0000" />
             @if (erroDo('telefone'); as erro) { <mat-error>{{ erro }}</mat-error> }
         </mat-form-field>

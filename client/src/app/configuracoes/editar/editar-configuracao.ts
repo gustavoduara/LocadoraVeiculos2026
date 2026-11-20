@@ -1,3 +1,5 @@
+import { NgxMaskDirective } from 'ngx-mask';
+
 import { Component, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -27,6 +29,7 @@ const validadoresPreco = [Validators.required, Validators.min(0.01), Validators.
         MatSlideToggleModule,
         RouterLink,
         ReactiveFormsModule,
+        NgxMaskDirective,
     ],
     templateUrl: './editar-configuracao.html',
 })
@@ -64,6 +67,41 @@ export class EditarConfiguracao {
         { campo: 'seguroClienteDiaria', rotulo: 'Seguro para o cliente (por dia)' },
         { campo: 'seguroTerceirosDiaria', rotulo: 'Seguro para terceiros (por dia)' },
     ];
+
+    // Nome e telefone da locadora: o que o cliente vê no catálogo e depois que a reserva é aprovada.
+    protected locadoraForm: FormGroup = this.formBuilder.group({
+        nomeFantasia: ['', [Validators.maxLength(150)]],
+        telefone: ['', [Validators.pattern(/^\(\d{2}\) \d{4,5}-\d{4}$/)]],
+    });
+
+    constructor() {
+        this.configuracaoService.obterDadosDaLocadora().subscribe({
+            next: (dados) =>
+                this.locadoraForm.patchValue({
+                    nomeFantasia: dados.nomeFantasia ?? '',
+                    telefone: dados.telefone ?? '',
+                }),
+        });
+    }
+
+    public salvarLocadora() {
+        if (this.locadoraForm.invalid) return;
+
+        const v = this.locadoraForm.value;
+
+        this.configuracaoService
+            .salvarDadosDaLocadora({
+                nomeFantasia: v.nomeFantasia?.trim() || null,
+                telefone: v.telefone || null,
+            })
+            .subscribe({
+                next: () => this.notificacaoService.sucesso('Os dados da locadora foram salvos!'),
+                error: (err) =>
+                    this.notificacaoService.erro(
+                        mensagemDeErro(err, 'Não foi possível salvar os dados da locadora.'),
+                    ),
+            });
+    }
 
     protected erroDo(campo: string): string | null {
         const erros = this.configuracaoForm.get(campo)?.errors;

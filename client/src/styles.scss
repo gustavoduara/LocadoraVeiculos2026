@@ -223,3 +223,26 @@ html.modo-noturno {
   background-color: var(--mat-sys-primary-container);
   color: var(--mat-sys-on-primary-container);
 }
+
+/* Selos de situação das reservas (claro e noturno). */
+.selo-ambar {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.selo-cinza {
+  background-color: #e5e7eb;
+  color: #374151;
+}
+
+html.modo-noturno {
+  .selo-ambar {
+    background-color: #46360f;
+    color: #ffd27a;
+  }
+
+  .selo-cinza {
+    background-color: #33373d;
+    color: #c8ccd3;
+  }
+}

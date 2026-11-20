@@ -1,3 +1,5 @@
+import { provideNgxMask } from 'ngx-mask';
+
 import { inject } from '@angular/core';
 import { Routes } from '@angular/router';
 
@@ -13,6 +15,6 @@ export const configuracaoRoutes: Routes = [
         path: '',
         component: EditarConfiguracao,
         resolve: { configuracao: configuracaoResolver },
-        providers: [ConfiguracaoService],
+        providers: [ConfiguracaoService, provideNgxMask()],
     },
 ];

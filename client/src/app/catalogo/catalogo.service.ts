@@ -4,6 +4,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 
 import { environment } from '../../environments/environment';
+import { CarroDetalheModel } from '../reservas/reserva.models';
 import {
     FiltrosCatalogoModel,
     OpcoesFiltroCatalogoModel,
@@ -26,6 +27,11 @@ export class CatalogoService {
         }
 
         return this.http.get<ResultadoCatalogoModel>(this.apiUrl, { params: parametros });
+    }
+
+    /** Detalhe de um carro: planos e seguros que a locadora oferece (para escolher como reservar). */
+    public detalhar(id: string): Observable<CarroDetalheModel> {
+        return this.http.get<CarroDetalheModel>(`${this.apiUrl}/${id}`);
     }
 
     public opcoesDeFiltro(): Observable<OpcoesFiltroCatalogoModel> {

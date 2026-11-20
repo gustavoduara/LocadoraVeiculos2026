@@ -59,6 +59,39 @@
         </form>
     </mat-card>
 
+    <!-- Dados que o cliente vê: nome da locadora e telefone para contato -->
+    <mat-card class="p-4 rounded-2xl shadow-sm mt-6">
+        <form [formGroup]="locadoraForm" (ngSubmit)="salvarLocadora()">
+            <mat-card-header>
+                <mat-card-title class="text-lg font-medium">Dados da locadora</mat-card-title>
+                <mat-card-subtitle>
+                    O nome aparece para os clientes no catálogo. O telefone só é mostrado quando você aprova uma reserva.
+                </mat-card-subtitle>
+            </mat-card-header>
+
+            <mat-card-content class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <mat-form-field class="w-full">
+                    <mat-label>Nome da locadora</mat-label>
+                    <input matInput formControlName="nomeFantasia" maxlength="150" />
+                </mat-form-field>
+
+                <mat-form-field class="w-full">
+                    <mat-label>Telefone</mat-label>
+                    <input matInput formControlName="telefone" mask="(00) 0000-0000||(00) 00000-0000" [dropSpecialCharacters]="false"
+                        placeholder="(00) 00000-0000" />
+                    @if (locadoraForm.get('telefone')?.errors) { <mat-error>Formato inválido.</mat-error> }
+                </mat-form-field>
+            </mat-card-content>
+
+            <mat-card-actions align="end" class="flex items-center justify-end gap-3 pt-4">
+                <button type="submit" [disabled]="locadoraForm.invalid" mat-flat-button class="px-6">
+                    <mat-icon class="!text-base mr-1">check</mat-icon>
+                    Salvar
+                </button>
+            </mat-card-actions>
+        </form>
+    </mat-card>
+
     <!-- Aparência: vale na hora e fica guardada neste navegador -->
     <mat-card class="p-4 rounded-2xl shadow-sm mt-6">
         <mat-card-header>

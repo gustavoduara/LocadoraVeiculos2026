@@ -30,7 +30,21 @@
           <mat-icon class="material-icons-outlined" matListItemIcon>search</mat-icon>
           Buscar carros
         </a>
+        <a mat-list-item [routerLink]="['/meus-pedidos']" routerLinkActive="nav-link-active" class="my-1">
+          <mat-icon class="material-icons-outlined" matListItemIcon>event_available</mat-icon>
+          Meus pedidos
+        </a>
+        <a mat-list-item [routerLink]="['/meus-dados']" routerLinkActive="nav-link-active" class="my-1">
+          <mat-icon class="material-icons-outlined" matListItemIcon>badge</mat-icon>
+          Meus dados
+        </a>
       } @else {
+        @if (usuarioAutenticado?.cargo === 'Empresa' || usuarioAutenticado?.cargo === 'Funcionario') {
+        <a mat-list-item [routerLink]="['/reservas']" routerLinkActive="nav-link-active" class="my-1">
+          <mat-icon class="material-icons-outlined" matListItemIcon>event_available</mat-icon>
+          Reservas
+        </a>
+        }
       @for (item of itensNavbar; track $index) {
         <a mat-list-item [routerLink]="item.link" routerLinkActive="nav-link-active" class="my-1">
           <mat-icon class="material-icons-outlined" matListItemIcon>{{ item.icone }}</mat-icon>

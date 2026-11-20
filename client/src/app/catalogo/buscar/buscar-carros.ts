@@ -9,6 +9,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { RouterLink } from '@angular/router';
 
 import { COMBUSTIVEIS, rotuloCombustivel, TipoCombustivelModel } from '../../automoveis/automovel.models';
 import { mensagemDeErro } from '../../shared/erros/mensagem-erro';
@@ -38,6 +39,7 @@ const TAMANHO_DA_PAGINA = 12;
         MatSelectModule,
         CurrencyPipe,
         FotoCatalogo,
+        RouterLink,
     ],
     templateUrl: './buscar-carros.html',
 })

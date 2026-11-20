@@ -1,3 +1,4 @@
+import { provideNgxMask } from 'ngx-mask';
 import { map, take } from 'rxjs';
 
 import {
@@ -10,6 +11,8 @@ import { provideAuth } from './auth/auth.provider';
 import { AuthService } from './auth/auth.service';
 import { cargoGuard } from './auth/cargo.guard';
 import { rotaInicial } from './auth/rota-inicial';
+import { CatalogoService } from './catalogo/catalogo.service';
+import { ReservaService } from './reservas/reserva.service';
 import { provideNotifications } from './shared/notificacao/notificacao.provider';
 
 const usuarioDesconhecidoGuard: CanActivateFn = () => {
@@ -146,6 +149,33 @@ const routes: Routes = [
     path: 'catalogo',
     loadChildren: () => import('./catalogo/catalogo.routes').then((r) => r.catalogoRoutes),
     canMatch: [usuarioAutenticadoGuard, cargoGuard('Cliente')],
+  },
+
+  // Reserva online: o cliente completa os dados, reserva e acompanha; a locadora responde.
+  {
+    path: 'meus-dados',
+    loadComponent: () => import('./reservas/meus-dados/meus-dados').then((c) => c.MeusDados),
+    providers: [ReservaService, provideNgxMask()],
+    canMatch: [usuarioAutenticadoGuard, cargoGuard('Cliente')],
+  },
+  {
+    path: 'reservar/:id',
+    loadComponent: () => import('./reservas/reservar/reservar').then((c) => c.Reservar),
+    providers: [ReservaService, CatalogoService],
+    canMatch: [usuarioAutenticadoGuard, cargoGuard('Cliente')],
+  },
+  {
+    path: 'meus-pedidos',
+    loadComponent: () => import('./reservas/meus-pedidos/meus-pedidos').then((c) => c.MeusPedidos),
+    providers: [ReservaService],
+    canMatch: [usuarioAutenticadoGuard, cargoGuard('Cliente')],
+  },
+  {
+    path: 'reservas',
+    loadComponent: () =>
+      import('./reservas/recebidas/reservas-recebidas').then((c) => c.ReservasRecebidas),
+    providers: [ReservaService],
+    canMatch: [usuarioAutenticadoGuard, cargoGuard('Empresa', 'Funcionario')],
   },
 ];
 

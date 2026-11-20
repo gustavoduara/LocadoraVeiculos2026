@@ -1,8 +1,8 @@
 <section class="mx-auto max-w-screen-xl px-4 py-6">
     <h2 class="text-2xl font-semibold">Encontre seu carro</h2>
     <p class="text-sm text-gray-600">
-        Procure entre os carros de todas as locadoras. A reserva online ainda está chegando: por enquanto você vê o que está
-        livre e quanto custa.
+        Procure entre os carros de todas as locadoras e faça o pedido de reserva. A locadora confirma e você acompanha em
+        "Meus pedidos".
     </p>
 
     <!-- Filtros -->
@@ -233,6 +233,14 @@
                         <p class="text-sm text-gray-500">Preço sob consulta</p>
                         }
                     </div>
+
+                    @if (carro.disponivel !== false && carro.diariaAPartirDe !== null) {
+                    <a mat-flat-button class="mt-4 w-full" [routerLink]="['/reservar', carro.id]"
+                        [queryParams]="{ retirada: retirada() || null, devolucao: devolucao() || null }">
+                        <mat-icon>event_available</mat-icon>
+                        Reservar
+                    </a>
+                    }
                 </mat-card-content>
             </mat-card>
             }
