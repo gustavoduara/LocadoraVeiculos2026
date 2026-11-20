@@ -5,6 +5,7 @@ import { ActivatedRouteSnapshot, Routes } from '@angular/router';
 
 import { AutomovelService } from '../automoveis/automovel.service';
 import { ClienteService } from '../clientes/cliente.service';
+import { CupomService } from '../cupons/cupom.service';
 import { CondutorService } from '../condutores/condutor.service';
 import { GrupoVeiculosService } from '../grupo-veiculos/grupo-veiculos.service';
 import { TaxaServicoService } from '../taxas-servicos/taxa-servico.service';
@@ -32,6 +33,7 @@ const dadosDoFormulario = {
     grupos: () => inject(GrupoVeiculosService).selecionarTodos(),
     automoveis: () => inject(AutomovelService).selecionarTodos(),
     taxas: () => inject(TaxaServicoService).selecionarTodos(),
+    cupons: () => inject(CupomService).selecionarTodos(),
 };
 
 export const aluguelRoutes: Routes = [
@@ -71,6 +73,7 @@ export const aluguelRoutes: Routes = [
             GrupoVeiculosService,
             AutomovelService,
             TaxaServicoService,
+            CupomService,
             provideNgxMask(),
         ],
     },

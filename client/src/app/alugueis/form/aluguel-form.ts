@@ -23,6 +23,7 @@ import { RouterLink } from '@angular/router';
 import { AutomovelModel, formatarPlaca } from '../../automoveis/automovel.models';
 import { ClienteModel } from '../../clientes/cliente.models';
 import { CondutorModel, dataBrParaIso, isoParaDataBr } from '../../condutores/condutor.models';
+import { CupomModel } from '../../cupons/cupom.models';
 import { SelecionarGruposVeiculosModel } from '../../grupo-veiculos/grupo-veiculos.models';
 import { mensagemDeErro } from '../../shared/erros/mensagem-erro';
 import { TaxaServicoModel } from '../../taxas-servicos/taxa-servico.models';
@@ -69,6 +70,7 @@ export class AluguelForm {
     @Input() grupos: SelecionarGruposVeiculosModel[] = [];
     @Input() automoveis: AutomovelModel[] = [];
     @Input() taxas: TaxaServicoModel[] = [];
+    @Input() cupons: CupomModel[] = [];
 
     /** Quando informado, o formulário entra em modo de edição. */
     @Input() set aluguel(valor: AluguelModel | undefined) {
@@ -89,6 +91,7 @@ export class AluguelForm {
             kmInicial: valor.kmInicial,
             tipoSeguro: valor.tipoSeguro,
             taxasIds: valor.taxas.map((t) => t.taxaServicoId),
+            cupomId: valor.cupomId ?? '',
         });
     }
 
@@ -114,6 +117,7 @@ export class AluguelForm {
         kmInicial: [0, [Validators.required, Validators.min(0)]],
         tipoSeguro: ['Nenhum', [Validators.required]],
         taxasIds: [[] as string[]],
+        cupomId: [''],
     });
 
     constructor() {
@@ -167,6 +171,16 @@ export class AluguelForm {
             });
     }
 
+    /**
+     * Só cupons ativos podem ser escolhidos; ao editar, o cupom que o aluguel já usa continua
+     * disponível mesmo vencido.
+     */
+    protected get cuponsDisponiveis(): CupomModel[] {
+        const atual = this.form.get('cupomId')!.value;
+
+        return this.cupons.filter((c) => c.ativo || c.id === atual);
+    }
+
     protected get condutoresDoCliente(): CondutorModel[] {
         const clienteId = this.form.get('clienteId')!.value;
 
@@ -198,6 +212,7 @@ export class AluguelForm {
             kmInicial: Number(v.kmInicial),
             tipoSeguro: v.tipoSeguro,
             taxasIds: v.taxasIds ?? [],
+            cupomId: v.cupomId || null,
         };
     }
 

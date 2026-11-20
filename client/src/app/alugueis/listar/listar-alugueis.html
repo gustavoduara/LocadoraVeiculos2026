@@ -55,6 +55,12 @@
                     </p>
                     <p><span class="font-medium">Plano:</span> {{ rotuloPlano(aluguel.tipoPlano) }}</p>
                     <p><span class="font-medium">Seguro:</span> {{ rotuloSeguro(aluguel.tipoSeguro) }}</p>
+                    @if (aluguel.nomeCupom) {
+                    <p>
+                        <span class="font-medium">Cupom:</span> {{ aluguel.nomeCupom }}
+                        ({{ (aluguel.devolucao?.final?.valorDesconto ?? aluguel.previsto.valorDesconto) | currency: 'BRL' }})
+                    </p>
+                    }
                     @if (aluguel.taxas.length > 0) {
                     <p>
                         <span class="font-medium">Taxas:</span>

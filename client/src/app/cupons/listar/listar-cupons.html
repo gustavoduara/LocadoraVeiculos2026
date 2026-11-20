@@ -1,0 +1,91 @@
+<section class="mx-auto max-w-screen-xl px-4">
+    <div class="py-6">
+        <h2 class="text-2xl font-semibold">Cupons</h2>
+
+        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-2">
+            <a mat-flat-button class="col-span-1 flex items-center justify-center gap-2 h-10" routerLink="cadastrar">
+                <mat-icon class="!text-base">add</mat-icon>
+                Cadastrar
+            </a>
+        </div>
+
+        <!-- Ranking: onde investir -->
+        <mat-card class="mt-6 p-4 rounded-2xl shadow-sm">
+            <h3 class="text-base font-medium">Cupons mais utilizados</h3>
+
+            @if (ranking.cupons.length === 0) {
+            <p class="mt-2 text-sm text-gray-600">Nenhum cupom foi usado em um aluguel ainda.</p>
+            } @else {
+            <div class="mt-3 grid grid-cols-1 lg:grid-cols-2 gap-6 text-sm">
+                <div>
+                    <p class="font-medium text-gray-700 mb-1">Por cupom</p>
+                    <ol class="space-y-1">
+                        @for (item of ranking.cupons; track item.cupomId; let i = $index) {
+                        <li class="flex justify-between gap-3">
+                            <span>
+                                {{ i + 1 }}. <span class="font-medium">{{ item.nome }}</span>
+                                @if (item.nomeParceiro) {
+                                <span class="text-gray-500"> · {{ item.nomeParceiro }}</span>
+                                }
+                            </span>
+                            <span>{{ item.usos }} {{ item.usos === 1 ? 'uso' : 'usos' }}</span>
+                        </li>
+                        }
+                    </ol>
+                </div>
+
+                <div>
+                    <p class="font-medium text-gray-700 mb-1">Por parceiro</p>
+                    <ol class="space-y-1">
+                        @for (item of ranking.parceiros; track item.parceiroId; let i = $index) {
+                        <li class="flex justify-between gap-3">
+                            <span>{{ i + 1 }}. <span class="font-medium">{{ item.nomeParceiro }}</span></span>
+                            <span>{{ item.usos }} {{ item.usos === 1 ? 'uso' : 'usos' }}</span>
+                        </li>
+                        }
+                    </ol>
+                </div>
+            </div>
+            }
+        </mat-card>
+
+        <hr class="my-6 border-muted/30" />
+
+        @if (cupons.length === 0) {
+        <p class="text-gray-600">Nenhum cupom cadastrado ainda. Cadastre um parceiro primeiro.</p>
+        }
+
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            @for (cupom of cupons; track cupom.id) {
+            <mat-card class="p-3 rounded-2xl shadow-sm">
+                <mat-card-header class="pb-2">
+                    <mat-card-title class="text-lg font-medium">{{ cupom.nome }}</mat-card-title>
+                    <mat-card-subtitle>Parceiro: {{ cupom.nomeParceiro }}</mat-card-subtitle>
+                </mat-card-header>
+
+                <mat-card-content class="mt-2 text-sm">
+                    <p class="text-xl font-semibold">{{ cupom.valor | currency: 'BRL' }}</p>
+                    <p>
+                        <span class="font-medium">Validade:</span> {{ dataBr(cupom.dataValidade) }}
+                        <span
+                            class="ml-1 rounded-full px-2 py-0.5 text-xs font-medium"
+                            [class]="cupom.ativo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-700'"
+                        >
+                            {{ cupom.ativo ? 'Ativo' : 'Expirado' }}
+                        </span>
+                    </p>
+                </mat-card-content>
+
+                <mat-card-actions align="end" class="flex items-center justify-end gap-2 pt-2">
+                    <a [routerLink]="['editar', cupom.id]" mat-icon-button aria-label="Editar">
+                        <mat-icon>edit</mat-icon>
+                    </a>
+                    <a [routerLink]="['excluir', cupom.id]" mat-icon-button aria-label="Excluir">
+                        <mat-icon>delete</mat-icon>
+                    </a>
+                </mat-card-actions>
+            </mat-card>
+            }
+        </div>
+    </div>
+</section>

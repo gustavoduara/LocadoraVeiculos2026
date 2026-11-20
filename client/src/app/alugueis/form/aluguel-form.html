@@ -95,6 +95,19 @@
                 }
             </mat-select>
         </mat-form-field>
+
+        <mat-form-field class="sm:col-span-2">
+            <mat-label>Cupom de desconto</mat-label>
+            <mat-select formControlName="cupomId">
+                <mat-option value="">Sem cupom</mat-option>
+                @for (cupom of cuponsDisponiveis; track cupom.id) {
+                <mat-option [value]="cupom.id">
+                    {{ cupom.nome }} · {{ cupom.valor | currency: 'BRL' }} ({{ cupom.nomeParceiro }})
+                </mat-option>
+                }
+            </mat-select>
+            <mat-hint>Cada cliente usa o mesmo cupom uma única vez.</mat-hint>
+        </mat-form-field>
     </div>
 
     <!-- Resumo do valor, calculado pela API -->
@@ -115,6 +128,10 @@
             <dd class="text-right">{{ s.previsto.valorTaxas | currency: 'BRL' }}</dd>
             <dt>Seguro</dt>
             <dd class="text-right">{{ s.previsto.valorSeguro | currency: 'BRL' }}</dd>
+            @if (s.previsto.valorDesconto > 0) {
+            <dt class="text-green-700">Desconto do cupom</dt>
+            <dd class="text-right text-green-700">- {{ s.previsto.valorDesconto | currency: 'BRL' }}</dd>
+            }
             <dt class="font-semibold pt-1">Total previsto</dt>
             <dd class="text-right font-semibold pt-1">{{ s.previsto.valorTotalPrevisto | currency: 'BRL' }}</dd>
         </dl>

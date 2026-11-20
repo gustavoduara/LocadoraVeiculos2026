@@ -41,6 +41,7 @@ export interface DetalhamentoPrevistoModel {
     valorDiarias: number;
     valorTaxas: number;
     valorSeguro: number;
+    valorDesconto: number;
     valorTotalPrevisto: number;
 }
 
@@ -55,6 +56,7 @@ export interface DetalhamentoFinalModel {
     valorSeguro: number;
     valorCombustivel: number;
     valorMulta: number;
+    valorDesconto: number;
     valorFinal: number;
 }
 
@@ -84,6 +86,8 @@ export interface AluguelModel {
     status: StatusAluguelModel;
     previsto: DetalhamentoPrevistoModel;
     devolucao: DevolucaoModel | null;
+    cupomId: string | null;
+    nomeCupom: string | null;
 }
 
 export interface SelecionarAlugueisResponseModel {
@@ -100,6 +104,7 @@ export interface DadosAluguelModel {
     kmInicial: number;
     tipoSeguro: TipoSeguroModel;
     taxasIds: string[];
+    cupomId: string | null;
 }
 
 export interface CadastrarAluguelResponseModel {

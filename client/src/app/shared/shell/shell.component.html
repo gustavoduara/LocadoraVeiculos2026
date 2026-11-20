@@ -117,6 +117,26 @@
 
         <a
           mat-list-item
+          [routerLink]="['/parceiros']"
+          routerLinkActive="nav-link-active"
+          class="my-1"
+        >
+          <mat-icon class="material-icons-outlined" matListItemIcon>handshake</mat-icon>
+          Parceiros
+        </a>
+
+        <a
+          mat-list-item
+          [routerLink]="['/cupons']"
+          routerLinkActive="nav-link-active"
+          class="my-1"
+        >
+          <mat-icon class="material-icons-outlined" matListItemIcon>sell</mat-icon>
+          Cupons
+        </a>
+
+        <a
+          mat-list-item
           [routerLink]="['/configuracoes']"
           routerLinkActive="nav-link-active"
           class="my-1"

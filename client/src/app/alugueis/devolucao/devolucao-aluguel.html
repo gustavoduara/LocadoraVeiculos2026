@@ -58,6 +58,10 @@
                         <dd class="text-right">{{ s.valorSeguro | currency: 'BRL' }}</dd>
                         <dt>Combustível</dt>
                         <dd class="text-right">{{ s.valorCombustivel | currency: 'BRL' }}</dd>
+                        @if (s.valorDesconto > 0) {
+                        <dt class="text-green-700">Desconto do cupom</dt>
+                        <dd class="text-right text-green-700">- {{ s.valorDesconto | currency: 'BRL' }}</dd>
+                        }
                         <dt [class.text-red-700]="s.atrasado">Multa por atraso (10%)</dt>
                         <dd class="text-right" [class.text-red-700]="s.atrasado">
                             {{ s.valorMulta | currency: 'BRL' }}

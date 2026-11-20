@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AutomovelModel } from '../../automoveis/automovel.models';
 import { ClienteModel } from '../../clientes/cliente.models';
 import { CondutorModel } from '../../condutores/condutor.models';
+import { CupomModel } from '../../cupons/cupom.models';
 import { SelecionarGruposVeiculosModel } from '../../grupo-veiculos/grupo-veiculos.models';
 import { mensagemDeErro } from '../../shared/erros/mensagem-erro';
 import { NotificacaoService } from '../../shared/notificacao/notificacao.service';
@@ -31,6 +32,7 @@ export class EditarAluguel {
         []) as SelecionarGruposVeiculosModel[];
     protected readonly automoveis = (this.route.snapshot.data['automoveis'] ?? []) as AutomovelModel[];
     protected readonly taxas = (this.route.snapshot.data['taxas'] ?? []) as TaxaServicoModel[];
+    protected readonly cupons = (this.route.snapshot.data['cupons'] ?? []) as CupomModel[];
 
     public editar(model: DadosAluguelModel) {
         this.aluguelService.editar(this.aluguel.id, model).subscribe({

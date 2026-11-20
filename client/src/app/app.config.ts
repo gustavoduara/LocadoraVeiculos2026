@@ -89,6 +89,18 @@ const routes: Routes = [
     canMatch: [usuarioAutenticadoGuard, cargoGuard('Empresa', 'Funcionario')],
   },
 
+  // Parceiros e cupons de desconto (inclui o ranking de uso): somente o administrador da empresa.
+  {
+    path: 'parceiros',
+    loadChildren: () => import('./parceiros/parceiro.routes').then((r) => r.parceiroRoutes),
+    canMatch: [usuarioAutenticadoGuard, cargoGuard('Empresa')],
+  },
+  {
+    path: 'cupons',
+    loadChildren: () => import('./cupons/cupom.routes').then((r) => r.cupomRoutes),
+    canMatch: [usuarioAutenticadoGuard, cargoGuard('Empresa')],
+  },
+
   // Catálogo de taxas e serviços (GPS, cadeirinha...): somente o administrador da empresa gerencia.
   {
     path: 'taxas-servicos',

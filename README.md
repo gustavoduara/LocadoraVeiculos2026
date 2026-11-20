@@ -59,11 +59,11 @@ Cada empresa enxerga **apenas os próprios dados** (multiempresa), e o que cada 
 | 🧾 **Taxas e Serviços** | Catálogo de itens extras (GPS, cadeirinha...), de cobrança fixa ou diária. |
 | 🏢 **Clientes** | Pessoa física (CPF, RG, CNH) e jurídica (CNPJ), com vínculo opcional da pessoa física a uma empresa. |
 | 🪪 **Condutores** | Quem dirige o veículo, ligado a um cliente. Aviso de CNH vencida e opção "cliente é condutor". |
+| 🤝 **Parceiros** | Cadastro de parceiros (só o nome). Um parceiro com cupons não pode ser excluído. |
+| 🏷️ **Cupons** | Desconto de valor fixo, com validade e parceiro. Ranking dos cupons e parceiros mais usados. |
 | 🔑 **Aluguéis** | Registro com valor previsto ao vivo (diárias, taxas, seguro e caução), edição enquanto em aberto e devolução com km, combustível e multa por atraso. |
 
-### Em construção
-
-Parceiros e cupons de desconto. Veja o [Roadmap](#-roadmap).
+Os desafios da especificação (parceiros e cupons) também estão prontos. Veja o [Roadmap](#-roadmap).
 
 ---
 
@@ -82,6 +82,7 @@ Parceiros e cupons de desconto. Veja o [Roadmap](#-roadmap).
   | Alterar configurações, planos e taxas | ✅ | ❌ |
   | Clientes, condutores, automóveis | ✅ | ✅ |
   | Registrar, editar e devolver aluguéis | ✅ | ✅ |
+  | Parceiros e cupons (cadastro e ranking) | ✅ | ❌ (só lê, para escolher o cupom) |
 
 - **Funcionário desativado:** perde a sessão imediatamente (os tokens são revogados) e não consegue entrar até ser reativado.
 - **Perfil próprio:** o funcionário altera só nome e CPF. Salário e data de admissão são definidos pelo administrador.
@@ -97,6 +98,12 @@ Parceiros e cupons de desconto. Veja o [Roadmap](#-roadmap).
   - Se o tanque não voltar cheio, cobra-se o reabastecimento completo pelo preço configurado.
   - O **atraso** gera multa de 10% sobre diárias, km, taxas e seguro.
   - Os preços ficam "congelados" no aluguel: mudar o catálogo depois não altera aluguéis já feitos.
+- **Cupons:**
+  - O desconto é um valor fixo abatido do que foi consumido (diárias, km, taxas e seguro). A caução, a multa e o combustível não recebem desconto.
+  - O desconto nunca passa do consumo, então a caução continua inteira.
+  - Só cupons dentro da validade entram em um aluguel (quem já usa o cupom pode editar o aluguel mesmo depois de ele vencer).
+  - Cada cliente usa o mesmo cupom uma única vez. Excluir o aluguel libera o cupom de novo.
+  - O nome e o valor ficam copiados no aluguel: editar ou excluir o cupom depois não muda o que já foi cobrado.
 - **Aluguel, regras:**
   - Um carro não pode ter dois aluguéis que se sobreponham (um aluguel vencido e não devolvido continua ocupando o carro).
   - A CNH do condutor precisa valer até o retorno previsto.
@@ -246,6 +253,10 @@ Todas as rotas (exceto autenticação) exigem o cabeçalho `Authorization: Beare
 | **Automóveis** | `GET /api/automoveis?grupoVeiculosId=` · `POST` · `GET · PUT · DELETE {id}`<br>`PUT · GET · DELETE {id}/foto` | Empresa e Funcionário |
 | **Clientes** | `GET /api/clientes?tipo=` · `POST` · `GET · PUT · DELETE {id}` | Empresa e Funcionário |
 | **Condutores** | `GET /api/condutores?clienteId=` · `POST` · `GET · PUT · DELETE {id}` | Empresa e Funcionário |
+| **Parceiros** | `GET /api/parceiros` · `GET {id}` | Empresa e Funcionário |
+| | `POST` · `PUT {id}` · `DELETE {id}` | Empresa |
+| **Cupons** | `GET /api/cupons` · `GET {id}` | Empresa e Funcionário |
+| | `POST` · `PUT {id}` · `DELETE {id}` · `GET /api/cupons/mais-utilizados` | Empresa |
 | **Aluguéis** | `GET /api/alugueis?status=` · `POST` · `GET · PUT · DELETE {id}`<br>`POST /api/alugueis/calcular`<br>`POST {id}/devolucao` · `POST {id}/devolucao/calcular` | Empresa e Funcionário |
 
 A documentação interativa completa está no Swagger.
@@ -274,6 +285,7 @@ LocadoraVeiculos2026/
         ├── planos-cobranca/ · automoveis/   #   Planos e frota (com foto)
         ├── clientes/ · condutores/          #   Clientes (PF/PJ) e condutores
         ├── taxas-servicos/                  #   Catálogo de taxas e serviços
+        ├── parceiros/ · cupons/             #   Parceiros, cupons e ranking de uso
         ├── alugueis/                        #   Aluguéis, devolução e cálculo de valores
         └── shared/                          #   Menu, notificações e utilitários
 ```
@@ -294,7 +306,7 @@ LocadoraVeiculos2026/
 - [x] Aluguéis e devolução (caução, seguro e multa por atraso)
 - [x] Testes automatizados (unitários e de integração, ~89% de cobertura)
 - [x] Pipeline de CI (GitHub Actions) e *containers* (Docker Compose)
-- [ ] Parceiros e cupons de desconto
+- [x] Parceiros e cupons de desconto (com ranking dos mais utilizados)
 
 ---
 

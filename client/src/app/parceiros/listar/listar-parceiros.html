@@ -1,0 +1,37 @@
+<section class="mx-auto max-w-screen-xl px-4">
+    <div class="py-6">
+        <h2 class="text-2xl font-semibold">Parceiros</h2>
+
+        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-6 gap-2">
+            <a mat-flat-button class="col-span-1 flex items-center justify-center gap-2 h-10" routerLink="cadastrar">
+                <mat-icon class="!text-base">add</mat-icon>
+                Cadastrar
+            </a>
+        </div>
+
+        <hr class="my-6 border-muted/30" />
+
+        @if (parceiros.length === 0) {
+        <p class="text-gray-600">Nenhum parceiro cadastrado ainda.</p>
+        }
+
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+            @for (parceiro of parceiros; track parceiro.id) {
+            <mat-card class="p-3 rounded-2xl shadow-sm">
+                <mat-card-header class="pb-2">
+                    <mat-card-title class="text-lg font-medium">{{ parceiro.nome }}</mat-card-title>
+                </mat-card-header>
+
+                <mat-card-actions align="end" class="flex items-center justify-end gap-2 pt-2">
+                    <a [routerLink]="['editar', parceiro.id]" mat-icon-button aria-label="Editar">
+                        <mat-icon>edit</mat-icon>
+                    </a>
+                    <a [routerLink]="['excluir', parceiro.id]" mat-icon-button aria-label="Excluir">
+                        <mat-icon>delete</mat-icon>
+                    </a>
+                </mat-card-actions>
+            </mat-card>
+            }
+        </div>
+    </div>
+</section>
