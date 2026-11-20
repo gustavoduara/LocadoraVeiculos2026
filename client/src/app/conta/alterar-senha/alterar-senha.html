@@ -1,0 +1,60 @@
+<section class="mx-auto max-w-xl px-4 py-6">
+    <h2 class="text-2xl font-semibold">Alterar senha</h2>
+    <hr class="my-4 border-muted/30" />
+
+    <mat-card class="p-4 rounded-2xl shadow-sm">
+        <form [formGroup]="form" (ngSubmit)="salvar()">
+            <mat-card-content class="space-y-2">
+                <mat-form-field class="w-full">
+                    <mat-label>Senha atual</mat-label>
+                    <input #campoAtual matInput formControlName="senhaAtual" type="password" autocomplete="current-password" />
+                    <app-botao-ver-senha matSuffix [campo]="campoAtual" />
+
+                    @if (senhaAtual?.errors?.['required']) {
+                    <mat-error>Informe a senha atual.</mat-error>
+                    }
+                </mat-form-field>
+
+                <mat-form-field class="w-full">
+                    <mat-label>Nova senha</mat-label>
+                    <input #campoNova matInput formControlName="novaSenha" type="password" autocomplete="new-password" />
+                    <app-botao-ver-senha matSuffix [campo]="campoNova" />
+
+                    @if (novaSenha?.errors?.['required']) {
+                    <mat-error>A nova senha é obrigatória.</mat-error>
+                    }
+                    @if (novaSenha?.errors?.['minlength']) {
+                    <mat-error>A senha deve conter no mínimo 6 caracteres.</mat-error>
+                    }
+                </mat-form-field>
+
+                <mat-form-field class="w-full">
+                    <mat-label>Confirmação da nova senha</mat-label>
+                    <input #campoConfirmacao matInput formControlName="confirmarSenha" type="password" autocomplete="new-password" />
+                    <app-botao-ver-senha matSuffix [campo]="campoConfirmacao" />
+
+                    @if (confirmarSenha?.errors?.['required']) {
+                    <mat-error>A confirmação é obrigatória.</mat-error>
+                    }
+                </mat-form-field>
+
+                @if (form.hasError('senhasDiferentes') && confirmarSenha?.touched) {
+                <mat-error>As senhas devem ser iguais.</mat-error>
+                }
+
+                <p class="text-xs text-gray-500">
+                    Use ao menos 6 caracteres, com letra maiúscula, minúscula e número.
+                </p>
+            </mat-card-content>
+
+            <mat-card-actions align="end" class="mt-4 flex justify-end gap-3">
+                <a mat-stroked-button [routerLink]="voltarPara()">Voltar</a>
+
+                <button type="submit" mat-flat-button class="px-6" [disabled]="form.invalid || enviando()">
+                    <mat-icon>check</mat-icon>
+                    {{ enviando() ? 'Salvando...' : 'Salvar' }}
+                </button>
+            </mat-card-actions>
+        </form>
+    </mat-card>
+</section>

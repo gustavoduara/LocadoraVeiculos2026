@@ -1,15 +1,42 @@
 <section class="flex justify-center">
     <div class="w-full max-w-xl lg:max-w-md xl:max-w-sm py-10">
-        <h2 class="text-2xl font-medium">Login de Usuário</h2>
+        <h2 class="text-2xl font-medium">Como você quer entrar?</h2>
         <hr class="my-4" />
 
-        <mat-card class="p-4">
+        <!-- Escolha do lado de entrada -->
+        <div class="grid grid-cols-2 gap-3" role="radiogroup" aria-label="Tipo de acesso">
+            @for (opcao of opcoes; track opcao.tipo) {
+            <button
+                type="button"
+                role="radio"
+                class="opcao-entrada"
+                [class.opcao-entrada-ativa]="tipo() === opcao.tipo"
+                [attr.aria-checked]="tipo() === opcao.tipo"
+                (click)="escolherTipo(opcao.tipo)"
+            >
+                <mat-icon class="!h-9 !w-9 !text-[36px]" aria-hidden="true">{{ opcao.icone }}</mat-icon>
+                <span class="font-medium">{{ opcao.titulo }}</span>
+                <span class="text-xs">{{ opcao.descricao }}</span>
+            </button>
+            }
+        </div>
+
+        <mat-card class="p-4 mt-4">
             <form [formGroup]="loginForm" (ngSubmit)="login()">
                 <mat-card-header>
-                    <mat-card-title>Preencha o formulário de login</mat-card-title>
+                    <mat-card-title>
+                        {{ tipo() === 'Cliente' ? 'Entrar como cliente' : 'Entrar como locadora' }}
+                    </mat-card-title>
+                    <mat-card-subtitle>
+                        {{
+                            tipo() === 'Cliente'
+                                ? 'Procure carros de todas as locadoras.'
+                                : 'Para o administrador da empresa e para os funcionários.'
+                        }}
+                    </mat-card-subtitle>
                 </mat-card-header>
 
-                <mat-card-content class="mt-8">
+                <mat-card-content class="mt-6">
                     <mat-form-field class="w-full">
                         <mat-label>Endereço de Email</mat-label>
                         <input matInput formControlName="email" type="email" autocomplete="email" />
@@ -34,10 +61,18 @@
                         <mat-error>A senha deve conter no mínimo 6 caracteres.</mat-error>
                         }
                     </mat-form-field>
+
+                    <a class="text-sm font-medium text-primary hover:underline" routerLink="/auth/esqueci-senha">
+                        Esqueci minha senha
+                    </a>
                 </mat-card-content>
 
                 <mat-card-actions class="flex justify-end items-center mt-4 space-x-4">
+                    @if (tipo() === 'Cliente') {
                     <a mat-text-button routerLink="/auth/registro-cliente">Criar conta de cliente</a>
+                    } @else {
+                    <a mat-text-button routerLink="/auth/registro">Cadastrar minha locadora</a>
+                    }
 
                     <button type="submit" [disabled]="loginForm.invalid" mat-flat-button class="px-6 py-2">
                         <mat-icon>arrow_forward</mat-icon>
@@ -46,10 +81,5 @@
                 </mat-card-actions>
             </form>
         </mat-card>
-
-        <p class="mt-4 text-center text-sm text-gray-600">
-            Tem uma locadora?
-            <a class="font-medium text-primary hover:underline" routerLink="/auth/registro">Cadastre sua empresa</a>
-        </p>
     </div>
 </section>

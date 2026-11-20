@@ -1,0 +1,72 @@
+<section class="flex justify-center">
+    <div class="w-full max-w-xl lg:max-w-md xl:max-w-sm py-10">
+        <h2 class="text-2xl font-medium">Criar nova senha</h2>
+        <hr class="my-4" />
+
+        <mat-card class="p-4">
+            @if (linkIncompleto || erroDoLink()) {
+            <mat-card-content class="text-center">
+                <mat-icon class="!h-12 !w-12 !text-[48px] text-red-700" aria-hidden="true">link_off</mat-icon>
+                <p class="mt-3 text-lg font-medium">Link inválido ou expirado</p>
+                <p class="mt-1 text-sm text-gray-600">
+                    {{ erroDoLink() ?? 'O link está incompleto. Peça um novo para criar a senha.' }}
+                </p>
+            </mat-card-content>
+
+            <mat-card-actions class="flex justify-center mt-4 gap-3">
+                <a mat-stroked-button routerLink="/auth/login">Voltar ao login</a>
+                <a mat-flat-button routerLink="/auth/esqueci-senha">Pedir novo link</a>
+            </mat-card-actions>
+            } @else {
+            <form [formGroup]="form" (ngSubmit)="redefinir()">
+                <mat-card-header>
+                    <mat-card-title>Escolha a nova senha</mat-card-title>
+                    <mat-card-subtitle>Conta: {{ email }}</mat-card-subtitle>
+                </mat-card-header>
+
+                <mat-card-content class="mt-6">
+                    <mat-form-field class="w-full">
+                        <mat-label>Nova senha</mat-label>
+                        <input #campoSenha matInput formControlName="senha" type="password" autocomplete="new-password" />
+                        <app-botao-ver-senha matSuffix [campo]="campoSenha" />
+
+                        @if (senha?.errors?.['required']) {
+                        <mat-error>A senha é obrigatória.</mat-error>
+                        }
+                        @if (senha?.errors?.['minlength']) {
+                        <mat-error>A senha deve conter no mínimo 6 caracteres.</mat-error>
+                        }
+                    </mat-form-field>
+
+                    <mat-form-field class="w-full mt-2">
+                        <mat-label>Confirmação da nova senha</mat-label>
+                        <input #campoConfirmacao matInput formControlName="confirmarSenha" type="password" autocomplete="new-password" />
+                        <app-botao-ver-senha matSuffix [campo]="campoConfirmacao" />
+
+                        @if (confirmarSenha?.errors?.['required']) {
+                        <mat-error>A confirmação de senha é obrigatória.</mat-error>
+                        }
+                    </mat-form-field>
+
+                    @if (form.hasError('compararConfirmacaoSenha') && confirmarSenha?.touched) {
+                    <mat-error class="mt-3">As senhas devem ser iguais.</mat-error>
+                    }
+
+                    <p class="mt-3 text-xs text-gray-500">
+                        Use ao menos 6 caracteres, com letra maiúscula, minúscula e número.
+                    </p>
+                </mat-card-content>
+
+                <mat-card-actions class="flex justify-end items-center mt-4 space-x-4">
+                    <a mat-text-button routerLink="/auth/login">Cancelar</a>
+
+                    <button type="submit" mat-flat-button class="px-6 py-2" [disabled]="form.invalid || enviando()">
+                        <mat-icon>check</mat-icon>
+                        {{ enviando() ? 'Salvando...' : 'Salvar nova senha' }}
+                    </button>
+                </mat-card-actions>
+            </form>
+            }
+        </mat-card>
+    </div>
+</section>

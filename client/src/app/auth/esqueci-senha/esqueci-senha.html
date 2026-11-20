@@ -1,0 +1,54 @@
+<section class="flex justify-center">
+    <div class="w-full max-w-xl lg:max-w-md xl:max-w-sm py-10">
+        <h2 class="text-2xl font-medium">Esqueci minha senha</h2>
+        <hr class="my-4" />
+
+        <mat-card class="p-4">
+            @if (enviado()) {
+            <mat-card-content class="text-center">
+                <mat-icon class="!h-12 !w-12 !text-[48px] text-primary" aria-hidden="true">mark_email_read</mat-icon>
+                <p class="mt-3 text-lg font-medium">Confira seu e-mail</p>
+                <p class="mt-1 text-sm text-gray-600">
+                    Se o endereço estiver cadastrado, enviamos um link para você criar uma nova senha. Ele vale por 1 hora.
+                </p>
+                <p class="mt-1 text-sm text-gray-600">Não chegou? Veja a caixa de spam ou tente de novo.</p>
+            </mat-card-content>
+
+            <mat-card-actions class="flex justify-center mt-4 gap-3">
+                <button mat-stroked-button type="button" (click)="enviado.set(false)">Tentar outro e-mail</button>
+                <a mat-flat-button routerLink="/auth/login">Voltar ao login</a>
+            </mat-card-actions>
+            } @else {
+            <form [formGroup]="form" (ngSubmit)="enviar()">
+                <mat-card-header>
+                    <mat-card-title>Informe o e-mail da sua conta</mat-card-title>
+                    <mat-card-subtitle>Enviaremos um link para você criar uma nova senha.</mat-card-subtitle>
+                </mat-card-header>
+
+                <mat-card-content class="mt-6">
+                    <mat-form-field class="w-full">
+                        <mat-label>Endereço de Email</mat-label>
+                        <input matInput formControlName="email" type="email" autocomplete="email" />
+
+                        @if (email?.errors?.['required']) {
+                        <mat-error>O email é obrigatório.</mat-error>
+                        }
+                        @if (email?.errors?.['email']) {
+                        <mat-error>O email deve seguir o padrão nome&#64;provedor.</mat-error>
+                        }
+                    </mat-form-field>
+                </mat-card-content>
+
+                <mat-card-actions class="flex justify-end items-center mt-4 space-x-4">
+                    <a mat-text-button routerLink="/auth/login">Voltar</a>
+
+                    <button type="submit" mat-flat-button class="px-6 py-2" [disabled]="form.invalid || enviando()">
+                        <mat-icon>mail</mat-icon>
+                        {{ enviando() ? 'Enviando...' : 'Enviar link' }}
+                    </button>
+                </mat-card-actions>
+            </form>
+            }
+        </mat-card>
+    </div>
+</section>

@@ -187,3 +187,39 @@ html.modo-noturno {
     max-width: 100%;
   }
 }
+
+/* Cor principal para textos e links (também usada fora do Início). */
+.text-primary {
+  color: var(--mat-sys-primary);
+}
+
+/* Escolha do lado de entrada no login (cliente ou locadora). */
+.opcao-entrada {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 14px 10px;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 16px;
+  border: 1.5px solid var(--mat-sys-outline-variant);
+  background-color: var(--mat-sys-surface-container-low);
+  color: var(--mat-sys-on-surface-variant);
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s;
+
+  &:hover {
+    border-color: var(--mat-sys-primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--mat-sys-primary);
+    outline-offset: 2px;
+  }
+}
+
+.opcao-entrada-ativa {
+  border-color: var(--mat-sys-primary);
+  background-color: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+}

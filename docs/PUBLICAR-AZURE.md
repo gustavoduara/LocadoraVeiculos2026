@@ -41,6 +41,17 @@ Confira os preços atuais no portal antes de criar. Para uma demonstração, F1 
 | `ASPNETCORE_ENVIRONMENT` | `Production` |
 
 4. Em **Configurações > Configuração geral**, ative **Somente HTTPS**.
+5. **E-mail do "esqueci minha senha"** (opcional, mas sem isto o link não chega a ninguém: ele só vai para o log do app). Adicione também:
+
+| Nome | Valor |
+|---|---|
+| `SMTP_HOST` | servidor de e-mail (ex.: `smtp.sendgrid.net`) |
+| `SMTP_PORT` | porta (geralmente `587`) |
+| `SMTP_USER` / `SMTP_PASSWORD` | credenciais do serviço de e-mail |
+| `SMTP_FROM` | remetente (ex.: `nao-responda@seudominio.com`) |
+| `APP_URL` | o endereço público do app, usado nos links do e-mail (ex.: `https://meu-app.azurewebsites.net`) |
+
+O envio por SMTP foi escrito mas ainda não foi testado contra um servidor real: faça um teste ("esqueci minha senha" com o seu e-mail) antes de divulgar o site.
 
 > Essas chaves ficam só na Azure. Não coloque a licença nem a chave JWT no GitHub.
 

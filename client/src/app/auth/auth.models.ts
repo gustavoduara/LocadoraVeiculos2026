@@ -5,9 +5,26 @@ export interface RegistroModel {
     confirmarSenha: string;
 }
 
+/** O lado por onde a pessoa diz que quer entrar: cliente (procura carros) ou locadora (empresa e funcionários). */
+export type TipoDeAcessoModel = 'Cliente' | 'Locadora';
+
 export interface LoginModel {
     email: string;
     senha: string;
+    tipo?: TipoDeAcessoModel;
+}
+
+export interface RedefinirSenhaModel {
+    email: string;
+    codigo: string;
+    novaSenha: string;
+    confirmarSenha: string;
+}
+
+export interface AlterarSenhaModel {
+    senhaAtual: string;
+    novaSenha: string;
+    confirmarSenha: string;
 }
 
 export interface AccessTokenModel {

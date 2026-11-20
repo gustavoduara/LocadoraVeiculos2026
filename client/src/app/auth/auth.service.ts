@@ -7,7 +7,13 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 
 import { environment } from '../../environments/environment';
-import { AccessTokenModel, LoginModel, RegistroModel } from './auth.models';
+import {
+    AccessTokenModel,
+    AlterarSenhaModel,
+    LoginModel,
+    RedefinirSenhaModel,
+    RegistroModel,
+} from './auth.models';
 
 @Injectable()
 export class AuthService {
@@ -48,6 +54,20 @@ export class AuthService {
         return this.http
             .post<AccessTokenModel>(urlCompleto, loginModel)
             .pipe(tap((token) => this.accessTokenSubject$.next(token)));
+    }
+
+    /** Pede o e-mail com o link para criar uma nova senha (a resposta é a mesma exista ou não a conta). */
+    public esqueciSenha(email: string): Observable<{ mensagem: string }> {
+        return this.http.post<{ mensagem: string }>(`${this.apiUrl}/esqueci-senha`, { email });
+    }
+
+    public redefinirSenha(model: RedefinirSenhaModel): Observable<null> {
+        return this.http.post<null>(`${this.apiUrl}/redefinir-senha`, model);
+    }
+
+    /** A pessoa logada troca a própria senha. */
+    public alterarSenha(model: AlterarSenhaModel): Observable<null> {
+        return this.http.post<null>(`${this.apiUrl}/alterar-senha`, model);
     }
 
     public rotacionar(): Observable<AccessTokenModel> {

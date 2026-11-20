@@ -133,6 +133,14 @@ const routes: Routes = [
     canMatch: [usuarioAutenticadoGuard, cargoGuard('Empresa', 'Funcionario')],
   },
 
+  // Qualquer pessoa logada troca a própria senha.
+  {
+    path: 'conta/senha',
+    loadComponent: () =>
+      import('./conta/alterar-senha/alterar-senha').then((c) => c.AlterarSenha),
+    canMatch: [usuarioAutenticadoGuard],
+  },
+
   // Catálogo: o cliente procura carros de todas as locadoras.
   {
     path: 'catalogo',

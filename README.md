@@ -63,6 +63,7 @@ Cada empresa enxerga **apenas os próprios dados** (multiempresa), e o que cada 
 | 🪪 **Condutores** | Quem dirige o veículo, ligado a um cliente. Aviso de CNH vencida e opção "cliente é condutor". |
 | 🤝 **Parceiros** | Cadastro de parceiros (só o nome). Um parceiro com cupons não pode ser excluído. |
 | 🏷️ **Cupons** | Desconto de valor fixo, com validade e parceiro. Ranking dos cupons e parceiros mais usados. |
+| 🔐 **Entrada e senhas** | O login pergunta primeiro se a pessoa é **cliente** ou **locadora** (empresa ou funcionário) e recusa a conta do lado errado com uma mensagem clara. Há "Esqueci minha senha" (link por e-mail, válido por 1 hora e de uso único) e "Alterar senha" para qualquer conta logada. |
 | 🔎 **Catálogo (conta de cliente)** | A pessoa cria uma conta de cliente e procura carros de **todas as locadoras**: por período (só os livres), texto, categoria, combustível, ano, preço da diária e locadora, com ordenação e paginação. Mostra foto, locadora, preço e total do período. A reserva online é a próxima etapa. |
 | 🏠 **Início** | Pesquisa de período (retirada e devolução) e vitrine da frota real: foto, preço a partir da menor diária do plano do grupo, total do período e disponibilidade. O botão Alugar leva o carro e as datas ao formulário de aluguel. |
 | 🌙 **Modo noturno** | Tema escuro em Configurações (e no menu do usuário), salvo no navegador. |
@@ -246,7 +247,7 @@ Todas as rotas (exceto autenticação) exigem o cabeçalho `Authorization: Beare
 
 | Recurso | Rota | Acesso |
 |---|---|---|
-| **Autenticação** | `POST /api/auth/registrar` (locadora) · `registrar-cliente` · `autenticar` · `rotacionar` · `sair` | Público / logado |
+| **Autenticação** | `POST /api/auth/registrar` (locadora) · `registrar-cliente` · `autenticar` (aceita `tipo`: `Cliente` ou `Locadora`) · `esqueci-senha` · `redefinir-senha` · `alterar-senha` (logado) · `rotacionar` · `sair` | Público / logado |
 | **Funcionários** | `GET · POST /api/funcionarios`<br>`GET · PUT · DELETE /api/funcionarios/{id}`<br>`PATCH /api/funcionarios/{id}/status` | Empresa |
 | **Meu perfil** | `GET · PUT /api/funcionarios/meu-perfil` | Funcionário |
 | **Grupos de veículos** | `GET · POST /api/grupos-veiculos`<br>`GET · PUT · DELETE /api/grupos-veiculos/{id}` | Empresa e Funcionário |
