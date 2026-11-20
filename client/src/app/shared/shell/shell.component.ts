@@ -13,6 +13,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
 import { UsuarioAutenticadoModel } from '../../auth/auth.models';
+import { Rodape } from '../rodape/rodape';
 
 @Component({
     selector: 'app-shell',
@@ -28,6 +29,7 @@ import { UsuarioAutenticadoModel } from '../../auth/auth.models';
         AsyncPipe,
         RouterLink,
         RouterLinkActive,
+        Rodape,
     ],
 })
 export class ShellComponent {

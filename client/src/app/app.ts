@@ -4,11 +4,12 @@ import { Router, RouterOutlet } from '@angular/router';
 
 import { AuthService } from './auth/auth.service';
 import { NotificacaoService } from './shared/notificacao/notificacao.service';
+import { Rodape } from './shared/rodape/rodape';
 import { ShellComponent } from './shared/shell/shell.component';
 
 @Component({
   selector: 'app-root',
-  imports: [ShellComponent, RouterOutlet, AsyncPipe],
+  imports: [ShellComponent, RouterOutlet, AsyncPipe, Rodape],
   template: `
     @if (accessToken$ | async; as accessToken) {
       <app-shell
@@ -21,6 +22,7 @@ import { ShellComponent } from './shared/shell/shell.component';
       <main class="container-fluid py-3">
         <router-outlet></router-outlet>
       </main>
+      <app-rodape />
     }
   `,
 })
