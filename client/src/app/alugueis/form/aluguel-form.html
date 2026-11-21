@@ -1,5 +1,20 @@
 <form [formGroup]="form" (ngSubmit)="enviar()" class="space-y-4">
+    @if (!edicao) {
+    <div>
+        <p class="text-sm font-medium">Cliente</p>
+        <mat-radio-group formControlName="modoCliente" class="flex flex-wrap gap-x-6">
+            <mat-radio-button value="existente">Já cadastrado</mat-radio-button>
+            <mat-radio-button value="novo">Cliente novo</mat-radio-button>
+        </mat-radio-group>
+    </div>
+    }
+
+    @if (clienteNovo) {
+    <app-novo-cliente-form (alterado)="aoMudarNovoCliente($event)" />
+    }
+
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        @if (!clienteNovo) {
         <mat-form-field>
             <mat-label>Cliente</mat-label>
             <mat-select formControlName="clienteId">
@@ -24,6 +39,7 @@
             <mat-hint>Este cliente não possui condutores cadastrados.</mat-hint>
             }
         </mat-form-field>
+        }
 
         <mat-form-field>
             <mat-label>Grupo de veículos</mat-label>

@@ -1,14 +1,13 @@
 <section class="mx-auto max-w-screen-xl px-4">
     <div class="py-6">
         <h2 class="text-2xl font-semibold">Clientes</h2>
+        <p class="text-sm text-gray-600">
+            Os clientes aparecem aqui depois do primeiro aluguel e só esta locadora os enxerga. Para cadastrar um
+            cliente novo, registre o aluguel dele em <a class="text-primary underline" routerLink="/alugueis/cadastrar">Aluguéis</a>.
+        </p>
 
         <!-- Ações e filtro -->
         <div class="mt-4 flex flex-col sm:flex-row sm:items-center gap-3">
-            <a mat-flat-button class="flex items-center justify-center gap-2 h-10" routerLink="cadastrar">
-                <mat-icon class="!text-base">add</mat-icon>
-                Cadastrar
-            </a>
-
             <mat-form-field class="w-full sm:w-64" subscriptSizing="dynamic">
                 <mat-label>Filtrar por tipo</mat-label>
                 <mat-select [value]="tipoFiltro()" (selectionChange)="filtrar($event.value)">
@@ -24,7 +23,7 @@
 
         @if (clientes().length === 0) {
         <p class="text-gray-600">
-            {{ tipoFiltro() ? 'Nenhum cliente deste tipo.' : 'Nenhum cliente cadastrado ainda.' }}
+            {{ tipoFiltro() ? 'Nenhum cliente deste tipo.' : 'Nenhum cliente ainda: eles surgem quando você registra um aluguel.' }}
         </p>
         }
 

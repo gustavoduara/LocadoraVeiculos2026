@@ -59,7 +59,7 @@ Cada empresa enxerga **apenas os próprios dados** (multiempresa), e o que cada 
 | 💲 **Planos de Cobrança** | Um plano por grupo de veículos, com três modalidades: Diário, Controlado e Livre. |
 | 🚘 **Automóveis** | Cadastro da frota com foto (JPEG, PNG ou WebP), placa única e filtro por grupo. |
 | 🧾 **Taxas e Serviços** | Catálogo de itens extras (GPS, cadeirinha...), de cobrança fixa ou diária. |
-| 🏢 **Clientes** | Pessoa física (CPF, RG, CNH) e jurídica (CNPJ), com vínculo opcional da pessoa física a uma empresa. |
+| 🏢 **Clientes** | Pessoa física (CPF, RG, CNH) e jurídica (CNPJ). **Não há cadastro avulso:** o cliente nasce junto com o primeiro aluguel (preenchido no próprio formulário do aluguel, ou aprovando uma reserva do site) e só a locadora que alugou o enxerga. Se o aluguel não puder ser registrado, o cliente não é criado. A lista permite editar e excluir. |
 | 🪪 **Condutores** | Quem dirige o veículo, ligado a um cliente. Aviso de CNH vencida e opção "cliente é condutor". |
 | 🤝 **Parceiros** | Cadastro de parceiros (só o nome). Um parceiro com cupons não pode ser excluído. |
 | 🏷️ **Cupons** | Desconto de valor fixo, com validade e parceiro. Ranking dos cupons e parceiros mais usados. |
@@ -262,7 +262,7 @@ Todas as rotas (exceto autenticação) exigem o cabeçalho `Authorization: Beare
 | **Taxas e serviços** | `GET /api/taxas-servicos` · `GET {id}` | Empresa e Funcionário |
 | | `POST` · `PUT {id}` · `DELETE {id}` | Empresa |
 | **Automóveis** | `GET /api/automoveis?grupoVeiculosId=` · `POST` · `GET · PUT · DELETE {id}`<br>`PUT · GET · DELETE {id}/foto` | Empresa e Funcionário |
-| **Clientes** | `GET /api/clientes?tipo=` · `POST` · `GET · PUT · DELETE {id}` | Empresa e Funcionário |
+| **Clientes** | `GET /api/clientes?tipo=` · `GET · PUT · DELETE {id}` (o cliente é criado pelo `POST /api/alugueis` com `novoCliente`) | Empresa e Funcionário |
 | **Condutores** | `GET /api/condutores?clienteId=` · `POST` · `GET · PUT · DELETE {id}` | Empresa e Funcionário |
 | **Parceiros** | `GET /api/parceiros` · `GET {id}` | Empresa e Funcionário |
 | | `POST` · `PUT {id}` · `DELETE {id}` | Empresa |

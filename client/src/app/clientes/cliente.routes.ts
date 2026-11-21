@@ -3,7 +3,6 @@ import { provideNgxMask } from 'ngx-mask';
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, Routes } from '@angular/router';
 
-import { CadastrarCliente } from './cadastrar/cadastrar-cliente';
 import { ClienteService } from './cliente.service';
 import { EditarCliente } from './editar/editar-cliente';
 import { ExcluirCliente } from './excluir/excluir-cliente';
@@ -34,11 +33,6 @@ export const clienteRoutes: Routes = [
                 path: '',
                 component: ListarClientes,
                 resolve: { clientes: listarClientesResolver },
-            },
-            {
-                path: 'cadastrar',
-                component: CadastrarCliente,
-                resolve: { pessoasJuridicas: pessoasJuridicasResolver },
             },
             {
                 path: 'editar/:id',

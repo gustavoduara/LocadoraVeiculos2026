@@ -3,7 +3,7 @@ import { NgxMaskDirective } from 'ngx-mask';
 import { catchError, debounceTime, filter, map, of, switchMap } from 'rxjs';
 
 import { CurrencyPipe } from '@angular/common';
-import { Component, computed, DestroyRef, EventEmitter, inject, Input, Output, signal } from '@angular/core';
+import { Component, computed, DestroyRef, EventEmitter, inject, Input, Output, signal, ViewChild } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
     AbstractControl,
@@ -17,6 +17,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { RouterLink } from '@angular/router';
 
@@ -36,6 +37,7 @@ import {
     TIPOS_SEGURO,
 } from '../aluguel.models';
 import { AluguelService } from '../aluguel.service';
+import { NovoClienteAlterado, NovoClienteForm } from '../novo-cliente/novo-cliente-form';
 
 function dataBrValida(controle: AbstractControl): ValidationErrors | null {
     const valor = (controle.value ?? '') as string;
@@ -59,6 +61,8 @@ function dataBrValida(controle: AbstractControl): ValidationErrors | null {
         RouterLink,
         CurrencyPipe,
         PrecoComDesconto,
+        MatRadioModule,
+        NovoClienteForm,
     ],
     templateUrl: './aluguel-form.html',
 })
@@ -149,7 +153,13 @@ export class AluguelForm {
     protected readonly descricaoDesconto = descricaoDoDesconto;
     protected readonly erroSimulacao = signal<string | null>(null);
 
+    @ViewChild(NovoClienteForm) private novoClienteForm?: NovoClienteForm;
+
     protected form: FormGroup = this.formBuilder.group({
+        /** Cliente que já existe na locadora ou um cliente novo (cadastrado junto com o aluguel). */
+        modoCliente: ['existente' as 'existente' | 'novo'],
+        novoCliente: [null as NovoClienteAlterado['dados'] | null],
+        novoClienteValido: [false],
         clienteId: ['', [Validators.required]],
         condutorId: ['', [Validators.required]],
         grupoId: ['', [Validators.required]],
@@ -164,6 +174,13 @@ export class AluguelForm {
     });
 
     constructor() {
+        this.form
+            .get('modoCliente')!
+            .valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe((modo) => this.aplicarModoDoCliente(modo));
+
+        this.aplicarModoDoCliente('existente');
+
         // Trocar o cliente ou o grupo invalida a escolha dependente (condutor / automóvel).
         this.form
             .get('clienteId')!
@@ -214,6 +231,29 @@ export class AluguelForm {
             });
     }
 
+    /** Só o modo escolhido exige os seus campos (cliente e condutor existentes, ou os dados do cliente novo). */
+    private aplicarModoDoCliente(modo: 'existente' | 'novo'): void {
+        const novo = modo === 'novo';
+
+        for (const campo of ['clienteId', 'condutorId'])
+            novo ? this.form.get(campo)!.disable({ emitEvent: false }) : this.form.get(campo)!.enable({ emitEvent: false });
+
+        const valido = this.form.get('novoClienteValido')!;
+
+        valido.setValidators(novo ? [Validators.requiredTrue] : []);
+        valido.updateValueAndValidity({ emitEvent: false });
+
+        this.form.updateValueAndValidity();
+    }
+
+    protected get clienteNovo(): boolean {
+        return this.form.get('modoCliente')!.value === 'novo';
+    }
+
+    protected aoMudarNovoCliente(alterado: NovoClienteAlterado): void {
+        this.form.patchValue({ novoCliente: alterado.dados, novoClienteValido: alterado.valido });
+    }
+
     /**
      * Só cupons ativos podem ser escolhidos; ao editar, o cupom que o aluguel já usa continua
      * disponível mesmo vencido.
@@ -243,11 +283,14 @@ export class AluguelForm {
         const saida = dataBrParaIso(v.dataSaida ?? '');
         const retorno = dataBrParaIso(v.dataRetornoPrevista ?? '');
 
-        if (!v.condutorId || !v.automovelId || !saida || !retorno) return null;
+        const novo = v.modoCliente === 'novo';
+
+        if (novo ? !v.novoCliente : !v.condutorId) return null;
+        if (!v.automovelId || !saida || !retorno) return null;
         if (v.kmInicial === null || v.kmInicial === '' || v.kmInicial < 0) return null;
 
         return {
-            condutorId: v.condutorId,
+            ...(novo ? { novoCliente: v.novoCliente } : { condutorId: v.condutorId }),
             automovelId: v.automovelId,
             tipoPlano: v.tipoPlano,
             dataSaida: saida,
@@ -272,6 +315,7 @@ export class AluguelForm {
 
     public enviar(): void {
         this.form.markAllAsTouched();
+        this.novoClienteForm?.marcarComoTocado();
 
         if (this.form.invalid) return;
 

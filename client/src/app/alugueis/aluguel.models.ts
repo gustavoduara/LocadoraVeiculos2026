@@ -1,3 +1,5 @@
+import { TipoClienteModel } from '../clientes/cliente.models';
+
 export type TipoPlanoModel = 'Diario' | 'Controlado' | 'Livre';
 export type TipoSeguroModel = 'Nenhum' | 'Cliente' | 'Terceiros';
 export type StatusAluguelModel = 'EmAberto' | 'Concluido';
@@ -94,9 +96,44 @@ export interface SelecionarAlugueisResponseModel {
     registros: AluguelModel[];
 }
 
+/** Condutor de um cliente novo (pessoa jurídica). Datas em ISO. */
+export interface CondutorNovoAluguelModel {
+    nome: string;
+    email: string;
+    telefone: string;
+    cpf: string;
+    cnh: string;
+    validadeCnh: string;
+}
+
+/**
+ * Cliente cadastrado junto com o aluguel. Pessoa física: cpf, rg, cnh e validadeCnh (ela mesma dirige).
+ * Pessoa jurídica: cnpj e o condutor.
+ */
+export interface NovoClienteAluguelModel {
+    tipo: TipoClienteModel;
+    nome: string;
+    email: string;
+    telefone: string;
+    cpf: string | null;
+    rg: string | null;
+    cnh: string | null;
+    cnpj: string | null;
+    estado: string;
+    cidade: string;
+    bairro: string;
+    rua: string;
+    numero: string;
+    validadeCnh: string;
+    condutor: CondutorNovoAluguelModel | null;
+}
+
 /** Dados enviados ao registrar, editar ou simular um aluguel. Datas em ISO (yyyy-MM-dd). */
 export interface DadosAluguelModel {
-    condutorId: string;
+    /** Um condutor existente; ausente quando o cliente é novo. */
+    condutorId?: string;
+    /** Cliente que ainda não existe: só ao registrar (ou simular) o aluguel. */
+    novoCliente?: NovoClienteAluguelModel;
     automovelId: string;
     tipoPlano: TipoPlanoModel;
     dataSaida: string;

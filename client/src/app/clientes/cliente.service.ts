@@ -5,8 +5,6 @@ import { inject, Injectable } from '@angular/core';
 
 import { environment } from '../../environments/environment';
 import {
-    CadastrarClienteModel,
-    CadastrarClienteResponseModel,
     ClienteModel,
     EditarClienteModel,
     SelecionarClientesResponseModel,
@@ -17,10 +15,6 @@ import {
 export class ClienteService {
     private readonly http = inject(HttpClient);
     private readonly apiUrl = environment.apiUrl + '/clientes';
-
-    public cadastrar(model: CadastrarClienteModel): Observable<CadastrarClienteResponseModel> {
-        return this.http.post<CadastrarClienteResponseModel>(this.apiUrl, model);
-    }
 
     public editar(id: string, model: EditarClienteModel): Observable<ClienteModel> {
         return this.http.put<ClienteModel>(`${this.apiUrl}/${id}`, model);
