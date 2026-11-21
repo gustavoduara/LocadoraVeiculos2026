@@ -102,7 +102,7 @@
                 <mat-option value="">Sem cupom</mat-option>
                 @for (cupom of cuponsDisponiveis; track cupom.id) {
                 <mat-option [value]="cupom.id">
-                    {{ cupom.nome }} · {{ cupom.valor | currency: 'BRL' }} ({{ cupom.nomeParceiro }})
+                    {{ cupom.nome }} · {{ descricaoDesconto(cupom.tipo, cupom.valor) }} ({{ cupom.nomeParceiro }})
                 </mat-option>
                 }
             </mat-select>
@@ -123,17 +123,19 @@
             <dt>Caução</dt>
             <dd class="text-right">{{ s.previsto.valorCaucao | currency: 'BRL' }}</dd>
             <dt>Diárias</dt>
-            <dd class="text-right">{{ s.previsto.valorDiarias | currency: 'BRL' }}</dd>
+            <dd class="text-right"><app-preco-com-desconto [original]="s.previsto.valorDiarias" [atual]="precos()!.diarias" /></dd>
             <dt>Taxas e serviços</dt>
-            <dd class="text-right">{{ s.previsto.valorTaxas | currency: 'BRL' }}</dd>
+            <dd class="text-right"><app-preco-com-desconto [original]="s.previsto.valorTaxas" [atual]="precos()!.taxas" /></dd>
             <dt>Seguro</dt>
-            <dd class="text-right">{{ s.previsto.valorSeguro | currency: 'BRL' }}</dd>
+            <dd class="text-right"><app-preco-com-desconto [original]="s.previsto.valorSeguro" [atual]="precos()!.seguro" /></dd>
             @if (s.previsto.valorDesconto > 0) {
             <dt class="text-green-700">Desconto do cupom</dt>
             <dd class="text-right text-green-700">- {{ s.previsto.valorDesconto | currency: 'BRL' }}</dd>
             }
             <dt class="font-semibold pt-1">Total previsto</dt>
-            <dd class="text-right font-semibold pt-1">{{ s.previsto.valorTotalPrevisto | currency: 'BRL' }}</dd>
+            <dd class="text-right font-semibold pt-1">
+                <app-preco-com-desconto [original]="precos()!.totalSemCupom" [atual]="s.previsto.valorTotalPrevisto" />
+            </dd>
         </dl>
         <p class="mt-2 text-xs text-gray-500">
             A caução é devolvida ao cliente conforme o acerto final na devolução.

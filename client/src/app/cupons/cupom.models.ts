@@ -1,7 +1,23 @@
+/** Valor fixo em reais ou porcentagem do consumo. */
+export type TipoDescontoModel = 'Valor' | 'Percentual';
+
+export const TIPOS_DESCONTO: { valor: TipoDescontoModel; rotulo: string }[] = [
+    { valor: 'Valor', rotulo: 'Valor fixo (R$)' },
+    { valor: 'Percentual', rotulo: 'Porcentagem (%)' },
+];
+
+/** "10%" ou "R$ 100,00": como o desconto aparece nas telas. */
+export function descricaoDoDesconto(tipo: TipoDescontoModel | null | undefined, valor: number): string {
+    if (tipo === 'Percentual') return `${valor.toLocaleString('pt-BR', { maximumFractionDigits: 2 })}%`;
+
+    return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
 export interface CupomModel {
     id: string;
     nome: string;
     valor: number;
+    tipo: TipoDescontoModel;
     /** Data no formato ISO (yyyy-MM-dd). */
     dataValidade: string;
     parceiroId: string;
@@ -17,6 +33,7 @@ export interface SelecionarCuponsResponseModel {
 export interface CadastrarCupomModel {
     nome: string;
     valor: number;
+    tipo: TipoDescontoModel;
     dataValidade: string;
     parceiroId: string;
 }
@@ -32,6 +49,7 @@ export interface CupomMaisUtilizadoModel {
     nome: string;
     nomeParceiro: string;
     valor: number;
+    tipo: TipoDescontoModel;
     usos: number;
 }
 

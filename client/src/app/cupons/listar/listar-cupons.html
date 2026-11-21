@@ -27,6 +27,7 @@
                                 @if (item.nomeParceiro) {
                                 <span class="text-gray-500"> · {{ item.nomeParceiro }}</span>
                                 }
+                                <span class="text-gray-500"> · {{ descricaoDesconto(item.tipo, item.valor) }}</span>
                             </span>
                             <span>{{ item.usos }} {{ item.usos === 1 ? 'uso' : 'usos' }}</span>
                         </li>
@@ -64,7 +65,7 @@
                 </mat-card-header>
 
                 <mat-card-content class="mt-2 text-sm">
-                    <p class="text-xl font-semibold">{{ cupom.valor | currency: 'BRL' }}</p>
+                    <p class="text-xl font-semibold">{{ descricao(cupom) }}</p>
                     <p>
                         <span class="font-medium">Validade:</span> {{ dataBr(cupom.dataValidade) }}
                         <span

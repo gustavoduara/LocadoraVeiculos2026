@@ -112,8 +112,9 @@ Os desafios da especificação (parceiros e cupons) também estão prontos. Veja
   - O desconto é um valor fixo abatido do que foi consumido (diárias, km, taxas e seguro). A caução, a multa e o combustível não recebem desconto.
   - O desconto nunca passa do consumo, então a caução continua inteira.
   - Só cupons dentro da validade entram em um aluguel (quem já usa o cupom pode editar o aluguel mesmo depois de ele vencer).
+  - O cupom pode ser de **valor fixo (R$)** ou de **porcentagem (1% a 100%)** do consumo (diárias, km, taxas e seguro; a caução, o combustível e a multa não recebem desconto). Na tela do aluguel, na devolução e na lista, cada preço atingido aparece **riscado com o valor atualizado ao lado**.
   - Cada cliente usa o mesmo cupom uma única vez. Excluir o aluguel libera o cupom de novo.
-  - O nome e o valor ficam copiados no aluguel: editar ou excluir o cupom depois não muda o que já foi cobrado.
+  - O nome, o tipo e o valor ficam copiados no aluguel: editar ou excluir o cupom depois não muda o que já foi cobrado.
 - **Aluguel, regras:**
   - Um carro não pode ter dois aluguéis que se sobreponham (um aluguel vencido e não devolvido continua ocupando o carro).
   - A CNH do condutor precisa valer até o retorno previsto.

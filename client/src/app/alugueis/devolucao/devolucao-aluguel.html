@@ -49,13 +49,13 @@
                         <dt>Caução</dt>
                         <dd class="text-right">{{ s.valorCaucao | currency: 'BRL' }}</dd>
                         <dt>Diárias</dt>
-                        <dd class="text-right">{{ s.valorDiarias | currency: 'BRL' }}</dd>
+                        <dd class="text-right"><app-preco-com-desconto [original]="s.valorDiarias" [atual]="precos()!.diarias" /></dd>
                         <dt>Quilometragem</dt>
-                        <dd class="text-right">{{ s.valorKm | currency: 'BRL' }}</dd>
+                        <dd class="text-right"><app-preco-com-desconto [original]="s.valorKm" [atual]="precos()!.km" /></dd>
                         <dt>Taxas e serviços</dt>
-                        <dd class="text-right">{{ s.valorTaxas | currency: 'BRL' }}</dd>
+                        <dd class="text-right"><app-preco-com-desconto [original]="s.valorTaxas" [atual]="precos()!.taxas" /></dd>
                         <dt>Seguro</dt>
-                        <dd class="text-right">{{ s.valorSeguro | currency: 'BRL' }}</dd>
+                        <dd class="text-right"><app-preco-com-desconto [original]="s.valorSeguro" [atual]="precos()!.seguro" /></dd>
                         <dt>Combustível</dt>
                         <dd class="text-right">{{ s.valorCombustivel | currency: 'BRL' }}</dd>
                         @if (s.valorDesconto > 0) {
@@ -67,7 +67,9 @@
                             {{ s.valorMulta | currency: 'BRL' }}
                         </dd>
                         <dt class="font-semibold pt-1">Total final</dt>
-                        <dd class="text-right font-semibold pt-1">{{ s.valorFinal | currency: 'BRL' }}</dd>
+                        <dd class="text-right font-semibold pt-1">
+                            <app-preco-com-desconto [original]="precos()!.totalSemCupom" [atual]="s.valorFinal" />
+                        </dd>
                     </dl>
                     } @else {
                     <p class="text-gray-600">Informe a data e a quilometragem para ver o valor.</p>

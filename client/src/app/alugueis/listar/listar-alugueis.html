@@ -85,11 +85,17 @@
                         @if (devolucao.final.valorMulta > 0) {
                         <p>Multa por atraso: {{ devolucao.final.valorMulta | currency: 'BRL' }}</p>
                         }
-                        <p class="font-semibold">Total final: {{ devolucao.final.valorFinal | currency: 'BRL' }}</p>
+                        <p class="font-semibold">Total final:
+                            <app-preco-com-desconto
+                                [original]="devolucao.final.valorFinal + devolucao.final.valorDesconto"
+                                [atual]="devolucao.final.valorFinal" /></p>
                     </div>
                     } @else {
                     <p class="font-semibold">
-                        Total previsto: {{ aluguel.previsto.valorTotalPrevisto | currency: 'BRL' }}
+                        Total previsto:
+                        <app-preco-com-desconto
+                            [original]="aluguel.previsto.valorTotalPrevisto + aluguel.previsto.valorDesconto"
+                            [atual]="aluguel.previsto.valorTotalPrevisto" />
                     </p>
                     }
                 </mat-card-content>

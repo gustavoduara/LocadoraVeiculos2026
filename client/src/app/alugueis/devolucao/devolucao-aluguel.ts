@@ -3,7 +3,7 @@ import { NgxMaskDirective } from 'ngx-mask';
 import { catchError, debounceTime, map, of, switchMap } from 'rxjs';
 
 import { CurrencyPipe } from '@angular/common';
-import { Component, DestroyRef, inject, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -16,6 +16,7 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
 import { dataBrParaIso, isoParaDataBr } from '../../condutores/condutor.models';
 import { mensagemDeErro } from '../../shared/erros/mensagem-erro';
+import { PrecoComDesconto, ratearDesconto } from '../../shared/preco/preco-com-desconto';
 import { NotificacaoService } from '../../shared/notificacao/notificacao.service';
 import {
     AluguelModel,
@@ -39,6 +40,7 @@ import { AluguelService } from '../aluguel.service';
         NgxMaskDirective,
         RouterLink,
         CurrencyPipe,
+        PrecoComDesconto,
     ],
     templateUrl: './devolucao-aluguel.html',
 })
@@ -58,6 +60,26 @@ export class DevolucaoAluguel {
 
     protected readonly simulacao = signal<DetalhamentoFinalModel | null>(null);
     protected readonly erroSimulacao = signal<string | null>(null);
+
+    /** Com cupom, o desconto é repartido entre as linhas que ele atinge (a caução, o combustível e a multa não mudam). */
+    protected readonly precos = computed(() => {
+        const s = this.simulacao();
+
+        if (!s) return null;
+
+        const [diarias, km, taxas, seguro] = ratearDesconto(
+            [s.valorDiarias, s.valorKm, s.valorTaxas, s.valorSeguro],
+            s.valorDesconto,
+        );
+
+        return {
+            diarias,
+            km,
+            taxas,
+            seguro,
+            totalSemCupom: Math.round((s.valorFinal + s.valorDesconto) * 100) / 100,
+        };
+    });
 
     protected readonly form: FormGroup = this.formBuilder.group({
         dataDevolucao: [format(new Date(), 'dd/MM/yyyy'), [Validators.required]],

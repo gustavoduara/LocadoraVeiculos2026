@@ -18,7 +18,7 @@ import { RouterLink } from '@angular/router';
 
 import { dataBrParaIso, isoParaDataBr } from '../../condutores/condutor.models';
 import { ParceiroModel } from '../../parceiros/parceiro.models';
-import { CadastrarCupomModel, CupomModel } from '../cupom.models';
+import { CadastrarCupomModel, CupomModel, TIPOS_DESCONTO } from '../cupom.models';
 
 function dataBrValida(controle: AbstractControl): ValidationErrors | null {
     const valor = (controle.value ?? '') as string;
@@ -53,18 +53,44 @@ export class CupomForm {
 
         this.edicao = true;
         this.form.patchValue({ ...valor, dataValidade: isoParaDataBr(valor.dataValidade) });
+        this.ajustarLimiteDoValor();
+        this.form.get('valor')!.updateValueAndValidity();
     }
 
     @Output() salvar = new EventEmitter<CadastrarCupomModel>();
 
     protected edicao = false;
+    protected readonly tiposDesconto = TIPOS_DESCONTO;
 
     protected form: FormGroup = this.formBuilder.group({
         nome: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
+        tipo: ['Valor', [Validators.required]],
         valor: [null, [Validators.required, Validators.min(0.01), Validators.max(99999.99)]],
         dataValidade: ['', [Validators.required, dataBrValida]],
         parceiroId: ['', [Validators.required]],
     });
+
+    constructor() {
+        // Porcentagem vai até 100; valor fixo, até 99999,99.
+        this.form.get('tipo')!.valueChanges.subscribe(() => {
+            this.ajustarLimiteDoValor();
+            this.form.get('valor')!.updateValueAndValidity();
+        });
+    }
+
+    protected get porcentagem(): boolean {
+        return this.form.get('tipo')!.value === 'Percentual';
+    }
+
+    private ajustarLimiteDoValor(): void {
+        this.form
+            .get('valor')!
+            .setValidators([
+                Validators.required,
+                Validators.min(0.01),
+                Validators.max(this.porcentagem ? 100 : 99999.99),
+            ]);
+    }
 
     protected erroDo(campo: string): string | null {
         const controle = this.form.get(campo);
@@ -77,7 +103,8 @@ export class CupomForm {
         if (controle.errors['maxlength'])
             return `Informe no máximo ${controle.errors['maxlength'].requiredLength} caracteres.`;
         if (controle.errors['min']) return 'O valor deve ser maior que zero.';
-        if (controle.errors['max']) return 'O valor deve ser menor que 100000.';
+        if (controle.errors['max'])
+            return this.porcentagem ? 'A porcentagem deve ser de no máximo 100.' : 'O valor deve ser menor que 100000.';
 
         return 'Valor inválido.';
     }
@@ -92,6 +119,7 @@ export class CupomForm {
         this.salvar.emit({
             nome: v.nome,
             valor: Number(v.valor),
+            tipo: v.tipo,
             dataValidade: dataBrParaIso(v.dataValidade)!,
             parceiroId: v.parceiroId,
         });

@@ -3,7 +3,7 @@ import { NgxMaskDirective } from 'ngx-mask';
 import { catchError, debounceTime, filter, map, of, switchMap } from 'rxjs';
 
 import { CurrencyPipe } from '@angular/common';
-import { Component, DestroyRef, EventEmitter, inject, Input, Output, signal } from '@angular/core';
+import { Component, computed, DestroyRef, EventEmitter, inject, Input, Output, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import {
     AbstractControl,
@@ -23,9 +23,10 @@ import { RouterLink } from '@angular/router';
 import { AutomovelModel, formatarPlaca } from '../../automoveis/automovel.models';
 import { ClienteModel } from '../../clientes/cliente.models';
 import { CondutorModel, dataBrParaIso, isoParaDataBr } from '../../condutores/condutor.models';
-import { CupomModel } from '../../cupons/cupom.models';
+import { CupomModel, descricaoDoDesconto } from '../../cupons/cupom.models';
 import { SelecionarGruposVeiculosModel } from '../../grupo-veiculos/grupo-veiculos.models';
 import { mensagemDeErro } from '../../shared/erros/mensagem-erro';
+import { PrecoComDesconto, ratearDesconto } from '../../shared/preco/preco-com-desconto';
 import { TaxaServicoModel } from '../../taxas-servicos/taxa-servico.models';
 import {
     AluguelModel,
@@ -57,6 +58,7 @@ function dataBrValida(controle: AbstractControl): ValidationErrors | null {
         NgxMaskDirective,
         RouterLink,
         CurrencyPipe,
+        PrecoComDesconto,
     ],
     templateUrl: './aluguel-form.html',
 })
@@ -124,6 +126,27 @@ export class AluguelForm {
     protected readonly formatarPlaca = formatarPlaca;
 
     protected readonly simulacao = signal<SimulacaoAluguelModel | null>(null);
+
+    /** Com cupom, o desconto é repartido entre as linhas para mostrar cada preço atualizado. */
+    protected readonly precos = computed(() => {
+        const p = this.simulacao()?.previsto;
+
+        if (!p) return null;
+
+        const [diarias, taxas, seguro] = ratearDesconto(
+            [p.valorDiarias, p.valorTaxas, p.valorSeguro],
+            p.valorDesconto,
+        );
+
+        return {
+            diarias,
+            taxas,
+            seguro,
+            totalSemCupom: Math.round((p.valorTotalPrevisto + p.valorDesconto) * 100) / 100,
+        };
+    });
+
+    protected readonly descricaoDesconto = descricaoDoDesconto;
     protected readonly erroSimulacao = signal<string | null>(null);
 
     protected form: FormGroup = this.formBuilder.group({

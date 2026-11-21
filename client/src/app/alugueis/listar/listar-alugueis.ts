@@ -10,6 +10,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { isoParaDataBr } from '../../condutores/condutor.models';
 import { mensagemDeErro } from '../../shared/erros/mensagem-erro';
 import { NotificacaoService } from '../../shared/notificacao/notificacao.service';
+import { PrecoComDesconto } from '../../shared/preco/preco-com-desconto';
 import {
     AluguelModel,
     rotuloPlano,
@@ -29,6 +30,7 @@ import { AluguelService } from '../aluguel.service';
         MatSelectModule,
         RouterLink,
         CurrencyPipe,
+        PrecoComDesconto,
     ],
     templateUrl: './listar-alugueis.html',
 })
