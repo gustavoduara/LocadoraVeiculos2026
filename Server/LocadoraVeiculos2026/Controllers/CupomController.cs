@@ -17,7 +17,8 @@ public sealed class CupomController(IMediator mediator) : MainController
     public async Task<ActionResult<CadastrarCupomResponse>> Cadastrar(
         CadastrarCupomRequest request, CancellationToken cancellationToken)
     {
-        CadastrarCupomCommand command = new(request.Nome, request.Valor, request.DataValidade, request.ParceiroId);
+        CadastrarCupomCommand command = new(
+            request.Nome, request.Valor, request.DataValidade, request.ParceiroId, request.Tipo);
 
         Result<CadastrarCupomResult> result = await mediator.Send(command, cancellationToken);
 
@@ -30,7 +31,8 @@ public sealed class CupomController(IMediator mediator) : MainController
     public async Task<ActionResult<CupomDto>> Editar(
         Guid id, EditarCupomRequest request, CancellationToken cancellationToken)
     {
-        EditarCupomCommand command = new(id, request.Nome, request.Valor, request.DataValidade, request.ParceiroId);
+        EditarCupomCommand command = new(
+            id, request.Nome, request.Valor, request.DataValidade, request.ParceiroId, request.Tipo);
 
         Result<EditarCupomResult> result = await mediator.Send(command, cancellationToken);
 

@@ -258,6 +258,48 @@ public class AluguelTestes
     }
 
     [Fact]
+    public void Cupom_percentual_abate_a_porcentagem_do_consumo_sem_tocar_na_caucao()
+    {
+        var aluguel = Criar();
+        aluguel.CupomTipo = TipoDesconto.Percentual;
+        aluguel.CupomValor = 10m;
+
+        var previsto = aluguel.CalcularPrevisto();
+
+        Assert.Equal(65m, previsto.ValorDesconto); // 10% de 650 de consumo
+        Assert.Equal(1585m, previsto.ValorTotalPrevisto); // 1650 - 65
+    }
+
+    [Fact]
+    public void Cupom_de_cem_por_cento_zera_o_consumo_mas_a_caucao_continua()
+    {
+        var aluguel = Criar();
+        aluguel.CupomTipo = TipoDesconto.Percentual;
+        aluguel.CupomValor = 100m;
+
+        var previsto = aluguel.CalcularPrevisto();
+
+        Assert.Equal(650m, previsto.ValorDesconto);
+        Assert.Equal(1000m, previsto.ValorTotalPrevisto);
+    }
+
+    [Fact]
+    public void Cupom_percentual_no_valor_final_incide_so_sobre_o_consumo()
+    {
+        var aluguel = Criar(TipoPlano.Controlado, dias: 2, seguro: 0m, comTaxas: false);
+        aluguel.CupomTipo = TipoDesconto.Percentual;
+        aluguel.CupomValor = 10m;
+
+        // Consumo 650 (sem cupom o final é 2045): desconto de 65, multa e combustível intactos.
+        var final = aluguel.CalcularFinal(Saida.AddDays(3), 300 + 1000, tanqueCheio: false, 5.5m, 60);
+
+        Assert.Equal(65m, final.ValorDesconto);
+        Assert.Equal(65m, final.ValorMulta);
+        Assert.Equal(330m, final.ValorCombustivel);
+        Assert.Equal(1980m, final.ValorFinal);
+    }
+
+    [Fact]
     public void Cupom_maior_que_o_consumo_e_limitado_e_a_caucao_continua_inteira()
     {
         var aluguel = Criar(TipoPlano.Livre, dias: 1, seguro: 0m, comTaxas: false);

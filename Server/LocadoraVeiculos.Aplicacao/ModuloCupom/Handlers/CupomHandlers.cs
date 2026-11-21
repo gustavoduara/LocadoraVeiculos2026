@@ -21,6 +21,7 @@ internal static class CupomMapeamento
         c.Id,
         c.Nome,
         c.Valor,
+        c.Tipo,
         c.DataValidade,
         c.ParceiroId,
         c.Parceiro?.Nome ?? string.Empty,
@@ -59,7 +60,7 @@ public class CadastrarCupomCommandHandler(
         try
         {
             Cupom cupom = new(
-                tenantProvider.EmpresaId.GetValueOrDefault(), nome, command.Valor, command.DataValidade, parceiro.Id);
+                tenantProvider.EmpresaId.GetValueOrDefault(), nome, command.Valor, command.DataValidade, parceiro.Id, command.Tipo);
 
             await repositorioCupom.CadastrarAsync(cupom);
 
@@ -112,7 +113,7 @@ public class EditarCupomCommandHandler(
         {
             // Aluguéis já feitos guardam uma cópia do valor, então editar o cupom não muda o que já foi cobrado.
             cupom.AtualizarRegistro(new Cupom(
-                tenantProvider.EmpresaId.GetValueOrDefault(), nome, command.Valor, command.DataValidade, parceiro.Id));
+                tenantProvider.EmpresaId.GetValueOrDefault(), nome, command.Valor, command.DataValidade, parceiro.Id, command.Tipo));
 
             cupom.Parceiro = parceiro;
 
@@ -221,7 +222,8 @@ public class CuponsMaisUtilizadosQueryHandler(
                     cupom?.Nome ?? g.First().NomeCupom,
                     cupom?.Parceiro?.Nome ?? string.Empty,
                     cupom?.Valor ?? g.First().ValorCupom,
-                    g.Count());
+                    g.Count(),
+                    cupom?.Tipo ?? g.First().TipoCupom);
             })
             .OrderByDescending(c => c.Usos)
             .ThenBy(c => c.Nome)

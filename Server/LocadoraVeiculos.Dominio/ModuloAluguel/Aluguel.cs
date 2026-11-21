@@ -95,6 +95,9 @@ public class Aluguel : EntidadeBase<Aluguel>
     public string? CupomNome { get; set; }
     public decimal CupomValor { get; set; }
 
+    /// <summary>Se <see cref="CupomValor"/> é um valor em reais ou uma porcentagem.</summary>
+    public TipoDesconto CupomTipo { get; set; } = TipoDesconto.Valor;
+
     // ---- situação e devolução
     public StatusAluguel Status { get; set; } = StatusAluguel.EmAberto;
     public DateOnly? DataDevolucao { get; set; }
@@ -127,10 +130,13 @@ public class Aluguel : EntidadeBase<Aluguel>
     public decimal ValorSeguro => Arredondar(SeguroPrecoDiaria * Dias);
 
     /// <summary>
-    /// Desconto do cupom: valor fixo abatido do que foi consumido, limitado a esse consumo
+    /// Desconto do cupom, limitado ao que foi consumido: um valor fixo ou uma porcentagem do consumo
     /// (a caução não recebe desconto, pois é devolvida ao cliente).
     /// </summary>
-    private decimal CalcularDesconto(decimal consumo) => Math.Min(CupomValor, consumo);
+    private decimal CalcularDesconto(decimal consumo) =>
+        CupomTipo == TipoDesconto.Percentual
+            ? Math.Min(Arredondar(consumo * CupomValor / 100m), consumo)
+            : Math.Min(CupomValor, consumo);
 
     /// <summary>Caução + diárias do plano + taxas + seguro − desconto. Km rodados, combustível e multa só entram na devolução.</summary>
     public DetalhamentoPrevisto CalcularPrevisto()
@@ -261,6 +267,7 @@ public class Aluguel : EntidadeBase<Aluguel>
         CupomId = editado.CupomId;
         CupomNome = editado.CupomNome;
         CupomValor = editado.CupomValor;
+        CupomTipo = editado.CupomTipo;
 
         Taxas.Clear();
 

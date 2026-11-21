@@ -147,6 +147,7 @@ public class AluguelServico(
             CupomId = cupom?.Id,
             CupomNome = cupom?.Nome,
             CupomValor = cupom?.Valor ?? 0m,
+            CupomTipo = cupom?.Tipo ?? TipoDesconto.Valor,
             Taxas = taxas
                 .Select(t => new AluguelTaxa(t.Id, t.Nome, t.Preco, t.TipoCobranca))
                 .ToList()

@@ -1,6 +1,7 @@
 using FluentValidation.TestHelper;
 using LocadoraDeVeiculos.Aplicacao.ModuloCupom.Commands;
 using LocadoraDeVeiculos.Aplicacao.ModuloCupom.Validators;
+using LocadoraDeVeiculos.Dominio.Compartilhado;
 using LocadoraDeVeiculos.Aplicacao.ModuloParceiro.Commands;
 using LocadoraDeVeiculos.Aplicacao.ModuloParceiro.Validators;
 
@@ -46,6 +47,28 @@ public class CupomParceiroValidadoresTestes
         new CadastrarCupomCommandValidator()
             .TestValidate(new CadastrarCupomCommand("PROMO10", valor, Hoje.AddDays(1), Guid.NewGuid()))
             .ShouldHaveValidationErrorFor(c => c.Valor);
+    }
+
+    [Theory]
+    [InlineData(100, true)]
+    [InlineData(10.5, true)]
+    [InlineData(100.01, false)]
+    [InlineData(150, false)]
+    public void Cupom_percentual_aceita_de_zero_virgula_zero_um_ate_cem(double percentual, bool valido)
+    {
+        var resultado = new CadastrarCupomCommandValidator().TestValidate(new CadastrarCupomCommand(
+            "PROMO10", (decimal)percentual, Hoje.AddDays(1), Guid.NewGuid(), TipoDesconto.Percentual));
+
+        if (valido) resultado.ShouldNotHaveValidationErrorFor(c => c.Valor);
+        else resultado.ShouldHaveValidationErrorFor(c => c.Valor);
+    }
+
+    [Fact]
+    public void Cupom_de_valor_fixo_continua_aceitando_mais_de_cem()
+    {
+        new CadastrarCupomCommandValidator()
+            .TestValidate(new CadastrarCupomCommand("PROMO10", 150m, Hoje.AddDays(1), Guid.NewGuid(), TipoDesconto.Valor))
+            .ShouldNotHaveValidationErrorFor(c => c.Valor);
     }
 
     [Fact]

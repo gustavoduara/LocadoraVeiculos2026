@@ -1,3 +1,4 @@
+using LocadoraDeVeiculos.Dominio.Compartilhado;
 using LocadoraDeVeiculos.Dominio.ModuloCupom;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -12,6 +13,7 @@ public class MapeadorCupomEmOrm : IEntityTypeConfiguration<Cupom>
 
         builder.Property(c => c.Nome).HasColumnType("nvarchar(50)").IsRequired();
         builder.Property(c => c.Valor).HasColumnType("decimal(18,2)").IsRequired();
+        builder.Property(c => c.Tipo).HasConversion<int>().HasDefaultValue(TipoDesconto.Valor).IsRequired();
         builder.Property(c => c.DataValidade).HasColumnType("date").IsRequired();
 
         builder.HasOne(c => c.Parceiro)

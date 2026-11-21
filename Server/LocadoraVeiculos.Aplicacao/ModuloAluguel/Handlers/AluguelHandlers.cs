@@ -51,7 +51,9 @@ internal static class AluguelMapeamento
             a.CalcularPrevisto(),
             devolucao,
             a.CupomId,
-            a.CupomNome
+            a.CupomNome,
+            a.CupomId is null ? null : a.CupomTipo,
+            a.CupomValor
         );
     }
 }

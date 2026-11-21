@@ -43,7 +43,9 @@ public record AluguelDto(
     DetalhamentoPrevisto Previsto,
     DevolucaoDto? Devolucao,
     Guid? CupomId = null,
-    string? NomeCupom = null
+    string? NomeCupom = null,
+    TipoDesconto? CupomTipo = null,
+    decimal CupomValor = 0m
 );
 
 /// <summary>Resultado de uma simulação de preço (nada é gravado).</summary>

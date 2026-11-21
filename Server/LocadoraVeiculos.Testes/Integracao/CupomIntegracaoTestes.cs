@@ -139,6 +139,54 @@ public class CupomIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFactor
     }
 
     [Fact]
+    public async Task Cupom_percentual_desconta_a_porcentagem_do_consumo_e_guarda_o_tipo_no_aluguel()
+    {
+        var c = await Criar(fabrica);
+        var parceiro = (await c.Api.Post("/api/parceiros", new { nome = "Parceiro" })).Id;
+
+        // A porcentagem não passa de 100; sem informar o tipo, continua sendo valor fixo.
+        Assert.Equal(400, (await c.Api.Post("/api/cupons", new
+        {
+            nome = "MUITO", valor = 150m, dataValidade = Dia(30), parceiroId = parceiro, tipo = "Percentual"
+        })).Codigo);
+
+        var criado = await c.Api.Post("/api/cupons", new
+        {
+            nome = "DEZPORCENTO", valor = 10m, dataValidade = Dia(30), parceiroId = parceiro, tipo = "Percentual"
+        });
+        Assert.Equal(201, criado.Codigo);
+
+        var lido = await c.Api.Get($"/api/cupons/{criado.Id}");
+        Assert.Equal("Percentual", lido.Texto("tipo"));
+        Assert.Equal(10m, lido.Numero("valor"));
+
+        var fixo = await c.Api.Get($"/api/cupons/{(await c.Api.Post("/api/cupons", Cupom(parceiro, "FIXO20", 20m))).Id}");
+        Assert.Equal("Valor", fixo.Texto("tipo"));
+
+        var carro = await c.NovoAutomovel();
+
+        // 3 diárias de R$ 150 = 450; 10% = 45 -> 1000 de caução + 405.
+        var simulacao = await c.Api.Post("/api/alugueis/calcular", Aluguel(c, carro, criado.Id));
+        Assert.Equal(45m, simulacao.Corpo.GetProperty("previsto").GetProperty("valorDesconto").GetDecimal());
+        Assert.Equal(1405m, simulacao.Corpo.GetProperty("previsto").GetProperty("valorTotalPrevisto").GetDecimal());
+
+        var aluguel = await c.Api.Post("/api/alugueis", Aluguel(c, carro, criado.Id));
+        Assert.Equal(201, aluguel.Codigo);
+
+        var gravado = await c.Api.Get($"/api/alugueis/{aluguel.Id}");
+        Assert.Equal("Percentual", gravado.Texto("cupomTipo"));
+        Assert.Equal(10m, gravado.Numero("cupomValor"));
+
+        // Editar o cupom depois não muda o aluguel já feito (ele guarda a própria cópia).
+        await c.Api.Put($"/api/cupons/{criado.Id}", new
+        {
+            nome = "DEZPORCENTO", valor = 50m, dataValidade = Dia(30), parceiroId = parceiro, tipo = "Percentual"
+        });
+        var depois = await c.Api.Get($"/api/alugueis/{aluguel.Id}");
+        Assert.Equal(1405m, depois.Corpo.GetProperty("previsto").GetProperty("valorTotalPrevisto").GetDecimal());
+    }
+
+    [Fact]
     public async Task Cupom_expirado_ou_inexistente_nao_pode_ser_usado()
     {
         var c = await Criar(fabrica);

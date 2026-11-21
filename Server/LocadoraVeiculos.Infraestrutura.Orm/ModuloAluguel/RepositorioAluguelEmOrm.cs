@@ -1,3 +1,4 @@
+using LocadoraDeVeiculos.Dominio.Compartilhado;
 using LocadoraDeVeiculos.Dominio.ModuloAluguel;
 using LocadoraDeVeiculos.Infraestrutura.Orm.Compartilhado;
 using Microsoft.EntityFrameworkCore;
@@ -5,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace LocadoraDeVeiculos.Infraestrutura.Orm.ModuloAluguel;
 
 /// <summary>Uma utilização de cupom em um aluguel.</summary>
-public record UsoDeCupom(Guid CupomId, string NomeCupom, decimal ValorCupom);
+public record UsoDeCupom(Guid CupomId, string NomeCupom, decimal ValorCupom, TipoDesconto TipoCupom);
 
 public class RepositorioAluguelEmOrm : RepositorioBaseEmOrm<Aluguel>
 {
@@ -84,7 +85,7 @@ public class RepositorioAluguelEmOrm : RepositorioBaseEmOrm<Aluguel>
     public async Task<List<UsoDeCupom>> SelecionarUsosDeCuponsAsync() =>
         await dbContext.Alugueis
             .Where(a => a.CupomId != null)
-            .Select(a => new UsoDeCupom(a.CupomId!.Value, a.CupomNome ?? string.Empty, a.CupomValor))
+            .Select(a => new UsoDeCupom(a.CupomId!.Value, a.CupomNome ?? string.Empty, a.CupomValor, a.CupomTipo))
             .ToListAsync();
 
     public async Task<bool> ExisteEmAbertoParaTaxaAsync(Guid taxaServicoId) =>

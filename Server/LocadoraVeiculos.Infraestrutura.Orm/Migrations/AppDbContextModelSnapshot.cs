@@ -49,6 +49,11 @@ namespace LocadoraDeVeiculos.Infraestrutura.Orm.Migrations
                     b.Property<string>("CupomNome")
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<int>("CupomTipo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
                     b.Property<decimal>("CupomValor")
                         .HasColumnType("decimal(18,2)");
 
@@ -599,6 +604,11 @@ namespace LocadoraDeVeiculos.Infraestrutura.Orm.Migrations
 
                     b.Property<Guid>("ParceiroId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Tipo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
 
                     b.Property<decimal>("Valor")
                         .HasColumnType("decimal(18,2)");

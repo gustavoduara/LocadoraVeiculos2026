@@ -1,3 +1,4 @@
+using LocadoraDeVeiculos.Dominio.Compartilhado;
 using LocadoraDeVeiculos.Dominio.ModuloAluguel;
 using LocadoraDeVeiculos.Dominio.ModuloCliente;
 using LocadoraDeVeiculos.Dominio.ModuloCupom;
@@ -33,6 +34,7 @@ public class MapeadorAluguelEmOrm : IEntityTypeConfiguration<Aluguel>
 
         builder.Property(a => a.CupomNome).HasColumnType("nvarchar(50)");
         builder.Property(a => a.CupomValor).HasColumnType("decimal(18,2)").IsRequired();
+        builder.Property(a => a.CupomTipo).HasConversion<int>().HasDefaultValue(TipoDesconto.Valor).IsRequired();
 
         builder.Property(a => a.Status).IsRequired();
         builder.Property(a => a.DataDevolucao).HasColumnType("date");
