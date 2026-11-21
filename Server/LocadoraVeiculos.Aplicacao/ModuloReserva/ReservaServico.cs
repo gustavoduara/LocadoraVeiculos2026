@@ -3,15 +3,24 @@ using LocadoraDeVeiculos.Aplicacao.Compartilhado;
 using LocadoraDeVeiculos.Aplicacao.ModuloReserva.Commands;
 using LocadoraDeVeiculos.Dominio.Compartilhado;
 using LocadoraDeVeiculos.Dominio.ModuloAluguel;
+using LocadoraDeVeiculos.Dominio.ModuloCupom;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoCobranca;
 using LocadoraDeVeiculos.Dominio.ModuloReserva;
+using LocadoraDeVeiculos.Dominio.ModuloTaxaServico;
 using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloCatalogo;
 using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloReserva;
 
 namespace LocadoraDeVeiculos.Aplicacao.ModuloReserva;
 
 /// <summary>Resultado de validar um pedido: o carro, o valor previsto e o nome da locadora.</summary>
-public record PreparoReserva(CarroReservavel Carro, EstimativaReservaDto Estimativa, string NomeLocadora, string DescricaoVeiculo);
+public record PreparoReserva(
+    CarroReservavel Carro,
+    EstimativaReservaDto Estimativa,
+    string NomeLocadora,
+    string DescricaoVeiculo,
+    IReadOnlyList<ReservaTaxa> Taxas,
+    Cupom? Cupom
+);
 
 /// <summary>
 /// Regras do pedido de reserva (lado do cliente). Atravessa as locadoras, então usa leituras que ignoram o filtro por empresa,
@@ -24,7 +33,13 @@ public class ReservaServico(
 {
     private const int DiasMaximosDeReserva = 365;
 
-    public async Task<Result<PreparoReserva>> PrepararAsync(DadosReservaDto dados)
+    private const int MaximoDeTaxas = 20;
+
+    /// <summary>
+    /// Valida o pedido e calcula o valor. <paramref name="usuarioClienteId"/> e <paramref name="cpf"/> servem para conferir se o
+    /// cliente já usou o cupom nesta locadora.
+    /// </summary>
+    public async Task<Result<PreparoReserva>> PrepararAsync(DadosReservaDto dados, Guid? usuarioClienteId = null, string? cpf = null)
     {
         DateOnly hoje = DateOnly.FromDateTime(DateTime.UtcNow);
 
@@ -70,6 +85,37 @@ public class ReservaServico(
         if (await repositorioReserva.CarroOcupadoAsync(carro.AutomovelId, dados.Retirada, dados.Devolucao, hoje))
             return Result.Fail(ResultadosErro.RegistroDuplicadoErro("O veículo não está disponível no período informado."));
 
+        // Taxas e serviços: só os do catálogo da locadora do carro.
+        List<Guid> idsTaxas = (dados.TaxasIds ?? []).Distinct().ToList();
+
+        if (idsTaxas.Count > MaximoDeTaxas)
+            return Result.Fail(ResultadosErro.RequisicaoInvalidaErro($"Escolha no máximo {MaximoDeTaxas} taxas e serviços."));
+
+        List<TaxaServico> taxasDaLocadora = await repositorioReserva.SelecionarTaxasDaLocadoraAsync(carro.EmpresaId);
+        List<TaxaServico> taxas = taxasDaLocadora.Where(t => idsTaxas.Contains(t.Id)).ToList();
+
+        if (taxas.Count != idsTaxas.Count)
+            return Result.Fail(ResultadosErro.RequisicaoInvalidaErro("Uma das taxas ou serviços escolhidos não existe nesta locadora."));
+
+        // Cupom: procurado pelo nome na locadora do carro; vale o mesmo que no aluguel (não vencido, um uso por cliente).
+        Cupom? cupom = null;
+
+        if (!string.IsNullOrWhiteSpace(dados.Cupom))
+        {
+            cupom = await repositorioReserva.SelecionarCupomPorNomeAsync(carro.EmpresaId, dados.Cupom);
+
+            if (cupom is null)
+                return Result.Fail(ResultadosErro.RequisicaoInvalidaErro("Não encontramos este cupom nesta locadora."));
+
+            if (!cupom.EstaAtivo(hoje))
+                return Result.Fail(ResultadosErro.RequisicaoInvalidaErro($"O cupom \"{cupom.Nome}\" expirou em {cupom.DataValidade:dd/MM/yyyy}."));
+
+            if (usuarioClienteId is { } usuario &&
+                await repositorioReserva.ClienteJaUsouCupomAsync(usuario, carro.EmpresaId, cpf, cupom.Id))
+                return Result.Fail(ResultadosErro.RequisicaoInvalidaErro(
+                    $"Você já usou o cupom \"{cupom.Nome}\" nesta locadora. Cada cupom vale uma vez por cliente."));
+        }
+
         // A mesma conta do aluguel, com um aluguel de mentira só para calcular.
         Aluguel simulado = new()
         {
@@ -78,7 +124,12 @@ public class ReservaServico(
             TipoPlano = dados.TipoPlano,
             TipoSeguro = dados.TipoSeguro,
             SeguroPrecoDiaria = precoSeguro,
-            ValorCaucao = Aluguel.ValorCaucaoPadrao
+            ValorCaucao = Aluguel.ValorCaucaoPadrao,
+            Taxas = taxas.Select(t => new AluguelTaxa(t.Id, t.Nome, t.Preco, t.TipoCobranca)).ToList(),
+            CupomId = cupom?.Id,
+            CupomNome = cupom?.Nome,
+            CupomTipo = cupom?.Tipo ?? TipoDesconto.Valor,
+            CupomValor = cupom?.Valor ?? 0m
         };
 
         switch (dados.TipoPlano)
@@ -98,11 +149,21 @@ public class ReservaServico(
 
         DetalhamentoPrevisto previsto = simulado.CalcularPrevisto();
 
+        var linhasDeTaxas = simulado.Taxas
+            .Select(t => new TaxaDaReservaDto(t.TaxaServicoId, t.Nome, t.PrecoUnitario, t.TipoCobranca, t.ValorPara(previsto.Dias)))
+            .ToList();
+
         var estimativa = new EstimativaReservaDto(
-            previsto.Dias, previsto.ValorDiarias, previsto.ValorSeguro, previsto.ValorCaucao, previsto.ValorTotalPrevisto);
+            previsto.Dias, previsto.ValorDiarias, previsto.ValorSeguro, previsto.ValorCaucao, previsto.ValorTotalPrevisto,
+            previsto.ValorTaxas, previsto.ValorDesconto, linhasDeTaxas, cupom?.Nome, cupom?.Tipo, cupom?.Valor ?? 0m);
+
+        List<ReservaTaxa> taxasDaReserva = taxas
+            .Select(t => new ReservaTaxa { TaxaServicoId = t.Id, Nome = t.Nome, PrecoUnitario = t.Preco, TipoCobranca = t.TipoCobranca })
+            .ToList();
 
         string nomeLocadora = await repositorioCatalogo.SelecionarNomeDaLocadoraAsync(carro.EmpresaId);
 
-        return Result.Ok(new PreparoReserva(carro, estimativa, nomeLocadora, $"{carro.Marca} {carro.Modelo} ({carro.Ano})"));
+        return Result.Ok(new PreparoReserva(
+            carro, estimativa, nomeLocadora, $"{carro.Marca} {carro.Modelo} ({carro.Ano})", taxasDaReserva, cupom));
     }
 }

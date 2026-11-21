@@ -11,10 +11,12 @@ public record DadosReservaRequest(
     DateOnly Retirada,
     DateOnly Devolucao,
     TipoPlano TipoPlano,
-    TipoSeguro TipoSeguro
+    TipoSeguro TipoSeguro,
+    List<Guid>? TaxasIds = null,
+    string? Cupom = null
 )
 {
-    public DadosReservaDto ParaDados() => new(AutomovelId, Retirada, Devolucao, TipoPlano, TipoSeguro);
+    public DadosReservaDto ParaDados() => new(AutomovelId, Retirada, Devolucao, TipoPlano, TipoSeguro, TaxasIds ?? [], Cupom);
 }
 
 public record AprovarReservaRequest(int KmInicial);

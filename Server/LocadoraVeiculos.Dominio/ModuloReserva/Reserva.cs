@@ -48,6 +48,16 @@ public class Reserva : EntidadeBase<Reserva>
     public decimal ValorCaucao { get; set; }
     public decimal ValorTotalPrevisto { get; set; }
 
+    // ---- taxas e cupom que o cliente escolheu (a locadora vê o mesmo valor que o cliente viu)
+    public decimal ValorTaxas { get; set; }
+    public decimal ValorDesconto { get; set; }
+    public List<ReservaTaxa> Taxas { get; set; } = [];
+
+    public Guid? CupomId { get; set; }
+    public string? CupomNome { get; set; }
+    public TipoDesconto CupomTipo { get; set; } = TipoDesconto.Valor;
+    public decimal CupomValor { get; set; }
+
     // ---- dados do cliente no momento do pedido
     public string ClienteNome { get; set; } = string.Empty;
     public string ClienteEmail { get; set; } = string.Empty;

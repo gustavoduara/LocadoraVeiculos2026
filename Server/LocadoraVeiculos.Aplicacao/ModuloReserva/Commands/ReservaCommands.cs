@@ -2,25 +2,40 @@ using FluentResults;
 using LocadoraDeVeiculos.Dominio.Compartilhado;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoCobranca;
 using LocadoraDeVeiculos.Dominio.ModuloReserva;
+using LocadoraDeVeiculos.Dominio.ModuloTaxaServico;
 using MediatR;
 
 namespace LocadoraDeVeiculos.Aplicacao.ModuloReserva.Commands;
 
-/// <summary>O que o cliente escolhe ao reservar. Datas em yyyy-MM-dd.</summary>
+/// <summary>
+/// O que o cliente escolhe ao reservar. Datas em yyyy-MM-dd. <c>TaxasIds</c> são taxas e serviços do catálogo da locadora
+/// do carro; <c>Cupom</c> é o nome do cupom (opcional) dessa locadora.
+/// </summary>
 public record DadosReservaDto(
     Guid AutomovelId,
     DateOnly Retirada,
     DateOnly Devolucao,
     TipoPlano TipoPlano,
-    TipoSeguro TipoSeguro
+    TipoSeguro TipoSeguro,
+    IReadOnlyList<Guid>? TaxasIds = null,
+    string? Cupom = null
 );
+
+/// <summary>Uma taxa ou serviço da reserva, com o valor já multiplicado pelos dias quando a cobrança é diária.</summary>
+public record TaxaDaReservaDto(Guid TaxaServicoId, string Nome, decimal PrecoUnitario, TipoCobrancaTaxa TipoCobranca, decimal Valor);
 
 public record EstimativaReservaDto(
     int Dias,
     decimal ValorDiarias,
     decimal ValorSeguro,
     decimal ValorCaucao,
-    decimal ValorTotalPrevisto
+    decimal ValorTotalPrevisto,
+    decimal ValorTaxas = 0m,
+    decimal ValorDesconto = 0m,
+    IReadOnlyList<TaxaDaReservaDto>? Taxas = null,
+    string? CupomNome = null,
+    TipoDesconto? CupomTipo = null,
+    decimal CupomValor = 0m
 );
 
 public record ReservaDto(
@@ -52,7 +67,13 @@ public record ReservaDto(
     string ClienteCnh,
     DateOnly ClienteValidadeCnh,
     string ClienteCidade,
-    string ClienteEstado
+    string ClienteEstado,
+    decimal ValorTaxas = 0m,
+    decimal ValorDesconto = 0m,
+    IReadOnlyList<TaxaDaReservaDto>? Taxas = null,
+    string? CupomNome = null,
+    TipoDesconto? CupomTipo = null,
+    decimal CupomValor = 0m
 );
 
 // ---------------- lado do cliente ----------------

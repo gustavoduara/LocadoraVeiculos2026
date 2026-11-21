@@ -12,6 +12,8 @@ using LocadoraDeVeiculos.Dominio.ModuloCondutor;
 using LocadoraDeVeiculos.Dominio.ModuloConfiguracao;
 using LocadoraDeVeiculos.Dominio.ModuloFuncionario;
 using LocadoraDeVeiculos.Dominio.ModuloReserva;
+using LocadoraDeVeiculos.Dominio.Compartilhado;
+using LocadoraDeVeiculos.Dominio.ModuloTaxaServico;
 using LocadoraDeVeiculos.Infraestrutura.Orm.Compartilhado;
 using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloAluguel;
 using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloCliente;
@@ -57,7 +59,16 @@ internal static class ReservaMapeamento
         r.ClienteCnh,
         r.ClienteValidadeCnh,
         r.ClienteCidade,
-        r.ClienteEstado
+        r.ClienteEstado,
+        r.ValorTaxas,
+        r.ValorDesconto,
+        r.Taxas
+            .Select(t => new TaxaDaReservaDto(t.TaxaServicoId, t.Nome, t.PrecoUnitario, t.TipoCobranca,
+                t.TipoCobranca == TipoCobrancaTaxa.Fixo ? t.PrecoUnitario : t.PrecoUnitario * r.Dias))
+            .ToList(),
+        r.CupomNome,
+        r.CupomId is null ? null : r.CupomTipo,
+        r.CupomValor
     );
 }
 
@@ -65,12 +76,19 @@ internal static class ReservaMapeamento
 // Lado do cliente
 // =====================================================================================
 
-public class CalcularReservaQueryHandler(ReservaServico servico)
-    : IRequestHandler<CalcularReservaQuery, Result<EstimativaReservaDto>>
+public class CalcularReservaQueryHandler(
+    ReservaServico servico,
+    RepositorioPerfilClienteEmOrm repositorioPerfil,
+    ITenantProvider tenantProvider
+) : IRequestHandler<CalcularReservaQuery, Result<EstimativaReservaDto>>
 {
     public async Task<Result<EstimativaReservaDto>> Handle(CalcularReservaQuery query, CancellationToken cancellationToken)
     {
-        Result<PreparoReserva> preparo = await servico.PrepararAsync(query.Dados);
+        // O CPF e o usuário servem para saber se o cliente já usou o cupom nesta locadora.
+        Guid? usuarioId = tenantProvider.UsuarioId;
+        var perfil = usuarioId is { } id ? await repositorioPerfil.SelecionarAsync(id) : null;
+
+        Result<PreparoReserva> preparo = await servico.PrepararAsync(query.Dados, usuarioId, perfil?.Cpf);
 
         return preparo.IsFailed ? Result.Fail(preparo.Errors) : Result.Ok(preparo.Value.Estimativa);
     }
@@ -95,12 +113,12 @@ public class CriarReservaCommandHandler(
 
         DadosReservaDto d = command.Dados;
 
-        Result<PreparoReserva> preparo = await servico.PrepararAsync(d);
+        DominioPerfil? perfil = await repositorioPerfil.SelecionarAsync(usuarioId);
+
+        Result<PreparoReserva> preparo = await servico.PrepararAsync(d, usuarioId, perfil?.Cpf);
 
         if (preparo.IsFailed)
             return Result.Fail(preparo.Errors);
-
-        DominioPerfil? perfil = await repositorioPerfil.SelecionarAsync(usuarioId);
 
         if (perfil is null)
             return Result.Fail(ResultadosErro.RequisicaoInvalidaErro(
@@ -145,6 +163,13 @@ public class CriarReservaCommandHandler(
                 ValorSeguro = p.Estimativa.ValorSeguro,
                 ValorCaucao = p.Estimativa.ValorCaucao,
                 ValorTotalPrevisto = p.Estimativa.ValorTotalPrevisto,
+                ValorTaxas = p.Estimativa.ValorTaxas,
+                ValorDesconto = p.Estimativa.ValorDesconto,
+                Taxas = p.Taxas.ToList(),
+                CupomId = p.Cupom?.Id,
+                CupomNome = p.Cupom?.Nome,
+                CupomTipo = p.Cupom?.Tipo ?? TipoDesconto.Valor,
+                CupomValor = p.Cupom?.Valor ?? 0m,
                 ClienteNome = usuario.FullName,
                 ClienteEmail = usuario.Email ?? string.Empty,
                 ClienteTelefone = perfil.Telefone,
@@ -330,7 +355,8 @@ public class AprovarReservaCommandHandler(
             Result<Aluguel> montagem = await aluguelServico.MontarAsync(
                 new DadosAluguelDto(
                     condutor.Id, reserva.AutomovelId, reserva.TipoPlano, reserva.Retirada, reserva.Devolucao,
-                    command.KmInicial, reserva.TipoSeguro, []),
+                    command.KmInicial, reserva.TipoSeguro,
+                    reserva.Taxas.Select(t => t.TaxaServicoId).ToList(), reserva.CupomId),
                 apenasPreco: false);
 
             if (montagem.IsFailed)

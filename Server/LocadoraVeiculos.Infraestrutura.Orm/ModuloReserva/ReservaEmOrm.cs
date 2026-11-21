@@ -2,8 +2,10 @@ using LocadoraDeVeiculos.Dominio.Compartilhado;
 using LocadoraDeVeiculos.Dominio.ModuloAluguel;
 using LocadoraDeVeiculos.Dominio.ModuloAutomovel;
 using LocadoraDeVeiculos.Dominio.ModuloConfiguracao;
+using LocadoraDeVeiculos.Dominio.ModuloCupom;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoCobranca;
 using LocadoraDeVeiculos.Dominio.ModuloReserva;
+using LocadoraDeVeiculos.Dominio.ModuloTaxaServico;
 using LocadoraDeVeiculos.Infraestrutura.Orm.Compartilhado;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -29,6 +31,17 @@ public class MapeadorReservaEmOrm : IEntityTypeConfiguration<Reserva>
         builder.Property(r => r.ValorSeguro).HasColumnType("decimal(18,2)").IsRequired();
         builder.Property(r => r.ValorCaucao).HasColumnType("decimal(18,2)").IsRequired();
         builder.Property(r => r.ValorTotalPrevisto).HasColumnType("decimal(18,2)").IsRequired();
+        builder.Property(r => r.ValorTaxas).HasColumnType("decimal(18,2)").IsRequired();
+        builder.Property(r => r.ValorDesconto).HasColumnType("decimal(18,2)").IsRequired();
+
+        builder.Property(r => r.CupomNome).HasColumnType("nvarchar(50)");
+        builder.Property(r => r.CupomValor).HasColumnType("decimal(18,2)").IsRequired();
+        builder.Property(r => r.CupomTipo).HasConversion<int>().HasDefaultValue(TipoDesconto.Valor).IsRequired();
+
+        builder.HasMany(r => r.Taxas)
+               .WithOne()
+               .HasForeignKey(t => t.ReservaId)
+               .OnDelete(DeleteBehavior.Cascade);
 
         builder.Property(r => r.ClienteNome).HasColumnType("nvarchar(150)").IsRequired();
         builder.Property(r => r.ClienteEmail).HasColumnType("nvarchar(256)").IsRequired();
@@ -54,6 +67,18 @@ public class MapeadorReservaEmOrm : IEntityTypeConfiguration<Reserva>
 
         builder.HasIndex(r => new { r.UsuarioClienteId, r.Status });
         builder.HasIndex(r => new { r.EmpresaId, r.Status });
+    }
+}
+
+public class MapeadorReservaTaxaEmOrm : IEntityTypeConfiguration<ReservaTaxa>
+{
+    public void Configure(EntityTypeBuilder<ReservaTaxa> builder)
+    {
+        builder.HasKey(t => t.Id);
+
+        builder.Property(t => t.Nome).HasColumnType("nvarchar(100)").IsRequired();
+        builder.Property(t => t.PrecoUnitario).HasColumnType("decimal(18,2)").IsRequired();
+        builder.Property(t => t.TipoCobranca).IsRequired();
     }
 }
 
@@ -114,9 +139,60 @@ public class RepositorioReservaEmOrm(AppDbContext dbContext) : RepositorioBaseEm
                 (a.DataRetornoPrevista >= hoje ? a.DataRetornoPrevista : hoje) >= retirada);
     }
 
+    /// <summary>Taxas e serviços do catálogo de uma locadora (o cliente escolhe entre elas ao reservar).</summary>
+    public async Task<List<TaxaServico>> SelecionarTaxasDaLocadoraAsync(Guid empresaId)
+    {
+        return await dbContext.TaxasServicos
+            .IgnoreQueryFilters()
+            .AsNoTracking()
+            .Where(t => t.EmpresaId == empresaId && !t.Excluido)
+            .OrderBy(t => t.Nome)
+            .ToListAsync();
+    }
+
+    /// <summary>O cupom que o cliente digitou, procurado pelo nome (sem diferenciar maiúsculas) na locadora do carro.</summary>
+    public async Task<Cupom?> SelecionarCupomPorNomeAsync(Guid empresaId, string nome)
+    {
+        string procurado = nome.Trim().ToUpper();
+
+        return await dbContext.Cupons
+            .IgnoreQueryFilters()
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.EmpresaId == empresaId && !c.Excluido && c.Nome.ToUpper() == procurado);
+    }
+
+    /// <summary>
+    /// Cada cliente usa um cupom uma vez por locadora: vale se ele já tem um pedido pendente ou aprovado com o cupom,
+    /// ou um aluguel (pelo mesmo CPF) que o usou.
+    /// </summary>
+    public async Task<bool> ClienteJaUsouCupomAsync(Guid usuarioClienteId, Guid empresaId, string? cpf, Guid cupomId)
+    {
+        if (await dbContext.Reservas.IgnoreQueryFilters().AnyAsync(r =>
+                !r.Excluido && r.UsuarioClienteId == usuarioClienteId && r.CupomId == cupomId &&
+                (r.Status == StatusReserva.Pendente || r.Status == StatusReserva.Aprovada)))
+            return true;
+
+        if (string.IsNullOrWhiteSpace(cpf))
+            return false;
+
+        Guid? clienteId = await dbContext.Clientes.IgnoreQueryFilters()
+            .Where(c => c.EmpresaId == empresaId && !c.Excluido && c.Cpf == cpf)
+            .Select(c => (Guid?)c.Id)
+            .FirstOrDefaultAsync();
+
+        return clienteId is not null &&
+               await dbContext.Alugueis.IgnoreQueryFilters().AnyAsync(a => !a.Excluido && a.ClienteId == clienteId && a.CupomId == cupomId);
+    }
+
+    public override async Task<Reserva?> SelecionarPorIdAsync(Guid idRegistro)
+    {
+        return await dbContext.Reservas.Include(r => r.Taxas).FirstOrDefaultAsync(r => r.Id == idRegistro);
+    }
+
     public async Task<List<Reserva>> SelecionarDoClienteAsync(Guid usuarioClienteId)
     {
         return await dbContext.Reservas
+            .Include(r => r.Taxas)
             .IgnoreQueryFilters()
             .Where(r => !r.Excluido && r.UsuarioClienteId == usuarioClienteId)
             .OrderBy(r => r.Status)
@@ -127,6 +203,7 @@ public class RepositorioReservaEmOrm(AppDbContext dbContext) : RepositorioBaseEm
     public async Task<Reserva?> SelecionarDoClientePorIdAsync(Guid id, Guid usuarioClienteId)
     {
         return await dbContext.Reservas
+            .Include(r => r.Taxas)
             .IgnoreQueryFilters()
             .FirstOrDefaultAsync(r => r.Id == id && !r.Excluido && r.UsuarioClienteId == usuarioClienteId);
     }
@@ -165,7 +242,7 @@ public class RepositorioReservaEmOrm(AppDbContext dbContext) : RepositorioBaseEm
 
     public async Task<List<Reserva>> SelecionarDaLocadoraAsync(StatusReserva? status)
     {
-        IQueryable<Reserva> consulta = dbContext.Reservas;
+        IQueryable<Reserva> consulta = dbContext.Reservas.Include(r => r.Taxas);
 
         if (status is not null)
             consulta = consulta.Where(r => r.Status == status);

@@ -1,5 +1,6 @@
 using FluentResults;
 using LocadoraDeVeiculos.Dominio.Compartilhado;
+using LocadoraDeVeiculos.Dominio.ModuloTaxaServico;
 using MediatR;
 
 namespace LocadoraDeVeiculos.Aplicacao.ModuloCatalogo.Commands;
@@ -74,7 +75,10 @@ public record PlanoControladoOpcaoDto(int KmDisponiveisPorDia, decimal PrecoDiar
 
 public record PlanoLivreOpcaoDto(decimal PrecoDiaria);
 
-/// <summary>O que o cliente precisa para escolher como reservar: o carro, os 3 planos e os seguros que a locadora oferece.</summary>
+/// <summary>Uma taxa ou serviço que a locadora oferece (o cliente marca os que quer ao reservar).</summary>
+public record TaxaOpcaoDto(Guid Id, string Nome, decimal Preco, TipoCobrancaTaxa TipoCobranca);
+
+/// <summary>O que o cliente precisa para escolher como reservar: o carro, os 3 planos, os seguros e as taxas que a locadora oferece.</summary>
 public record CarroDetalheDto(
     Guid Id,
     Guid LocadoraId,
@@ -92,7 +96,8 @@ public record CarroDetalheDto(
     /// <summary>Vazio quando a locadora não oferece esse seguro.</summary>
     decimal? SeguroClienteDiaria,
     decimal? SeguroTerceirosDiaria,
-    decimal ValorCaucao
+    decimal ValorCaucao,
+    IReadOnlyList<TaxaOpcaoDto>? Taxas = null
 );
 
 public record DetalharCarroQuery(Guid AutomovelId) : IRequest<Result<CarroDetalheDto>>;

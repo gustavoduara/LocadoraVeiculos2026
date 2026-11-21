@@ -912,6 +912,20 @@ namespace LocadoraDeVeiculos.Infraestrutura.Orm.Migrations
                     b.Property<DateTimeOffset>("CriadoEmUtc")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<Guid?>("CupomId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CupomNome")
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("CupomTipo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<decimal>("CupomValor")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<string>("DescricaoVeiculo")
                         .IsRequired()
                         .HasColumnType("nvarchar(150)");
@@ -963,10 +977,16 @@ namespace LocadoraDeVeiculos.Infraestrutura.Orm.Migrations
                     b.Property<decimal>("ValorCaucao")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<decimal>("ValorDesconto")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<decimal>("ValorDiarias")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("ValorSeguro")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("ValorTaxas")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("ValorTotalPrevisto")
@@ -983,6 +1003,35 @@ namespace LocadoraDeVeiculos.Infraestrutura.Orm.Migrations
                     b.HasIndex("UsuarioClienteId", "Status");
 
                     b.ToTable("Reservas");
+                });
+
+            modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloReserva.ReservaTaxa", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<decimal>("PrecoUnitario")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("ReservaId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TaxaServicoId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("TipoCobranca")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReservaId");
+
+                    b.ToTable("ReservaTaxa");
                 });
 
             modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloTaxaServico.TaxaServico", b =>
@@ -1372,6 +1421,15 @@ namespace LocadoraDeVeiculos.Infraestrutura.Orm.Migrations
                     b.Navigation("Empresa");
                 });
 
+            modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloReserva.ReservaTaxa", b =>
+                {
+                    b.HasOne("LocadoraDeVeiculos.Dominio.ModuloReserva.Reserva", null)
+                        .WithMany("Taxas")
+                        .HasForeignKey("ReservaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloTaxaServico.TaxaServico", b =>
                 {
                     b.HasOne("LocadoraDeVeiculos.Dominio.ModuloAutenticacao.Usuario", "Empresa")
@@ -1435,6 +1493,11 @@ namespace LocadoraDeVeiculos.Infraestrutura.Orm.Migrations
                 });
 
             modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloAluguel.Aluguel", b =>
+                {
+                    b.Navigation("Taxas");
+                });
+
+            modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloReserva.Reserva", b =>
                 {
                     b.Navigation("Taxas");
                 });
