@@ -100,24 +100,50 @@ import { PaginaLegal } from './pagina-legal';
             <h3>6. Por quanto tempo guardamos</h3>
             <p>
                 Guardamos os dados enquanto a conta existir e pelo tempo necessário para cumprir obrigações legais, resolver
-                disputas e manter o histórico dos aluguéis. Quando um registro é excluído no sistema, ele deixa de aparecer,
-                mas pode permanecer no banco de dados por um período (exclusão lógica). Para a eliminação definitiva, faça um
-                pedido pelos canais da seção 9.
+                disputas e manter o histórico dos aluguéis. Quando um registro comum é excluído no sistema, ele deixa de
+                aparecer, mas pode permanecer no banco de dados por um período (exclusão lógica).
             </p>
 
-            <h3>7. Segurança</h3>
+            <h3>7. Excluir a sua conta</h3>
+            <p>
+                Você mesmo exclui a sua conta, a qualquer momento, em <strong>menu do seu nome &gt; Excluir minha conta</strong>
+                (pedimos a senha e uma confirmação):
+            </p>
+            <ul>
+                <li>
+                    <strong>Cliente:</strong> a exclusão é <strong>imediata</strong>. Apagamos "Meus dados" (CPF, RG, CNH,
+                    telefone e endereço), cancelamos os pedidos que esperavam resposta, encerramos as suas sessões e
+                    anonimizamos a conta de login. O histórico que as locadoras guardam das suas reservas e aluguéis fica
+                    <strong>sem os seus dados pessoais</strong> (nome e documentos viram "Conta excluída"), mantendo só datas,
+                    veículo e valores, para a contabilidade da locadora. Se você tiver um aluguel em aberto, a exclusão só
+                    é liberada depois de concluí-lo.
+                </li>
+                <li>
+                    <strong>Locadora:</strong> o administrador agenda a exclusão para <strong>7 dias depois</strong> e pode
+                    cancelar até lá. No dia, os dados da empresa são removidos, as contas dos funcionários são encerradas e os
+                    dados pessoais de clientes, condutores e funcionários são anonimizados. O pedido é bloqueado se houver
+                    aluguéis em aberto ou reservas esperando resposta.
+                </li>
+            </ul>
+            <p>
+                Se for um dado que uma locadora cadastrou por conta própria (por exemplo, um aluguel feito no balcão), o
+                pedido também deve ser feito à própria locadora. Cópias de segurança do banco de dados podem levar algum
+                tempo para ser renovadas.
+            </p>
+
+            <h3>8. Segurança</h3>
             <p>
                 Usamos senhas guardadas de forma irreversível, confirmação de e-mail, limites de tentativas, sessões que
                 podem ser revogadas e separação dos dados de cada locadora. Nenhum sistema é totalmente imune a falhas; se
                 ocorrer um incidente que possa trazer risco a você, avisaremos como a lei exige.
             </p>
 
-            <h3>8. Seus direitos</h3>
+            <h3>9. Seus direitos</h3>
             <p>Você pode pedir, a qualquer momento:</p>
             <ul>
                 <li>confirmação de que tratamos seus dados e acesso a eles;</li>
                 <li>correção de dados incompletos ou desatualizados (você mesmo pode editar "Meus dados");</li>
-                <li>anonimização, bloqueio ou eliminação de dados desnecessários ou tratados em desacordo com a lei;</li>
+                <li>anonimização, bloqueio ou eliminação de dados desnecessários ou tratados em desacordo com a lei (a exclusão da conta é feita por você mesmo, como na seção 7);</li>
                 <li>portabilidade dos dados;</li>
                 <li>informação sobre com quem compartilhamos os dados;</li>
                 <li>revogação do consentimento, quando o tratamento se basear nele.</li>
@@ -127,17 +153,17 @@ import { PaginaLegal } from './pagina-legal';
                 locadora, que é a responsável por eles.
             </p>
 
-            <h3>9. Como falar com a gente</h3>
+            <h3>10. Como falar com a gente</h3>
             <p>
-                Para exercer seus direitos ou tirar dúvidas: telefone e WhatsApp {{ telefone }} ou pelas
+                Para exercer seus direitos que não podem ser feitos pelo próprio sistema, ou para tirar dúvidas: telefone e WhatsApp {{ telefone }} ou pelas
                 <a class="text-primary underline" [href]="problemas" target="_blank" rel="noopener noreferrer">issues do projeto</a>.
                 Para sua segurança, podemos pedir uma confirmação de identidade antes de atender.
             </p>
 
-            <h3>10. Menores de idade</h3>
+            <h3>11. Menores de idade</h3>
             <p>O serviço é destinado a maiores de 18 anos. Não coletamos de propósito dados de menores.</p>
 
-            <h3>11. Mudanças nesta Política</h3>
+            <h3>12. Mudanças nesta Política</h3>
             <p>
                 Podemos atualizar esta Política. A versão em vigor, com a sua data, fica sempre nesta página, e mudanças
                 relevantes serão avisadas no sistema ou por e-mail.

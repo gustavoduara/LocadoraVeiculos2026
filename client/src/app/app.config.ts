@@ -155,6 +155,13 @@ const routes: Routes = [
     canMatch: [usuarioAutenticadoGuard],
   },
 
+  // Excluir a própria conta (LGPD): o cliente na hora, o administrador da locadora com prazo de 7 dias.
+  {
+    path: 'conta/excluir',
+    loadComponent: () => import('./conta/excluir-conta/excluir-conta').then((c) => c.ExcluirConta),
+    canMatch: [usuarioAutenticadoGuard, cargoGuard('Cliente', 'Empresa')],
+  },
+
   // Catálogo: o cliente procura carros de todas as locadoras.
   {
     path: 'catalogo',

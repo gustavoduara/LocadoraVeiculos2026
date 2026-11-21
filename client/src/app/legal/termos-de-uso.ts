@@ -101,8 +101,10 @@ import { PaginaLegal } from './pagina-legal';
 
             <h3>8. Encerramento</h3>
             <p>
-                Você pode pedir a exclusão da sua conta a qualquer momento (veja a Política de Privacidade). Podemos
-                suspender ou encerrar contas que violem estes Termos ou a lei.
+                Você pode <strong>excluir a sua conta</strong> a qualquer momento pelo menu do seu nome, em "Excluir minha
+                conta" (cliente: na hora; locadora: agendada para 7 dias depois, com direito a cancelar). Veja os detalhes na
+                <a class="text-primary underline" routerLink="/privacidade">Política de Privacidade</a>. Podemos suspender ou
+                encerrar contas que violem estes Termos ou a lei.
             </p>
 
             <h3>9. Alterações</h3>

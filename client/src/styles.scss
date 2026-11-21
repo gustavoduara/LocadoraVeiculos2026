@@ -272,3 +272,9 @@ html.modo-noturno {
     margin: 0.35rem 0;
   }
 }
+
+/* Botão de uma ação que não dá para desfazer (excluir a conta). */
+.botao-perigo.mat-mdc-unelevated-button:not(:disabled) {
+  --mat-button-filled-container-color: #b42318;
+  --mat-button-filled-label-text-color: #ffffff;
+}
