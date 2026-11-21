@@ -10,7 +10,11 @@ internal class DadosAluguelValidator : AbstractValidator<DadosAluguelDto>
 
     public DadosAluguelValidator()
     {
-        RuleFor(p => p.CondutorId).NotEmpty().WithMessage("O condutor é obrigatório.");
+        RuleFor(p => p.CondutorId).NotEmpty().WithMessage("O condutor é obrigatório.")
+            .When(p => p.NovoCliente is null);
+        RuleFor(p => p.CondutorId).Empty()
+            .WithMessage("Escolha um condutor existente ou informe os dados de um cliente novo, não os dois.")
+            .When(p => p.NovoCliente is not null);
         RuleFor(p => p.AutomovelId).NotEmpty().WithMessage("O automóvel é obrigatório.");
 
         RuleFor(p => p.TipoPlano).IsInEnum().WithMessage("O plano de cobrança informado é inválido.");

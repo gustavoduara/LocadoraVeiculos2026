@@ -345,37 +345,26 @@ public class ModulosIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFact
     // ---------------- clientes ----------------
 
     [Fact]
-    public async Task Cliente_pessoa_fisica_e_juridica_com_vinculo_documentos_unicos_e_filtro()
+    public async Task Cliente_nao_se_cadastra_avulso_e_a_lista_filtra_edita_e_exclui()
     {
         var c = await Criar(fabrica);
 
-        var pf = await c.Api.Post("/api/clientes", ClientePf("Joao", c.ClientePjId));
-        Assert.Equal(201, pf.Codigo);
-        Assert.Equal(c.ClientePjId, (await c.Api.Get($"/api/clientes/{pf.Id}")).Corpo.GetProperty("pessoaJuridicaId").GetGuid());
+        // O cliente só nasce junto com um aluguel: não existe mais cadastro avulso.
+        Assert.Equal(405, (await c.Api.Post("/api/clientes", ClientePf("Avulso"))).Codigo);
 
-        // CPF repetido e vínculo com pessoa física são recusados.
-        var dados = ClientePf("Outro");
-        Assert.Equal(201, (await c.Api.Post("/api/clientes", dados)).Codigo);
-        Assert.Equal(409, (await c.Api.Post("/api/clientes", dados)).Codigo);
-        Assert.Equal(400, (await c.Api.Post("/api/clientes", ClientePf("Vinculo Errado", c.ClientePfId))).Codigo);
-
-        // Documentos inválidos.
-        Assert.Equal(400, (await c.Api.Post("/api/clientes", new
-        {
-            tipo = "PessoaJuridica", nome = "Sem Cnpj Valido", email = "a@a.com", telefone = "(47) 3333-4444",
-            cnpj = "11.111.111/1111-11", estado = "SC", cidade = "Rio do Sul", bairro = "Centro", rua = "Rua XV", numero = "1"
-        })).Codigo);
+        var pf = await c.NovoClientePf("Joao", c.ClientePjId);
+        Assert.Equal(c.ClientePjId, (await c.Api.Get($"/api/clientes/{pf}")).Corpo.GetProperty("pessoaJuridicaId").GetGuid());
 
         Assert.InRange((await c.Api.Get("/api/clientes?tipo=PessoaJuridica")).Registros.GetArrayLength(), 1, 1);
-        Assert.Equal(3, (await c.Api.Get("/api/clientes?tipo=PessoaFisica")).Registros.GetArrayLength());
+        Assert.Equal(2, (await c.Api.Get("/api/clientes?tipo=PessoaFisica")).Registros.GetArrayLength());
 
-        // Editar PF mantém o tipo.
-        var editado = await c.Api.Put($"/api/clientes/{pf.Id}", ClientePf("Joao Editado", c.ClientePjId));
-        Assert.Equal(200, editado.Codigo);
+        // Editar PF mantém o tipo; vínculo com pessoa física é recusado.
+        Assert.Equal(200, (await c.Api.Put($"/api/clientes/{pf}", ClientePf("Joao Editado", c.ClientePjId))).Codigo);
+        Assert.Equal(400, (await c.Api.Put($"/api/clientes/{pf}", ClientePf("Vinculo Errado", c.ClientePfId))).Codigo);
 
         // PJ com PF vinculada não pode ser excluída; PF sem condutor pode.
         Assert.Equal(422, (await c.Api.Delete($"/api/clientes/{c.ClientePjId}")).Codigo);
-        Assert.Equal(204, (await c.Api.Delete($"/api/clientes/{pf.Id}")).Codigo);
+        Assert.Equal(204, (await c.Api.Delete($"/api/clientes/{pf}")).Codigo);
     }
 
     // ---------------- condutores ----------------

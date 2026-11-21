@@ -63,6 +63,7 @@ public class CadastrarAluguelCommandHandler(
     RepositorioAluguelEmOrm repositorioAluguel,
     RepositorioFuncionarioEmOrm repositorioFuncionario,
     AluguelServico servico,
+    ClienteDoAluguelServico clienteDoAluguel,
     ITenantProvider tenantProvider,
     ILogger<CadastrarAluguelCommandHandler> logger
 ) : IRequestHandler<CadastrarAluguelCommand, Result<CadastrarAluguelResult>>
@@ -70,10 +71,34 @@ public class CadastrarAluguelCommandHandler(
     public async Task<Result<CadastrarAluguelResult>> Handle(
         CadastrarAluguelCommand command, CancellationToken cancellationToken)
     {
-        Result<Aluguel> montagem = await servico.MontarAsync(command.Dados, apenasPreco: false);
+        DadosAluguelDto dados = command.Dados;
+        ClienteECondutorNovos? novos = null;
+
+        if (dados.NovoCliente is not null)
+        {
+            var validacao = new Validators.DadosAluguelValidator().Validate(dados);
+
+            if (!validacao.IsValid)
+                return Result.Fail(ResultadosErro.RequisicaoInvalidaErro(validacao.Errors.Select(e => e.ErrorMessage)));
+
+            // O cliente nasce junto com o aluguel: se algo falhar daqui em diante, ele é desfeito.
+            Result<ClienteECondutorNovos> cadastro = await clienteDoAluguel.CadastrarAsync(dados.NovoCliente, cancellationToken);
+
+            if (cadastro.IsFailed)
+                return Result.Fail(cadastro.Errors);
+
+            novos = cadastro.Value;
+            dados = dados with { CondutorId = novos.Condutor.Id, NovoCliente = null };
+        }
+
+        Result<Aluguel> montagem = await servico.MontarAsync(dados, apenasPreco: false);
 
         if (montagem.IsFailed)
+        {
+            if (novos is not null) await clienteDoAluguel.DesfazerAsync(novos, cancellationToken);
+
             return Result.Fail(montagem.Errors);
+        }
 
         Aluguel aluguel = montagem.Value;
 
@@ -96,6 +121,8 @@ public class CadastrarAluguelCommandHandler(
         catch (Exception ex)
         {
             logger.LogError(ex, "Ocorreu um erro durante o cadastro de {@Command}.", command);
+
+            if (novos is not null) await clienteDoAluguel.DesfazerAsync(novos, cancellationToken);
 
             return Result.Fail(ResultadosErro.ExcecaoInternaErro(ex));
         }

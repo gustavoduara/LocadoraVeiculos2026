@@ -52,6 +52,11 @@ public class AluguelServico(
         if (!validacao.IsValid)
             return Result.Fail(ResultadosErro.RequisicaoInvalidaErro(validacao.Errors.Select(e => e.ErrorMessage)));
 
+        // O cliente novo é cadastrado só ao registrar o aluguel (antes de montá-lo); na simulação não importa.
+        if (dados.NovoCliente is not null && !apenasPreco)
+            return Result.Fail(ResultadosErro.RequisicaoInvalidaErro(
+                "Só é possível cadastrar um cliente novo ao registrar o aluguel."));
+
         // O filtro global por empresa garante que só registros da própria locadora são encontrados.
         Automovel? automovel = await repositorioAutomovel.SelecionarPorIdAsync(dados.AutomovelId);
 

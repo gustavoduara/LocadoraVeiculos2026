@@ -1,13 +1,34 @@
 using FluentResults;
 using LocadoraDeVeiculos.Dominio.Compartilhado;
+using LocadoraDeVeiculos.Aplicacao.ModuloCliente.Commands;
 using LocadoraDeVeiculos.Dominio.ModuloAluguel;
+using LocadoraDeVeiculos.Dominio.ModuloCliente;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoCobranca;
 using LocadoraDeVeiculos.Dominio.ModuloTaxaServico;
 using MediatR;
 
 namespace LocadoraDeVeiculos.Aplicacao.ModuloAluguel.Commands;
 
-/// <summary>Dados informados ao registrar (ou editar/simular) um aluguel.</summary>
+/// <summary>
+/// Condutor de um cliente novo. Em pessoa física o cliente é o próprio condutor (só a validade da CNH vale);
+/// em pessoa jurídica os demais campos são obrigatórios.
+/// </summary>
+public record DadosCondutorNoAluguelDto(
+    string? Nome,
+    string? Email,
+    string? Telefone,
+    string? Cpf,
+    string? Cnh,
+    DateOnly ValidadeCnh
+);
+
+/// <summary>Cliente (e condutor) cadastrados no momento de registrar o aluguel.</summary>
+public record NovoClienteNoAluguelDto(TipoCliente Tipo, DadosClienteDto Cliente, DadosCondutorNoAluguelDto Condutor);
+
+/// <summary>
+/// Dados informados ao registrar (ou editar/simular) um aluguel. O condutor é um já existente
+/// (<c>CondutorId</c>) ou, ao registrar, um cliente novo (<c>NovoCliente</c>).
+/// </summary>
 public record DadosAluguelDto(
     Guid CondutorId,
     Guid AutomovelId,
@@ -17,7 +38,8 @@ public record DadosAluguelDto(
     int KmInicial,
     TipoSeguro TipoSeguro,
     IReadOnlyList<Guid> TaxasIds,
-    Guid? CupomId = null
+    Guid? CupomId = null,
+    NovoClienteNoAluguelDto? NovoCliente = null
 );
 
 public record AluguelTaxaDto(Guid TaxaServicoId, string Nome, decimal PrecoUnitario, TipoCobrancaTaxa TipoCobranca, decimal Valor);

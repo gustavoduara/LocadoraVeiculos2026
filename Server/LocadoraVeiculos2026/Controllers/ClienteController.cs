@@ -14,35 +14,6 @@ namespace LocadoraDeVeiculos.WebApi.Controllers;
 [Route("api/clientes")]
 public sealed class ClienteController(IMediator mediator) : MainController
 {
-    [HttpPost]
-    public async Task<ActionResult<CadastrarClienteResponse>> Cadastrar(
-        CadastrarClienteRequest request,
-        CancellationToken cancellationToken
-    )
-    {
-        DadosClienteDto dados = new(
-            request.Nome,
-            request.Email,
-            request.Telefone,
-            request.Cpf,
-            request.Rg,
-            request.Cnh,
-            request.Cnpj,
-            request.Estado,
-            request.Cidade,
-            request.Bairro,
-            request.Rua,
-            request.Numero,
-            request.PessoaJuridicaId
-        );
-
-        Result<CadastrarClienteResult> result =
-            await mediator.Send(new CadastrarClienteCommand(request.Tipo, dados), cancellationToken);
-
-        return ProcessarResultado(result, (valor) =>
-            CreatedAtAction(nameof(SelecionarPorId), new { id = valor.Id }, new CadastrarClienteResponse(valor.Id)));
-    }
-
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<ClienteDto>> Editar(
         Guid id,

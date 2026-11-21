@@ -243,8 +243,8 @@ public class CatalogoIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFac
         var f = await DuasLocadoras();
 
         // A locadora A aluga o Onix de amanhã a daqui a 5 dias.
-        var cliente = await f.A.Api.Post("/api/clientes", ClientePj("Empresa Alfa"));
-        var condutor = (await f.A.Api.Post("/api/condutores", Condutor(cliente.Id, "Carlos", Dia(1000)))).Id;
+        var cliente = await f.A.NovoClientePj("Empresa Alfa");
+        var condutor = (await f.A.Api.Post("/api/condutores", Condutor(cliente, "Carlos", Dia(1000)))).Id;
         Assert.Equal(201, (await f.A.Api.Post("/api/alugueis", PedidoAluguel(condutor, f.Onix, saida: 1, retorno: 5, seguro: "Nenhum"))).Codigo);
 
         var pessoa = await NovoClienteDoCatalogo();

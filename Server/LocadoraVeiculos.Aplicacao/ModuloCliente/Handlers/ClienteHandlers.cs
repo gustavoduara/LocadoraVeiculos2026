@@ -81,67 +81,6 @@ internal static class ClienteRegras
     );
 }
 
-public class CadastrarClienteCommandHandler(
-    AppDbContext appDbContext,
-    RepositorioClienteEmOrm repositorioCliente,
-    ITenantProvider tenantProvider,
-    ILogger<CadastrarClienteCommandHandler> logger
-) : IRequestHandler<CadastrarClienteCommand, Result<CadastrarClienteResult>>
-{
-    public async Task<Result<CadastrarClienteResult>> Handle(
-        CadastrarClienteCommand command, CancellationToken cancellationToken)
-    {
-        if (!Enum.IsDefined(command.Tipo))
-            return Result.Fail(ResultadosErro.RequisicaoInvalidaErro("O tipo de cliente informado é inválido."));
-
-        ValidationResult resultadoValidacao = ClienteRegras.Validar(command.Tipo, command.Dados);
-
-        if (!resultadoValidacao.IsValid)
-        {
-            var erros = resultadoValidacao.Errors.Select(e => e.ErrorMessage);
-
-            return Result.Fail(ResultadosErro.RequisicaoInvalidaErro(erros));
-        }
-
-        Guid? vinculo = null;
-
-        if (command.Tipo == TipoCliente.PessoaFisica)
-        {
-            if (await repositorioCliente.ExisteCpfAsync(command.Dados.Cpf!))
-                return Result.Fail(ResultadosErro.RegistroDuplicadoErro("Já existe um cliente cadastrado com este CPF."));
-
-            Error? erroVinculo = await ClienteRegras.ValidarVinculoAsync(repositorioCliente, command.Dados.PessoaJuridicaId);
-
-            if (erroVinculo is not null)
-                return Result.Fail(erroVinculo);
-
-            vinculo = command.Dados.PessoaJuridicaId;
-        }
-        else if (await repositorioCliente.ExisteCnpjAsync(command.Dados.Cnpj!))
-        {
-            return Result.Fail(ResultadosErro.RegistroDuplicadoErro("Já existe um cliente cadastrado com este CNPJ."));
-        }
-
-        try
-        {
-            Cliente cliente = ClienteRegras.Montar(
-                command.Tipo, tenantProvider.EmpresaId.GetValueOrDefault(), command.Dados, vinculo);
-
-            await repositorioCliente.CadastrarAsync(cliente);
-
-            await appDbContext.SaveChangesAsync(cancellationToken);
-
-            return Result.Ok(new CadastrarClienteResult(cliente.Id));
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Ocorreu um erro durante o cadastro de {@Command}.", command);
-
-            return Result.Fail(ResultadosErro.ExcecaoInternaErro(ex));
-        }
-    }
-}
-
 public class EditarClienteCommandHandler(
     AppDbContext appDbContext,
     RepositorioClienteEmOrm repositorioCliente,

@@ -411,6 +411,7 @@ public class ReservaIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFact
 
         await cliente.Post("/api/minhas-reservas", Pedido(carro));
         var id = (await c.Api.Get("/api/reservas")).Registros[0].GetProperty("id").GetGuid();
+        int clientesAntes = (await c.Api.Get("/api/clientes")).Registros.GetArrayLength();
 
         // Antes de responder, a locadora aluga o mesmo carro no balcão.
         Assert.Equal(201, (await c.Api.Post("/api/alugueis", PedidoAluguel(c.CondutorId, carro, saida: 2, retorno: 3, seguro: "Nenhum"))).Codigo);
@@ -420,5 +421,8 @@ public class ReservaIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFact
 
         var pendente = (await c.Api.Get("/api/reservas?status=Pendente")).Registros;
         Assert.Equal(1, pendente.GetArrayLength());
+
+        // O cliente só passa a existir quando o aluguel acontece: a aprovação que falhou não deixa cliente para trás.
+        Assert.Equal(clientesAntes, (await c.Api.Get("/api/clientes")).Registros.GetArrayLength());
     }
 }

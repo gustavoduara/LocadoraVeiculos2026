@@ -1,3 +1,8 @@
+using System.Text.Json;
+using LocadoraDeVeiculos.Dominio.ModuloCliente;
+using LocadoraDeVeiculos.Infraestrutura.Orm.Compartilhado;
+using Microsoft.Extensions.DependencyInjection;
+
 namespace LocadoraDeVeiculos.Testes.Integracao;
 
 /// <summary>Geradores de documentos válidos e únicos para os testes.</summary>
@@ -71,6 +76,9 @@ public class Cenario
     public string? TokenFuncionario { get; private set; }
     public Guid FuncionarioId { get; private set; }
 
+    public ApiFactory Fabrica { get; private set; } = null!;
+    public Guid EmpresaId => EmpresaDoToken(TokenEmpresa);
+
     public Guid GrupoId { get; private set; }
     public Guid GrupoSemPlanoId { get; private set; }
     public Guid PlanoId { get; private set; }
@@ -81,6 +89,53 @@ public class Cenario
     public Guid CondutorCnhCurtaId { get; private set; }
     public Guid TaxaDiariaId { get; private set; }
     public Guid TaxaFixaId { get; private set; }
+
+    /// <summary>Lê o EmpresaId do token (as contas de teste não têm outra forma de dizer a qual empresa pertencem).</summary>
+    public static Guid EmpresaDoToken(string token)
+    {
+        string payload = token.Split('.')[1].Replace('-', '+').Replace('_', '/');
+        payload = payload.PadRight(payload.Length + (4 - payload.Length % 4) % 4, '=');
+
+        using var json = JsonDocument.Parse(Convert.FromBase64String(payload));
+
+        return json.RootElement.GetProperty("EmpresaId").GetGuid();
+    }
+
+    // O cadastro avulso de cliente saiu da API (o cliente nasce com o aluguel), então os testes que precisam de
+    // um cliente "já existente" o criam direto no banco, como se ele tivesse alugado antes.
+    public static async Task<Guid> SemearClientePj(ApiFactory fabrica, string token, string nome)
+    {
+        var cliente = Cliente.NovaPessoaJuridica(
+            EmpresaDoToken(token), nome, "contato@empresa.com", "(47) 3333-4444", Geradores.Cnpj(),
+            "SC", "Rio do Sul", "Centro", "Rua XV", "10");
+
+        return await Salvar(fabrica, cliente);
+    }
+
+    public static async Task<Guid> SemearClientePf(ApiFactory fabrica, string token, string nome, Guid? pessoaJuridicaId = null)
+    {
+        var cliente = Cliente.NovaPessoaFisica(
+            EmpresaDoToken(token), nome, "pessoa@ex.com", "(47) 99999-1234", Geradores.Cpf(), "1234567", "12345678901",
+            "SC", "Rio do Sul", "Centro", "Rua XV", "10", pessoaJuridicaId);
+
+        return await Salvar(fabrica, cliente);
+    }
+
+    private static async Task<Guid> Salvar(ApiFactory fabrica, Cliente cliente)
+    {
+        using var escopo = fabrica.Services.CreateScope();
+        var db = escopo.ServiceProvider.GetRequiredService<AppDbContext>();
+
+        db.Add(cliente);
+        await db.SaveChangesAsync();
+
+        return cliente.Id;
+    }
+
+    public Task<Guid> NovoClientePj(string nome) => SemearClientePj(Fabrica, TokenEmpresa, nome);
+
+    public Task<Guid> NovoClientePf(string nome, Guid? pessoaJuridicaId = null) =>
+        SemearClientePf(Fabrica, TokenEmpresa, nome, pessoaJuridicaId);
 
     public static readonly DateOnly Hoje = DateOnly.FromDateTime(DateTime.UtcNow);
 
@@ -110,7 +165,7 @@ public class Cenario
 
         api.UsarToken(token);
 
-        var c = new Cenario { Api = api, TokenEmpresa = token };
+        var c = new Cenario { Api = api, TokenEmpresa = token, Fabrica = fabrica };
 
         await c.Preparar(fabrica, comFuncionario);
 
@@ -141,8 +196,8 @@ public class Cenario
             livre = new { precoDiaria = 300m }
         })).Id;
 
-        ClientePjId = (await Api.Post("/api/clientes", ClientePj("Transportes Alfa"))).Id;
-        ClientePfId = (await Api.Post("/api/clientes", ClientePf("Maria Silva"))).Id;
+        ClientePjId = await NovoClientePj("Transportes Alfa");
+        ClientePfId = await NovoClientePf("Maria Silva");
 
         CondutorId = (await Api.Post("/api/condutores", Condutor(ClientePjId, "Carlos Motorista", Dia(1000)))).Id;
         CondutorPfId = (await Api.Post("/api/condutores", Condutor(ClientePfId, "Maria Silva", Dia(1000)))).Id;

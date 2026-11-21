@@ -259,6 +259,7 @@ public class AprovarReservaCommandHandler(
     RepositorioFuncionarioEmOrm repositorioFuncionario,
     RepositorioConfiguracaoEmOrm repositorioConfiguracao,
     AluguelServico aluguelServico,
+    ClienteDoAluguelServico clienteDoAluguel,
     IEnviadorDeEmail enviadorDeEmail,
     ITenantProvider tenantProvider,
     ILogger<AprovarReservaCommandHandler> logger
@@ -276,6 +277,9 @@ public class AprovarReservaCommandHandler(
 
         if (command.KmInicial is < 0 or > 2_000_000)
             return Result.Fail(ResultadosErro.RequisicaoInvalidaErro("A quilometragem inicial informada é inválida."));
+
+        Cliente? clienteCriado = null;
+        Condutor? condutorCriado = null;
 
         try
         {
@@ -297,6 +301,7 @@ public class AprovarReservaCommandHandler(
                     null);
 
                 await repositorioCliente.CadastrarAsync(cliente);
+                clienteCriado = cliente;
             }
 
             // 2) O condutor: a própria pessoa, com a CNH do pedido.
@@ -309,6 +314,7 @@ public class AprovarReservaCommandHandler(
                     reserva.ClienteCpf, reserva.ClienteCnh, reserva.ClienteValidadeCnh);
 
                 await repositorioCondutor.CadastrarAsync(condutor);
+                condutorCriado = condutor;
             }
             else
             {
@@ -316,7 +322,8 @@ public class AprovarReservaCommandHandler(
                 condutor.ValidadeCnh = reserva.ClienteValidadeCnh;
             }
 
-            // Salva antes para o aluguel enxergar o cliente e o condutor (se o aluguel falhar, eles ficam para a próxima).
+            // Salva antes para o aluguel enxergar o cliente e o condutor (se o aluguel falhar, quem foi criado aqui é desfeito:
+            // o cliente só passa a existir na locadora quando faz um aluguel).
             await appDbContext.SaveChangesAsync(cancellationToken);
 
             // 3) O aluguel, com as mesmas regras de qualquer aluguel (disponibilidade, CNH, plano, seguro).
@@ -327,7 +334,11 @@ public class AprovarReservaCommandHandler(
                 apenasPreco: false);
 
             if (montagem.IsFailed)
+            {
+                await DesfazerNovosAsync(clienteCriado, condutorCriado, cancellationToken);
+
                 return Result.Fail(montagem.Errors);
+            }
 
             Aluguel aluguel = montagem.Value;
 
@@ -354,8 +365,18 @@ public class AprovarReservaCommandHandler(
         {
             logger.LogError(ex, "Ocorreu um erro ao aprovar a reserva {@Command}.", command);
 
+            await DesfazerNovosAsync(clienteCriado, condutorCriado, cancellationToken);
+
             return Result.Fail(ResultadosErro.ExcecaoInternaErro(ex));
         }
+    }
+
+    /// <summary>Quando o aluguel não sai, o cliente criado só para ele não fica na locadora.</summary>
+    private async Task DesfazerNovosAsync(Cliente? cliente, Condutor? condutor, CancellationToken cancellationToken)
+    {
+        if (cliente is null || condutor is null) return;
+
+        await clienteDoAluguel.DesfazerAsync(new ClienteECondutorNovos(cliente, condutor), cancellationToken);
     }
 
     private async Task AvisarClienteAsync(Reserva reserva, string? telefone, CancellationToken cancellationToken)

@@ -43,11 +43,6 @@ public record ClienteDto(
     string? NomePessoaJuridica
 );
 
-public record CadastrarClienteCommand(TipoCliente Tipo, DadosClienteDto Dados)
-    : IRequest<Result<CadastrarClienteResult>>;
-
-public record CadastrarClienteResult(Guid Id);
-
 /// <summary>O tipo do cliente não pode ser alterado depois do cadastro.</summary>
 public record EditarClienteCommand(Guid Id, DadosClienteDto Dados)
     : IRequest<Result<EditarClienteResult>>;

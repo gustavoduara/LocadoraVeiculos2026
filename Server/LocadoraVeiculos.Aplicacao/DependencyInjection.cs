@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +14,7 @@ public static class DependencyInjection
         services.AddValidatorsFromAssembly(assembly);
 
         services.AddScoped<ModuloAluguel.AluguelServico>();
+        services.AddScoped<ModuloAluguel.ClienteDoAluguelServico>();
         services.AddScoped<ModuloReserva.ReservaServico>();
 
         var licenseKey = configuration["LUCKYPENNY_LICENSE_KEY"];
