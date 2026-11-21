@@ -15,6 +15,7 @@ public static class DependencyInjection
 
         services.AddScoped<ModuloAluguel.AluguelServico>();
         services.AddScoped<ModuloAluguel.ClienteDoAluguelServico>();
+        services.AddScoped<ModuloConta.ContaServico>();
         services.AddScoped<ModuloReserva.ReservaServico>();
 
         var licenseKey = configuration["LUCKYPENNY_LICENSE_KEY"];

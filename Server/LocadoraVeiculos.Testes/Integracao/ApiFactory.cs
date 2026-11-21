@@ -25,6 +25,7 @@ public class ApiFactory : WebApplicationFactory<Program>
         Environment.SetEnvironmentVariable("CORS_ALLOWED_ORIGINS", "http://localhost:4200");
         Environment.SetEnvironmentVariable("LUCKYPENNY_LICENSE_KEY", "chave-de-teste");
         // Os testes fazem muitos logins e cadastros do mesmo endereço: os limites ficam altos (há testes próprios para o limite).
+        Environment.SetEnvironmentVariable("EXCLUSOES_AGENDADAS_DESLIGADAS", "true");
         Environment.SetEnvironmentVariable("LIMITE_LOGIN_POR_MINUTO", "100000");
         Environment.SetEnvironmentVariable("LIMITE_RECUPERACAO_POR_15_MINUTOS", "100000");
         Environment.SetEnvironmentVariable("LIMITE_CADASTRO_POR_HORA", "100000");

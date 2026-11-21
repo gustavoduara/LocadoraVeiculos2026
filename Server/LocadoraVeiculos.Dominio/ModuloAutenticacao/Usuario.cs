@@ -10,6 +10,12 @@ public class Usuario : IdentityUser<Guid>
     /// <summary>Quando a pessoa aceitou os Termos de Uso e a Política de Privacidade (vazio nas contas anteriores a eles).</summary>
     public DateTime? AceiteTermosEmUtc { get; set; }
 
+    /// <summary>Locadora que pediu a exclusão: dia em que ela acontece (dá para cancelar até lá).</summary>
+    public DateTime? ExclusaoAgendadaParaUtc { get; set; }
+
+    /// <summary>Quando a conta foi excluída (anonimizada). A linha continua porque os dados da empresa apontam para ela.</summary>
+    public DateTime? ContaExcluidaEmUtc { get; set; }
+
     /// <summary>Versão dos termos que ela aceitou (<see cref="TermosDeUso.VersaoAtual"/> na hora do aceite).</summary>
     public string? VersaoTermosAceita { get; set; }
 

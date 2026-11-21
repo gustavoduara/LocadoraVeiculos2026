@@ -29,6 +29,10 @@ public class Program
         builder.Services.AddLimiteDeTentativas(builder.Configuration);
         builder.Services.AddChavesPersistentes(builder.Configuration);
 
+        // Executa de hora em hora as exclusões de locadora agendadas (os testes desligam e chamam o serviço direto).
+        if (!string.Equals(builder.Configuration["EXCLUSOES_AGENDADAS_DESLIGADAS"], "true", StringComparison.OrdinalIgnoreCase))
+            builder.Services.AddHostedService<Config.Conta.ExclusoesAgendadasHostedService>();
+
 
         builder.Services.ConfigureOptions<CorsConfig>() .AddCors();
 
