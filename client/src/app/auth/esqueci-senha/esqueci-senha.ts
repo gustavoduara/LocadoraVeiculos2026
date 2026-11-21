@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -37,6 +37,25 @@ export class EsqueciSenha {
         email: ['', [Validators.required, Validators.email]],
     });
 
+    /** Segundos até poder pedir o reenvio (evita cliques em sequência e respeita o limite da API). */
+    protected readonly espera = signal(0);
+    private temporizador?: ReturnType<typeof setInterval>;
+
+    constructor() {
+        inject(DestroyRef).onDestroy(() => clearInterval(this.temporizador));
+    }
+
+    private iniciarEspera(): void {
+        clearInterval(this.temporizador);
+        this.espera.set(60);
+
+        this.temporizador = setInterval(() => {
+            this.espera.update((s) => Math.max(0, s - 1));
+
+            if (this.espera() === 0) clearInterval(this.temporizador);
+        }, 1000);
+    }
+
     get email() {
         return this.form.get('email');
     }
@@ -48,8 +67,13 @@ export class EsqueciSenha {
 
         this.authService.esqueciSenha(this.form.value.email).subscribe({
             next: () => {
+                const reenvio = this.enviado();
+
                 this.enviado.set(true);
                 this.enviando.set(false);
+                this.iniciarEspera();
+
+                if (reenvio) this.notificacaoService.sucesso('Enviamos o link de novo. Veja também o spam.');
             },
             error: (err) => {
                 this.enviando.set(false);

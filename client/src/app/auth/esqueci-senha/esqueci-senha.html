@@ -14,7 +14,11 @@
                 <p class="mt-1 text-sm text-gray-600">Não chegou? Veja a caixa de spam ou tente de novo.</p>
             </mat-card-content>
 
-            <mat-card-actions class="flex justify-center mt-4 gap-3">
+            <mat-card-actions class="flex flex-wrap justify-center mt-4 gap-3">
+                <button mat-stroked-button type="button" [disabled]="espera() > 0 || enviando()" (click)="enviar()">
+                    <mat-icon>refresh</mat-icon>
+                    {{ enviando() ? 'Enviando...' : espera() > 0 ? 'Reenviar em ' + espera() + 's' : 'Reenviar e-mail' }}
+                </button>
                 <button mat-stroked-button type="button" (click)="enviado.set(false)">Tentar outro e-mail</button>
                 <a mat-flat-button routerLink="/auth/login">Voltar ao login</a>
             </mat-card-actions>
