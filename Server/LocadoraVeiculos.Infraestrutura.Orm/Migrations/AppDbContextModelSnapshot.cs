@@ -262,6 +262,9 @@ namespace LocadoraDeVeiculos.Infraestrutura.Orm.Migrations
                     b.Property<Guid>("AccessTokenVersionId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTime?>("AceiteTermosEmUtc")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -309,6 +312,9 @@ namespace LocadoraDeVeiculos.Infraestrutura.Orm.Migrations
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("VersaoTermosAceita")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 

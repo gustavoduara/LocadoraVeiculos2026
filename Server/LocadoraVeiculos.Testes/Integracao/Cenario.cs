@@ -155,7 +155,7 @@ public class Cenario
     {
         api.UsarToken(null);
 
-        var r = await api.Post(rota, new { nomeCompleto = nome, email, senha, confirmarSenha = senha });
+        var r = await api.Post(rota, new { nomeCompleto = nome, email, senha, confirmarSenha = senha, aceitouTermos = true });
         Assert.Equal(200, r.Codigo);
 
         await ConfirmarEmail(api, email);

@@ -48,7 +48,7 @@ public class SegurancaIntegracaoTestes
             nomeCompleto = "Pessoa",
             email = Geradores.Email("limite"),
             senha = "Senha123",
-            confirmarSenha = "Senha123"
+            confirmarSenha = "Senha123", aceitouTermos = true
         };
 
         Assert.Equal(200, (await api.Post("/api/auth/registrar-cliente", Conta())).Codigo);
@@ -67,7 +67,7 @@ public class SegurancaIntegracaoTestes
             var api = new ClienteApi(fabrica.CreateClient());
 
             var email = Geradores.Email("chave");
-            await api.Post("/api/auth/registrar-cliente", new { nomeCompleto = "Pessoa", email, senha = "Senha123", confirmarSenha = "Senha123" });
+            await api.Post("/api/auth/registrar-cliente", new { nomeCompleto = "Pessoa", email, senha = "Senha123", confirmarSenha = "Senha123", aceitouTermos = true });
 
             // Gerar o código de redefinição usa as chaves de proteção, que passam a ser gravadas em arquivo.
             Assert.Equal(200, (await api.Post("/api/auth/esqueci-senha", new { email })).Codigo);

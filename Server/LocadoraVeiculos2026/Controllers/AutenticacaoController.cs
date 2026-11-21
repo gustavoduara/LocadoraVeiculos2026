@@ -23,7 +23,8 @@ public class AutenticacaoController(IMediator mediator) : MainController
             request.Email,
             request.Senha,
             request.ConfirmarSenha,
-            EnderecoDoSite(configuracao)
+            EnderecoDoSite(configuracao),
+            request.AceitouTermos
         );
 
         var result = await mediator.Send(command);
@@ -42,6 +43,7 @@ public class AutenticacaoController(IMediator mediator) : MainController
             request.Senha,
             request.ConfirmarSenha,
             EnderecoDoSite(configuracao),
+            request.AceitouTermos,
             CargoUsuario.Cliente
         );
 

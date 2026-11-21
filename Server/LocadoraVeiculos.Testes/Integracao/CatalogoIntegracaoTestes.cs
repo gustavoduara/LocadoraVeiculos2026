@@ -94,7 +94,7 @@ public class CatalogoIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFac
         var api = new ClienteApi(fabrica.CreateClient());
         var email = Geradores.Email("login");
 
-        await api.Post("/api/auth/registrar-cliente", new { nomeCompleto = "Maria", email, senha = "Senha123", confirmarSenha = "Senha123" });
+        await api.Post("/api/auth/registrar-cliente", new { nomeCompleto = "Maria", email, senha = "Senha123", confirmarSenha = "Senha123", aceitouTermos = true });
         await ConfirmarEmail(api, email);
 
         var login = await api.Post("/api/auth/autenticar", new { email, senha = "Senha123" });
@@ -109,11 +109,11 @@ public class CatalogoIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFac
         var api = new ClienteApi(fabrica.CreateClient());
         var email = Geradores.Email("dup");
 
-        var fraca = await api.Post("/api/auth/registrar-cliente", new { nomeCompleto = "Maria", email, senha = "semmaiuscula1", confirmarSenha = "semmaiuscula1" });
+        var fraca = await api.Post("/api/auth/registrar-cliente", new { nomeCompleto = "Maria", email, senha = "semmaiuscula1", confirmarSenha = "semmaiuscula1", aceitouTermos = true });
         Assert.Equal(400, fraca.Codigo);
         Assert.Contains("letra maiúscula", fraca.Bruto);
 
-        var corpo = new { nomeCompleto = "Maria", email, senha = "Senha123", confirmarSenha = "Senha123" };
+        var corpo = new { nomeCompleto = "Maria", email, senha = "Senha123", confirmarSenha = "Senha123", aceitouTermos = true };
         Assert.Equal(200, (await api.Post("/api/auth/registrar-cliente", corpo)).Codigo);
         Assert.InRange((await api.Post("/api/auth/registrar-cliente", corpo)).Codigo, 400, 409);
     }

@@ -19,7 +19,7 @@ public class ModulosIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFact
         var email = Geradores.Email("auth");
 
         var registro = await api.Post("/api/auth/registrar",
-            new { nomeCompleto = "Dono", email, senha = "Senha123", confirmarSenha = "Senha123" });
+            new { nomeCompleto = "Dono", email, senha = "Senha123", confirmarSenha = "Senha123", aceitouTermos = true });
 
         // O cadastro não entra direto: devolve um aviso e manda o e-mail de confirmação.
         Assert.Equal(200, registro.Codigo);
@@ -37,13 +37,13 @@ public class ModulosIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFact
     {
         var api = NovaApi();
         var email = Geradores.Email("dup");
-        var corpo = new { nomeCompleto = "Dono", email, senha = "Senha123", confirmarSenha = "Senha123" };
+        var corpo = new { nomeCompleto = "Dono", email, senha = "Senha123", confirmarSenha = "Senha123", aceitouTermos = true };
 
         Assert.Equal(200, (await api.Post("/api/auth/registrar", corpo)).Codigo);
         Assert.InRange((await api.Post("/api/auth/registrar", corpo)).Codigo, 400, 409);
 
         var fraca = await api.Post("/api/auth/registrar",
-            new { nomeCompleto = "Dono", email = Geradores.Email("fraca"), senha = "abc", confirmarSenha = "abc" });
+            new { nomeCompleto = "Dono", email = Geradores.Email("fraca"), senha = "abc", confirmarSenha = "abc", aceitouTermos = true });
 
         Assert.InRange(fraca.Codigo, 400, 422);
     }
@@ -457,7 +457,7 @@ public class ModulosIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFact
             nomeCompleto = "Dono",
             email = Geradores.Email("fraca"),
             senha,
-            confirmarSenha = senha
+            confirmarSenha = senha, aceitouTermos = true
         });
 
         Assert.Equal(400, registro.Codigo);

@@ -20,7 +20,7 @@ public class ConfirmacaoDeEmailIntegracaoTestes(ApiFactory fabrica) : IClassFixt
         var api = NovaApi();
         var email = Geradores.Email("confirma");
 
-        var r = await api.Post(rota, new { nomeCompleto = "Pessoa Nova", email, senha = "Senha123", confirmarSenha = "Senha123" });
+        var r = await api.Post(rota, new { nomeCompleto = "Pessoa Nova", email, senha = "Senha123", confirmarSenha = "Senha123", aceitouTermos = true });
         Assert.Equal(200, r.Codigo);
 
         return (api, email);

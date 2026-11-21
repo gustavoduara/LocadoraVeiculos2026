@@ -27,6 +27,10 @@ public class RegistrarUsuarioCommandHandler(
             if (command.Cargo is not (CargoUsuario.Empresa or CargoUsuario.Cliente))
                 return Result.Fail(ResultadosErro.RequisicaoInvalidaErro("O tipo de conta informado é inválido."));
 
+            if (!command.AceitouTermos)
+                return Result.Fail(ResultadosErro.RequisicaoInvalidaErro(
+                    "É preciso aceitar os Termos de Uso e a Política de Privacidade para criar a conta."));
+
             if (!command.Senha.Equals(command.ConfirmarSenha))
                 return Result.Fail(ResultadosErro.RequisicaoInvalidaErro("A confirmação de senha falhou."));
 
@@ -34,7 +38,9 @@ public class RegistrarUsuarioCommandHandler(
             {
                 FullName = command.NomeCompleto,
                 UserName = command.Email,
-                Email = command.Email
+                Email = command.Email,
+                AceiteTermosEmUtc = DateTime.UtcNow,
+                VersaoTermosAceita = TermosDeUso.VersaoAtual
             };
 
             var usuarioResult = await userManager.CreateAsync(usuario, command.Senha);
