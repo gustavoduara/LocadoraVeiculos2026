@@ -1,19 +1,17 @@
-import { PartialObserver } from 'rxjs';
-
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { mensagemDeErro } from '../../shared/erros/mensagem-erro';
 import { NotificacaoService } from '../../shared/notificacao/notificacao.service';
-import { AccessTokenModel, RegistroModel } from '../auth.models';
+import { RegistroModel } from '../auth.models';
 import { AuthService } from '../auth.service';
-import { rotaInicial } from '../rota-inicial';
+import { AvisoConfirmarEmail } from '../confirmacao/aviso-confirmar-email';
 import { compararConfirmacaoSenha } from '../validators/comparar-confirmacao-senha-validator';
 import { BotaoVerSenha } from '../../shared/senha/botao-ver-senha';
 
@@ -28,17 +26,21 @@ import { BotaoVerSenha } from '../../shared/senha/botao-ver-senha';
         RouterLink,
         ReactiveFormsModule,
         BotaoVerSenha,
+        AvisoConfirmarEmail,
     ],
     templateUrl: './registro.html',
 })
 export class Registro {
     protected readonly formBuilder = inject(FormBuilder);
-    protected readonly router = inject(Router);
     protected readonly authService = inject(AuthService);
     protected readonly notificacaoService = inject(NotificacaoService);
 
     /** A mesma tela serve às duas contas: a rota /auth/registro-cliente marca `tipo: 'cliente'`. */
     protected readonly ehCliente = inject(ActivatedRoute).snapshot.data['tipo'] === 'cliente';
+
+    /** Depois de criar a conta: o e-mail para onde o link de confirmação foi enviado. */
+    protected readonly emailEnviado = signal<string | null>(null);
+    protected readonly enviando = signal(false);
 
     protected readonly registroForm: FormGroup = this.formBuilder.group(
         {
@@ -69,18 +71,24 @@ export class Registro {
     public registro() {
         if (this.registroForm.invalid) return;
 
+        if (this.enviando()) return;
+
         const registroModel: RegistroModel = this.registroForm.value;
-        const cliente = this.ehCliente;
 
-        const registroObserver: PartialObserver<AccessTokenModel> = {
-            error: (err) =>
-                this.notificacaoService.erro(mensagemDeErro(err, 'Não foi possível criar a conta.')),
-            complete: () => this.router.navigate([rotaInicial(cliente ? 'Cliente' : 'Empresa')]),
-        };
+        this.enviando.set(true);
 
-        (cliente
+        (this.ehCliente
             ? this.authService.registroCliente(registroModel)
             : this.authService.registro(registroModel)
-        ).subscribe(registroObserver);
+        ).subscribe({
+            next: (resposta) => {
+                this.enviando.set(false);
+                this.emailEnviado.set(resposta.email);
+            },
+            error: (err) => {
+                this.enviando.set(false);
+                this.notificacaoService.erro(mensagemDeErro(err, 'Não foi possível criar a conta.'));
+            },
+        });
     }
 }

@@ -22,6 +22,14 @@
         </div>
 
         <mat-card class="p-4 mt-4">
+            @if (emailPendente(); as pendente) {
+            <mat-card-content>
+                <app-aviso-confirmar-email [email]="pendente" titulo="Confirme seu e-mail para entrar" [mostrarVoltar]="false" />
+                <div class="mt-4 text-center">
+                    <button mat-button type="button" (click)="emailPendente.set(null)">Voltar</button>
+                </div>
+            </mat-card-content>
+            } @else {
             <form [formGroup]="loginForm" (ngSubmit)="login()">
                 <mat-card-header>
                     <mat-card-title>
@@ -80,6 +88,7 @@
                     </button>
                 </mat-card-actions>
             </form>
+            }
         </mat-card>
     </div>
 </section>

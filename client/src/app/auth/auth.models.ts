@@ -5,6 +5,12 @@ export interface RegistroModel {
     confirmarSenha: string;
 }
 
+/** Resposta do cadastro: a conta ainda não entra, a pessoa precisa confirmar o e-mail. */
+export interface RegistroRespostaModel {
+    email: string;
+    mensagem: string;
+}
+
 /** O lado por onde a pessoa diz que quer entrar: cliente (procura carros) ou locadora (empresa e funcionários). */
 export type TipoDeAcessoModel = 'Cliente' | 'Locadora';
 

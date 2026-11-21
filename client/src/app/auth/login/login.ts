@@ -5,6 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Router, RouterLink } from '@angular/router';
 
 import { mensagemDeErro } from '../../shared/erros/mensagem-erro';
@@ -12,6 +13,7 @@ import { NotificacaoService } from '../../shared/notificacao/notificacao.service
 import { BotaoVerSenha } from '../../shared/senha/botao-ver-senha';
 import { LoginModel, TipoDeAcessoModel } from '../auth.models';
 import { AuthService } from '../auth.service';
+import { AvisoConfirmarEmail } from '../confirmacao/aviso-confirmar-email';
 import { rotaInicial } from '../rota-inicial';
 
 const CHAVE_TIPO = 'locadora.tipo-de-login';
@@ -43,6 +45,7 @@ const OPCOES: { tipo: TipoDeAcessoModel; titulo: string; descricao: string; icon
         RouterLink,
         ReactiveFormsModule,
         BotaoVerSenha,
+        AvisoConfirmarEmail,
     ],
     templateUrl: './login.html',
 })
@@ -53,6 +56,9 @@ export class Login {
     protected readonly notificacaoService = inject(NotificacaoService);
 
     protected readonly opcoes = OPCOES;
+
+    /** E-mail de uma conta com a senha certa, mas ainda sem confirmar: mostra o aviso com o reenvio. */
+    protected readonly emailPendente = signal<string | null>(null);
 
     /** Lembra a última escolha neste navegador; quem nunca escolheu começa como cliente. */
     protected readonly tipo = signal<TipoDeAcessoModel>(this.lerTipoSalvo());
@@ -91,6 +97,13 @@ export class Login {
                 this.router.navigate([rotaInicial(token.usuarioAutenticado.cargo)]);
             },
             error: (err) => {
+                // 403 = senha certa, e-mail ainda não confirmado.
+                if ((err as HttpErrorResponse).status === 403) {
+                    this.emailPendente.set(loginModel.email);
+
+                    return;
+                }
+
                 const mensagem = mensagemDeErro(err, 'Falha ao autenticar. Verifique suas credenciais.');
                 this.notificacaoService.erro(mensagem);
             },

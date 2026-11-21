@@ -13,6 +13,7 @@ import {
     LoginModel,
     RedefinirSenhaModel,
     RegistroModel,
+    RegistroRespostaModel,
 } from './auth.models';
 
 @Injectable()
@@ -33,19 +34,24 @@ export class AuthService {
         );
     }
 
-    public registro(registroModel: RegistroModel): Observable<AccessTokenModel> {
-        const urlCompleto = `${this.apiUrl}/registrar`;
-
-        return this.http
-            .post<AccessTokenModel>(urlCompleto, registroModel)
-            .pipe(tap((token) => this.accessTokenSubject$.next(token)));
+    /** Cria a conta da locadora. Ela só entra depois de confirmar o e-mail (por isso não devolve token). */
+    public registro(registroModel: RegistroModel): Observable<RegistroRespostaModel> {
+        return this.http.post<RegistroRespostaModel>(`${this.apiUrl}/registrar`, registroModel);
     }
 
     /** Conta de cliente: quem procura e aluga carros no catálogo (não é uma locadora). */
-    public registroCliente(registroModel: RegistroModel): Observable<AccessTokenModel> {
-        return this.http
-            .post<AccessTokenModel>(`${this.apiUrl}/registrar-cliente`, registroModel)
-            .pipe(tap((token) => this.accessTokenSubject$.next(token)));
+    public registroCliente(registroModel: RegistroModel): Observable<RegistroRespostaModel> {
+        return this.http.post<RegistroRespostaModel>(`${this.apiUrl}/registrar-cliente`, registroModel);
+    }
+
+    /** Abre o link do e-mail e confirma o endereço (repetir não dá erro). */
+    public confirmarEmail(email: string, codigo: string): Observable<null> {
+        return this.http.post<null>(`${this.apiUrl}/confirmar-email`, { email, codigo });
+    }
+
+    /** Pede um novo e-mail de confirmação (a resposta é a mesma exista ou não a conta). */
+    public reenviarConfirmacao(email: string): Observable<{ mensagem: string }> {
+        return this.http.post<{ mensagem: string }>(`${this.apiUrl}/reenviar-confirmacao`, { email });
     }
 
     public login(loginModel: LoginModel): Observable<AccessTokenModel> {

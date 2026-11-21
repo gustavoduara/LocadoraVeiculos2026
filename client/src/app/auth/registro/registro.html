@@ -4,6 +4,11 @@
         <hr class="my-4" />
 
         <mat-card class="p-4">
+            @if (emailEnviado(); as enviado) {
+            <mat-card-content>
+                <app-aviso-confirmar-email [email]="enviado" titulo="Conta criada! Confirme seu e-mail" [esperaInicial]="60" />
+            </mat-card-content>
+            } @else {
             <form [formGroup]="registroForm" (ngSubmit)="registro()">
                 <mat-card-header>
                     <mat-card-title>
@@ -67,12 +72,13 @@
                 <mat-card-actions class="flex justify-end items-center mt-4 space-x-4">
                     <a mat-text-button routerLink="/auth/login">Já tenho uma conta</a>
 
-                    <button type="submit" [disabled]="registroForm.invalid" mat-flat-button class="px-6 py-2">
+                    <button type="submit" [disabled]="registroForm.invalid || enviando()" mat-flat-button class="px-6 py-2">
                         <mat-icon>arrow_forward</mat-icon>
                         Registrar
                     </button>
                 </mat-card-actions>
             </form>
+            }
         </mat-card>
 
         <p class="mt-4 text-center text-sm text-gray-600">

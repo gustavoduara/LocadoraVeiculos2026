@@ -52,7 +52,9 @@ Confira os preços atuais no portal antes de criar. Para uma demonstração, F1 
 | `SMTP_FROM` | remetente (ex.: `nao-responda@seudominio.com`) |
 | `APP_URL` | o endereço público do app, usado nos links do e-mail (ex.: `https://meu-app.azurewebsites.net`) |
 
-O envio por SMTP foi escrito mas ainda não foi testado contra um servidor real: faça um teste ("esqueci minha senha" com o seu e-mail) antes de divulgar o site.
+O envio por SMTP foi testado com o Gmail (senha de app), mas não com outros serviços: faça um teste ("esqueci minha senha" com o seu e-mail) antes de divulgar o site.
+
+> **Atenção:** o cadastro (locadora e cliente) exige confirmar o e-mail. **Sem o SMTP configurado, ninguém consegue criar conta**, porque o link de confirmação só seria escrito no log. Configure o `SMTP_*` e o `APP_URL` antes de publicar.
 
 > Essas chaves ficam só na Azure. Não coloque a licença nem a chave JWT no GitHub.
 
