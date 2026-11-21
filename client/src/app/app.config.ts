@@ -39,6 +39,17 @@ const usuarioAutenticadoGuard: CanActivateFn = () => {
 
 const routes: Routes = [
   { path: '', redirectTo: 'auth/login', pathMatch: 'full' },
+
+  // Textos legais: abertos a todos, logados ou não (o cadastro e o rodapé apontam para eles).
+  {
+    path: 'termos-de-uso',
+    loadComponent: () => import('./legal/termos-de-uso').then((c) => c.TermosDeUso),
+  },
+  {
+    path: 'privacidade',
+    loadComponent: () =>
+      import('./legal/politica-de-privacidade').then((c) => c.PoliticaDePrivacidade),
+  },
   {
     path: 'auth',
     loadChildren: () => import('./auth/auth.routes').then((r) => r.authRoutes),

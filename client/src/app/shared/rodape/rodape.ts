@@ -76,6 +76,8 @@ interface LinkRodape {
                     <nav aria-label="Projeto">
                         <h3 class="mb-3 font-semibold text-[color:var(--rodape-titulo)]">Projeto</h3>
                         <ul class="space-y-2">
+                            <li><a class="link-rodape" routerLink="/termos-de-uso">Termos de Uso</a></li>
+                            <li><a class="link-rodape" routerLink="/privacidade">Privacidade</a></li>
                             <li>
                                 <a class="link-rodape" [href]="perfilGithub" target="_blank" rel="noopener noreferrer"
                                     >GitHub</a

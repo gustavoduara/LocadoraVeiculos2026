@@ -67,6 +67,15 @@
                     @if (registroForm.hasError('compararConfirmacaoSenha')) {
                     <mat-error class="mt-3">As senhas devem ser iguais.</mat-error>
                     }
+
+                    <mat-checkbox class="mt-4" formControlName="aceitouTermos">
+                        <span class="text-sm">
+                            Li e aceito os
+                            <a class="text-primary underline" routerLink="/termos-de-uso" target="_blank">Termos de Uso</a>
+                            e a
+                            <a class="text-primary underline" routerLink="/privacidade" target="_blank">Política de Privacidade</a>.
+                        </span>
+                    </mat-checkbox>
                 </mat-card-content>
 
                 <mat-card-actions class="flex justify-end items-center mt-4 space-x-4">

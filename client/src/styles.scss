@@ -246,3 +246,29 @@ html.modo-noturno {
     color: #c8ccd3;
   }
 }
+
+/* Texto corrido das páginas legais (Termos de Uso e Política de Privacidade). */
+.texto-legal {
+  font-size: 0.95rem;
+  line-height: 1.7;
+
+  h3 {
+    margin: 1.75rem 0 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0.6rem 0;
+  }
+
+  ul {
+    margin: 0.5rem 0;
+    padding-left: 1.4rem;
+    list-style: disc;
+  }
+
+  li {
+    margin: 0.35rem 0;
+  }
+}

@@ -3,6 +3,8 @@ export interface RegistroModel {
     email: string;
     senha: string;
     confirmarSenha: string;
+    /** Aceite dos Termos de Uso e da Política de Privacidade. */
+    aceitouTermos: boolean;
 }
 
 /** Resposta do cadastro: a conta ainda não entra, a pessoa precisa confirmar o e-mail. */

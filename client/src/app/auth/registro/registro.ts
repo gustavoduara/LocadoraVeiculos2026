@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -19,6 +20,7 @@ import { BotaoVerSenha } from '../../shared/senha/botao-ver-senha';
     selector: 'app-registro',
     imports: [
         MatCardModule,
+        MatCheckboxModule,
         MatButtonModule,
         MatIconModule,
         MatFormFieldModule,
@@ -48,6 +50,8 @@ export class Registro {
             email: ['', [Validators.required, Validators.email]],
             senha: ['', [Validators.required, Validators.minLength(6)]],
             confirmarSenha: ['', [Validators.required, Validators.minLength(6)]],
+            // Termos de Uso e Política de Privacidade: sem o aceite a conta não é criada.
+            aceitouTermos: [false, [Validators.requiredTrue]],
         },
         { validators: [compararConfirmacaoSenha] },
     );
