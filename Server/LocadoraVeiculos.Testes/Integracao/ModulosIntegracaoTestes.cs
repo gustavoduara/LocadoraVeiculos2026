@@ -66,6 +66,24 @@ public class ModulosIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFact
         Assert.Equal(401, (await api.Post("/api/auth/sair")).Codigo);
     }
 
+    [Fact]
+    public async Task Cookie_de_refresh_velho_responde_401_e_e_apagado_em_vez_de_dar_500()
+    {
+        var api = NovaApi();
+        const string cookieVelho = "LocadoraDeVeiculos.RefreshToken=token-que-nao-existe-mais";
+
+        var rotacao = await api.PostComCookie("/api/auth/rotacionar", cookieVelho);
+
+        Assert.Equal(System.Net.HttpStatusCode.Unauthorized, rotacao.Status);
+        // O navegador recebe a ordem de apagar o cookie (expira no passado).
+        Assert.Contains(rotacao.SetCookies, c => c.StartsWith("LocadoraDeVeiculos.RefreshToken=;") || c.Contains("expires=Thu, 01 Jan 1970"));
+
+        // Sair com um cookie que já não vale também dá certo: a pessoa só quer sair.
+        var sair = await api.PostComCookie("/api/auth/sair", cookieVelho);
+
+        Assert.Equal(System.Net.HttpStatusCode.NoContent, sair.Status);
+    }
+
     // ---------------- funcionários ----------------
 
     [Fact]

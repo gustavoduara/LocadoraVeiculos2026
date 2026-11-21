@@ -1,4 +1,4 @@
-﻿using FluentResults;
+using FluentResults;
 using LocadoraDeVeiculos.Aplicacao.Compartilhado;
 using LocadoraDeVeiculos.Aplicacao.ModuloAutenticacao.Commands;
 using LocadoraDeVeiculos.Dominio.ModuloAutenticacao;
@@ -26,8 +26,9 @@ public class SairCommandHandler(
             var token = await dbContext.RefreshTokens
                 .FirstOrDefaultAsync(t => t.TokenHash == command.RefreshTokenHash, cancellationToken);
 
+            // Sessão que já não existe (cookie velho): sair é o que a pessoa quer, então não é erro.
             if (token is null)
-                throw new SecurityTokenException("O token de rotação não foi encontrado.");
+                return Result.Ok();
 
             var usuarioId = token.UsuarioId;
 

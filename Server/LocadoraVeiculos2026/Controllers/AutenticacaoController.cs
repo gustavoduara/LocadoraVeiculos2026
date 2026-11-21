@@ -1,4 +1,4 @@
-﻿using LocadoraDeVeiculos.Aplicacao.ModuloAutenticacao.Commands;
+using LocadoraDeVeiculos.Aplicacao.ModuloAutenticacao.Commands;
 using LocadoraDeVeiculos.Dominio.ModuloAutenticacao;
 using LocadoraDeVeiculos.WebApi.Compartilhado;
 using LocadoraDeVeiculos.WebApi.Config.Identity;
@@ -105,6 +105,10 @@ public class AutenticacaoController(IMediator mediator) : MainController
             return Unauthorized("O token de rotação não foi encontrado.");
 
         var result = await mediator.Send(new RotacionarTokenCommand(refreshToken));
+
+        // Cookie que não vale mais: apaga do navegador para ele não ser reenviado a cada visita.
+        if (result.IsFailed && result.Errors.Any(e => e.Metadata.TryGetValue("TipoErro", out var tipo) && tipo as string == "NaoAutorizado"))
+            RefreshTokenCookieService.LimparCookie(Response);
 
         return ProcessarResultado(result, ResponderComToken);
     }

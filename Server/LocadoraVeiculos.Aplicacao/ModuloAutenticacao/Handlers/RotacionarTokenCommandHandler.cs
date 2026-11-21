@@ -1,9 +1,10 @@
-﻿using FluentResults;
+using FluentResults;
 using LocadoraDeVeiculos.Aplicacao.Compartilhado;
 using LocadoraDeVeiculos.Aplicacao.ModuloAutenticacao.Commands;
 using LocadoraDeVeiculos.Dominio.ModuloAutenticacao;
 using LocadoraDeVeiculos.Infraestrutura.Jwt.Services;
 using LocadoraDeVeiculos.Infraestrutura.Orm.Compartilhado;
+using Microsoft.IdentityModel.Tokens;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -29,6 +30,13 @@ public class RotacionarTokenCommandHandler(
             await dbContext.SaveChangesAsync(cancellationToken);
 
             return Result.Ok((novoAccessToken, novoRefreshToken));
+        }
+        catch (SecurityTokenException ex)
+        {
+            // Cookie velho, expirado, já usado ou de usuário que não existe mais: é uma sessão inválida, não um erro do servidor.
+            logger.LogWarning("Rotação de token recusada: {Motivo}", ex.Message);
+
+            return Result.Fail(ResultadosErro.NaoAutorizadoErro("A sessão expirou ou não é mais válida. Entre novamente."));
         }
         catch (Exception ex)
         {

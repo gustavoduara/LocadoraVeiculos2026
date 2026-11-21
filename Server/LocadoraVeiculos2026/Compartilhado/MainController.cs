@@ -1,4 +1,4 @@
-﻿using FluentResults;
+using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LocadoraDeVeiculos.WebApi.Compartilhado;
@@ -46,6 +46,7 @@ public abstract class MainController : ControllerBase
                 "RegistroDuplicado" => Conflict(detalhes),              // 409
                 "ExclusaoBloqueada" => UnprocessableEntity(detalhes),   // 422
                 "OperacaoBloqueada" => UnprocessableEntity(detalhes),   // 422
+                "NaoAutorizado" => Unauthorized(detalhes),              // 401
                 "ExcecaoInterna" => StatusCode(500, detalhes),          // 500
                 _ => BadRequest(detalhes)
             };

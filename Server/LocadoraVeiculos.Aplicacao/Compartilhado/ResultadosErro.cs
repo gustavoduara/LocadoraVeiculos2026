@@ -1,4 +1,4 @@
-﻿using FluentResults;
+using FluentResults;
 
 namespace LocadoraDeVeiculos.Aplicacao.Compartilhado;
 
@@ -54,6 +54,14 @@ public abstract class ResultadosErro
         return new Error("Operação bloqueada")
             .CausedBy(mensagemErro)
             .WithMetadata("TipoErro", "OperacaoBloqueada");
+    }
+
+    /// <summary>Sessão ou credencial inválida, vencida ou revogada (vira 401, não 500).</summary>
+    public static Error NaoAutorizadoErro(string mensagemErro)
+    {
+        return new Error("Não autorizado")
+            .CausedBy(mensagemErro)
+            .WithMetadata("TipoErro", "NaoAutorizado");
     }
 
     public static Error ExcecaoInternaErro(Exception ex)

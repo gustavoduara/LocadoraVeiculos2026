@@ -86,6 +86,19 @@ public class ClienteApi
         return (resposta.StatusCode, await resposta.Content.ReadAsByteArrayAsync(), resposta.Content.Headers.ContentType?.MediaType);
     }
 
+    /// <summary>Envia um POST com um cookie e devolve o status e os Set-Cookie da resposta.</summary>
+    public async Task<(HttpStatusCode Status, string[] SetCookies)> PostComCookie(string url, string cookie)
+    {
+        using var requisicao = new HttpRequestMessage(HttpMethod.Post, url);
+        requisicao.Headers.Add("Cookie", cookie);
+
+        using var resposta = await http.SendAsync(requisicao);
+
+        resposta.Headers.TryGetValues("Set-Cookie", out var valores);
+
+        return (resposta.StatusCode, valores?.ToArray() ?? []);
+    }
+
     public Task<Resposta> Get(string url) => Enviar(HttpMethod.Get, url);
     public Task<Resposta> Post(string url, object? corpo = null) => Enviar(HttpMethod.Post, url, corpo);
     public Task<Resposta> Put(string url, object? corpo = null) => Enviar(HttpMethod.Put, url, corpo);
