@@ -1,5 +1,7 @@
 import { TipoCombustivelModel } from '../automoveis/automovel.models';
 import { TipoPlanoModel, TipoSeguroModel } from '../alugueis/aluguel.models';
+import { TipoDescontoModel } from '../cupons/cupom.models';
+import { TipoCobrancaTaxaModel } from '../taxas-servicos/taxa-servico.models';
 
 export type StatusReservaModel = 'Pendente' | 'Aprovada' | 'Recusada' | 'Cancelada';
 
@@ -78,6 +80,24 @@ export interface CarroDetalheModel {
     seguroClienteDiaria: number | null;
     seguroTerceirosDiaria: number | null;
     valorCaucao: number;
+    /** Taxas e serviços que a locadora oferece (o cliente marca as que quer). */
+    taxas: TaxaOpcaoModel[];
+}
+
+export interface TaxaOpcaoModel {
+    id: string;
+    nome: string;
+    preco: number;
+    tipoCobranca: TipoCobrancaTaxaModel;
+}
+
+/** Uma taxa da reserva, com o valor já multiplicado pelos dias quando a cobrança é diária. */
+export interface TaxaDaReservaModel {
+    taxaServicoId: string;
+    nome: string;
+    precoUnitario: number;
+    tipoCobranca: TipoCobrancaTaxaModel;
+    valor: number;
 }
 
 // ---------------- pedidos ----------------
@@ -89,6 +109,10 @@ export interface DadosReservaModel {
     devolucao: string;
     tipoPlano: TipoPlanoModel;
     tipoSeguro: TipoSeguroModel;
+    /** Taxas e serviços do catálogo da locadora do carro. */
+    taxasIds: string[];
+    /** Nome do cupom (opcional) dessa locadora. */
+    cupom?: string | null;
 }
 
 export interface EstimativaReservaModel {
@@ -97,6 +121,12 @@ export interface EstimativaReservaModel {
     valorSeguro: number;
     valorCaucao: number;
     valorTotalPrevisto: number;
+    valorTaxas: number;
+    valorDesconto: number;
+    taxas: TaxaDaReservaModel[];
+    cupomNome: string | null;
+    cupomTipo: TipoDescontoModel | null;
+    cupomValor: number;
 }
 
 export interface ReservaModel {
@@ -128,6 +158,12 @@ export interface ReservaModel {
     clienteValidadeCnh: string;
     clienteCidade: string;
     clienteEstado: string;
+    valorTaxas: number;
+    valorDesconto: number;
+    taxas: TaxaDaReservaModel[];
+    cupomNome: string | null;
+    cupomTipo: TipoDescontoModel | null;
+    cupomValor: number;
 }
 
 export interface SelecionarReservasResponseModel {

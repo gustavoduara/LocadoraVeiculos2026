@@ -96,6 +96,17 @@ import { BuscaLista, ListaPaginada, PaginacaoLista } from '../../shared/lista/li
                         <p class="font-medium">Pedido</p>
                         <p>{{ data(p.retirada) }} até {{ data(p.devolucao) }} ({{ p.dias }} {{ p.dias === 1 ? 'dia' : 'dias' }})</p>
                         <p class="text-gray-600">{{ plano(p.tipoPlano) }} · {{ seguro(p.tipoSeguro) }}</p>
+                        @if (p.taxas.length > 0) {
+                        <p class="text-gray-600">
+                            Taxas:
+                            @for (t of p.taxas; track t.taxaServicoId; let ultima = $last) {
+                            {{ t.nome }} ({{ t.valor | currency: 'BRL' }}){{ ultima ? '' : ', ' }}
+                            }
+                        </p>
+                        }
+                        @if (p.cupomNome) {
+                        <p class="text-green-700">Cupom {{ p.cupomNome }}: - {{ p.valorDesconto | currency: 'BRL' }}</p>
+                        }
                         <p>
                             Total previsto:
                             <strong class="text-destaque">{{ p.valorTotalPrevisto | currency: 'BRL' }}</strong>

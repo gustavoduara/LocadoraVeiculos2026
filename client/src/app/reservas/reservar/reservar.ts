@@ -5,6 +5,7 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -15,6 +16,8 @@ import { TipoPlanoModel, TipoSeguroModel } from '../../alugueis/aluguel.models';
 import { rotuloCombustivel } from '../../automoveis/automovel.models';
 import { CatalogoService } from '../../catalogo/catalogo.service';
 import { FotoCatalogo } from '../../catalogo/foto/foto-catalogo';
+import { descricaoDoDesconto } from '../../cupons/cupom.models';
+import { PrecoComDesconto, ratearDesconto } from '../../shared/preco/preco-com-desconto';
 import { mensagemDeErro } from '../../shared/erros/mensagem-erro';
 import { NotificacaoService } from '../../shared/notificacao/notificacao.service';
 import {
@@ -41,12 +44,14 @@ interface OpcaoDePlano {
         FormsModule,
         MatButtonModule,
         MatCardModule,
+        MatCheckboxModule,
         MatFormFieldModule,
         MatIconModule,
         MatInputModule,
         MatRadioModule,
         RouterLink,
         FotoCatalogo,
+        PrecoComDesconto,
     ],
     template: `
 <section class="mx-auto max-w-4xl px-4 py-6">
@@ -128,6 +133,49 @@ interface OpcaoDePlano {
                     </mat-radio-group>
                 </mat-card-content>
             </mat-card>
+
+            @if (c.taxas.length > 0) {
+            <mat-card class="rounded-2xl shadow-sm">
+                <mat-card-content class="p-4">
+                    <h3 class="text-base font-medium">Taxas e serviços</h3>
+                    <div class="mt-2 flex flex-col">
+                        @for (t of c.taxas; track t.id) {
+                        <mat-checkbox [checked]="taxasEscolhidas().includes(t.id)"
+                            (change)="alternarTaxa(t.id, $event.checked)">
+                            {{ t.nome }}
+                            <span class="text-xs text-gray-600">
+                                · {{ t.preco | currency: 'BRL' }}{{ t.tipoCobranca === 'Diario' ? ' por dia' : ' (uma vez)' }}
+                            </span>
+                        </mat-checkbox>
+                        }
+                    </div>
+                </mat-card-content>
+            </mat-card>
+            }
+
+            <mat-card class="rounded-2xl shadow-sm">
+                <mat-card-content class="p-4">
+                    <h3 class="text-base font-medium">Cupom de desconto</h3>
+                    <div class="mt-3 flex items-start gap-3">
+                        <mat-form-field class="flex-1" subscriptSizing="dynamic">
+                            <mat-label>Tem um cupom desta locadora?</mat-label>
+                            <input matInput autocomplete="off" [ngModel]="cupomDigitado()"
+                                (ngModelChange)="cupomDigitado.set($event)"
+                                (keydown.enter)="aplicarCupom(); $event.preventDefault()" />
+                        </mat-form-field>
+                        <button mat-stroked-button class="mt-2" type="button" (click)="aplicarCupom()">Aplicar</button>
+                    </div>
+
+                    @if (erroCupom(); as erro) {
+                    <p class="mt-2 text-sm text-red-700">{{ erro }}</p>
+                    } @else if (estimativa()?.cupomNome; as nome) {
+                    <p class="mt-2 text-sm text-green-700">
+                        Cupom {{ nome }} aplicado: {{ descricaoDesconto(estimativa()!.cupomTipo, estimativa()!.cupomValor) }}
+                        sobre diárias, taxas e seguro.
+                    </p>
+                    }
+                </mat-card-content>
+            </mat-card>
         </div>
 
         <div class="md:col-span-2 flex flex-col gap-4">
@@ -148,18 +196,31 @@ interface OpcaoDePlano {
                     @if (estimativa(); as e) {
                     <dl class="mt-3 flex flex-col gap-1 text-sm">
                         <div class="flex justify-between"><dt>Diárias ({{ e.dias }} {{ e.dias === 1 ? 'dia' : 'dias' }})</dt>
-                            <dd>{{ e.valorDiarias | currency: 'BRL' }}</dd></div>
+                            <dd><app-preco-com-desconto [original]="e.valorDiarias" [atual]="precos()!.diarias" /></dd></div>
+                        @if (e.valorTaxas > 0) {
+                        @for (t of e.taxas; track t.taxaServicoId) {
+                        <div class="flex justify-between text-gray-600"><dt>{{ t.nome }}</dt><dd>{{ t.valor | currency: 'BRL' }}</dd></div>
+                        }
+                        <div class="flex justify-between"><dt>Taxas e serviços</dt>
+                            <dd><app-preco-com-desconto [original]="e.valorTaxas" [atual]="precos()!.taxas" /></dd></div>
+                        }
                         @if (e.valorSeguro > 0) {
-                        <div class="flex justify-between"><dt>Seguro</dt><dd>{{ e.valorSeguro | currency: 'BRL' }}</dd></div>
+                        <div class="flex justify-between"><dt>Seguro</dt>
+                            <dd><app-preco-com-desconto [original]="e.valorSeguro" [atual]="precos()!.seguro" /></dd></div>
+                        }
+                        @if (e.valorDesconto > 0) {
+                        <div class="flex justify-between text-green-700"><dt>Desconto do cupom</dt>
+                            <dd>- {{ e.valorDesconto | currency: 'BRL' }}</dd></div>
                         }
                         <div class="flex justify-between"><dt>Caução (incluída)</dt>
                             <dd>{{ e.valorCaucao | currency: 'BRL' }}</dd></div>
                         <div class="mt-2 flex justify-between border-t pt-2 text-base font-semibold">
-                            <dt>Total previsto</dt><dd class="text-destaque">{{ e.valorTotalPrevisto | currency: 'BRL' }}</dd>
+                            <dt>Total previsto</dt>
+                            <dd class="text-destaque"><app-preco-com-desconto [original]="precos()!.totalSemCupom" [atual]="e.valorTotalPrevisto" /></dd>
                         </div>
                     </dl>
                     <p class="mt-3 text-xs text-gray-500">
-                        Previsão: quilometragem extra, combustível faltante e taxas são conferidos na devolução. A locadora
+                        Previsão: quilometragem extra, combustível faltante e atrasos são conferidos na devolução. A locadora
                         precisa aprovar o pedido.
                     </p>
                     } @else if (erroEstimativa()) {
@@ -202,6 +263,15 @@ export class Reservar implements OnInit {
     protected readonly plano = signal<TipoPlanoModel>('Diario');
     protected readonly seguro = signal<TipoSeguroModel>('Nenhum');
 
+    protected readonly taxasEscolhidas = signal<string[]>([]);
+
+    /** O que está escrito no campo, e o cupom que já foi aplicado (só vale depois de clicar em Aplicar). */
+    protected readonly cupomDigitado = signal('');
+    private readonly cupomAplicado = signal('');
+    protected readonly erroCupom = signal<string | null>(null);
+
+    protected readonly descricaoDesconto = descricaoDoDesconto;
+
     protected readonly estimativa = signal<EstimativaReservaModel | null>(null);
     protected readonly erroEstimativa = signal<string | null>(null);
     protected readonly enviando = signal(false);
@@ -236,6 +306,22 @@ export class Reservar implements OnInit {
         return lista;
     });
 
+    /** Com cupom, o desconto é repartido entre as linhas para mostrar cada preço atualizado. */
+    protected readonly precos = computed(() => {
+        const e = this.estimativa();
+
+        if (!e) return null;
+
+        const [diarias, taxas, seguro] = ratearDesconto([e.valorDiarias, e.valorTaxas, e.valorSeguro], e.valorDesconto);
+
+        return {
+            diarias,
+            taxas,
+            seguro,
+            totalSemCupom: Math.round((e.valorTotalPrevisto + e.valorDesconto) * 100) / 100,
+        };
+    });
+
     protected readonly erroDeDatas = computed(() => {
         const r = this.retirada();
         const d = this.devolucao();
@@ -250,6 +336,7 @@ export class Reservar implements OnInit {
     protected readonly podeEnviar = computed(
         () =>
             !!this.estimativa() &&
+            !this.erroCupom() &&
             !this.erroDeDatas() &&
             !this.enviando() &&
             !!this.perfil()?.completo,
@@ -301,6 +388,16 @@ export class Reservar implements OnInit {
         this.recalcular();
     }
 
+    protected alternarTaxa(id: string, marcada: boolean): void {
+        this.taxasEscolhidas.update((ids) => (marcada ? [...ids, id] : ids.filter((x) => x !== id)));
+        this.recalcular();
+    }
+
+    protected aplicarCupom(): void {
+        this.cupomAplicado.set(this.cupomDigitado().trim());
+        this.recalcular();
+    }
+
     protected completarDados(): void {
         this.router.navigate(['/meus-dados'], {
             state: { voltarPara: this.router.url },
@@ -314,19 +411,40 @@ export class Reservar implements OnInit {
             devolucao: this.devolucao(),
             tipoPlano: this.plano(),
             tipoSeguro: this.seguro(),
+            taxasIds: this.taxasEscolhidas(),
+            cupom: this.cupomAplicado() || null,
         };
     }
 
     private recalcular(): void {
         this.estimativa.set(null);
         this.erroEstimativa.set(null);
+        this.erroCupom.set(null);
 
         if (!this.carro() || this.erroDeDatas()) return;
 
         this.reservas.calcular(this.dados()).subscribe({
             next: (e) => this.estimativa.set(e),
-            error: (err) =>
-                this.erroEstimativa.set(mensagemDeErro(err, 'Não foi possível calcular o valor.')),
+            error: (err) => {
+                const mensagem = mensagemDeErro(err, 'Não foi possível calcular o valor.');
+
+                if (!this.cupomAplicado()) {
+                    this.erroEstimativa.set(mensagem);
+
+                    return;
+                }
+
+                // Pode ter sido o cupom: mostra o motivo e continua mostrando o valor sem ele.
+                this.erroCupom.set(mensagem);
+
+                this.reservas.calcular({ ...this.dados(), cupom: null }).subscribe({
+                    next: (e) => this.estimativa.set(e),
+                    error: (err2) => {
+                        this.erroCupom.set(null);
+                        this.erroEstimativa.set(mensagemDeErro(err2, 'Não foi possível calcular o valor.'));
+                    },
+                });
+            },
         });
     }
 

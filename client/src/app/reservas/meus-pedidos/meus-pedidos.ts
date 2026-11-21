@@ -59,6 +59,20 @@ import { ReservaService } from '../reserva.service';
                     ({{ p.dias }} {{ p.dias === 1 ? 'dia' : 'dias' }}) ·
                     {{ plano(p.tipoPlano) }} · {{ seguro(p.tipoSeguro) }}
                 </p>
+                @if (p.taxas.length > 0) {
+                <p class="mt-1 text-sm">
+                    <span class="font-medium">Taxas e serviços:</span>
+                    @for (t of p.taxas; track t.taxaServicoId; let ultima = $last) {
+                    {{ t.nome }} ({{ t.valor | currency: 'BRL' }}){{ ultima ? '' : ', ' }}
+                    }
+                </p>
+                }
+                @if (p.cupomNome) {
+                <p class="mt-1 text-sm">
+                    <span class="font-medium">Cupom {{ p.cupomNome }}:</span>
+                    desconto de {{ p.valorDesconto | currency: 'BRL' }}
+                </p>
+                }
                 <p class="mt-1 text-sm">
                     Total previsto:
                     <strong class="text-destaque">{{ p.valorTotalPrevisto | currency: 'BRL' }}</strong>
