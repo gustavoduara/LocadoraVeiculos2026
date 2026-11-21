@@ -13,9 +13,7 @@ public class ReservaIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFact
         var api = new ClienteApi(fabrica.CreateClient());
         var email = Geradores.Email("pessoa");
 
-        var r = await api.Post("/api/auth/registrar-cliente", new { nomeCompleto = "Beatriz Lima", email, senha = "Senha123", confirmarSenha = "Senha123" });
-        Assert.Equal(200, r.Codigo);
-        api.UsarToken(r.Texto("chave"));
+        api.UsarToken(await Cenario.CriarContaEEntrar(api, "/api/auth/registrar-cliente", "Beatriz Lima", email));
 
         var cpf = Geradores.Cpf();
 

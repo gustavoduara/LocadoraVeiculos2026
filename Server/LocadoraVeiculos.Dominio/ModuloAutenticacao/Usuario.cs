@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 
 namespace LocadoraDeVeiculos.Dominio.ModuloAutenticacao;
 
@@ -10,7 +10,8 @@ public class Usuario : IdentityUser<Guid>
     public Usuario()
     {
         Id = Guid.NewGuid();
-        EmailConfirmed = true;
+        // O e-mail nasce não confirmado: a pessoa precisa abrir o link enviado (contas criadas pelo administrador
+        // da empresa, como as de funcionário, são marcadas como confirmadas na hora do cadastro).
     }
 }
 

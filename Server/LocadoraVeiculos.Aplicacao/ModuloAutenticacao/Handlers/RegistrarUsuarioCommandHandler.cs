@@ -1,4 +1,4 @@
-﻿using FluentResults;
+using FluentResults;
 using LocadoraDeVeiculos.Aplicacao.Compartilhado;
 using LocadoraDeVeiculos.Aplicacao.ModuloAutenticacao.Commands;
 using LocadoraDeVeiculos.Dominio.ModuloAutenticacao;
@@ -12,12 +12,11 @@ namespace LocadoraDeVeiculos.Aplicacao.ModuloAutenticacao.Handlers;
 public class RegistrarUsuarioCommandHandler(
     UserManager<Usuario> userManager,
     RoleManager<Cargo> roleManager,
-    AccessTokenProvider tokenProvider,
-    RefreshTokenProvider refreshTokenProvider,
+    IEnviadorDeEmail enviadorDeEmail,
     ILogger<RegistrarUsuarioCommandHandler> logger
-) : IRequestHandler<RegistrarUsuarioCommand, Result<(AccessToken, RefreshToken)>>
+) : IRequestHandler<RegistrarUsuarioCommand, Result>
 {
-    public async Task<Result<(AccessToken, RefreshToken)>> Handle(
+    public async Task<Result> Handle(
         RegistrarUsuarioCommand command, CancellationToken cancellationToken)
     {
         Usuario? usuario = null;
@@ -72,17 +71,18 @@ public class RegistrarUsuarioCommandHandler(
                 return Result.Fail(ResultadosErro.RequisicaoInvalidaErro(erros));
             }
 
-            var accessToken = await tokenProvider.GerarAccessTokenAsync(usuario);
+            // A conta só entra depois de confirmar o e-mail. Se o envio falhar, a conta continua criada:
+            // a pessoa pede o reenvio na tela de login.
+            try
+            {
+                await EmailDeConfirmacao.EnviarAsync(userManager, enviadorDeEmail, usuario, command.EnderecoDoSite, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Não foi possível enviar o e-mail de confirmação.");
+            }
 
-            if (accessToken is null)
-                return Result.Fail(ResultadosErro.ExcecaoInternaErro(new Exception("Falha ao gerar token de acesso.")));
-
-            var refreshToken = await refreshTokenProvider.GerarRefreshTokenAsync(usuario);
-
-            if (refreshToken is null)
-                return Result.Fail(ResultadosErro.ExcecaoInternaErro(new Exception("Falha ao gerar token de rotação.")));
-
-            return Result.Ok((accessToken, refreshToken));
+            return Result.Ok();
         }
         catch (Exception ex)
         {

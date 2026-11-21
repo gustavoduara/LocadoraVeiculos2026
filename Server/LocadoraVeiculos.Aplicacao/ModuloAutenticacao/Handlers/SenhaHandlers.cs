@@ -102,6 +102,9 @@ public class RedefinirSenhaCommandHandler(
 
             usuario.AccessTokenVersionId = Guid.NewGuid();
 
+            // O link chegou ao e-mail da conta: quem o usou prova que o endereço é dele.
+            usuario.EmailConfirmed = true;
+
             await dbContext.SaveChangesAsync(cancellationToken);
 
             return Result.Ok();

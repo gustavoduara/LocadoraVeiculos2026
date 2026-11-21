@@ -1,4 +1,4 @@
-﻿using LocadoraDeVeiculos.Dominio.ModuloAutenticacao;
+using LocadoraDeVeiculos.Dominio.ModuloAutenticacao;
 using LocadoraDeVeiculos.Infraestrutura.Jwt;
 using LocadoraDeVeiculos.Infraestrutura.Orm.Compartilhado;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -26,9 +26,11 @@ public static class IdentityConfig
             options.Password.RequireUppercase = true;
             options.Password.RequireNonAlphanumeric = false;
             options.Password.RequiredLength = 6;
+            options.Tokens.EmailConfirmationTokenProvider = ConfirmacaoDeEmailTokenProviderOptions.NomeDoProvedor;
         })
         .AddEntityFrameworkStores<AppDbContext>()
-        .AddDefaultTokenProviders();
+        .AddDefaultTokenProviders()
+        .AddTokenProvider<ConfirmacaoDeEmailTokenProvider>(ConfirmacaoDeEmailTokenProviderOptions.NomeDoProvedor);
 
         // O link de "esqueci minha senha" vale por 1 hora.
         services.Configure<DataProtectionTokenProviderOptions>(o => o.TokenLifespan = TimeSpan.FromHours(1));

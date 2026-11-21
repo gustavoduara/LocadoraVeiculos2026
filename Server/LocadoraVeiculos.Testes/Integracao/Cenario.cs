@@ -141,22 +141,33 @@ public class Cenario
 
     public static string Dia(int deslocamento) => Hoje.AddDays(deslocamento).ToString("yyyy-MM-dd");
 
-    public static async Task<string> RegistrarEmpresa(ClienteApi api, string nome = "Empresa Teste")
+    /// <summary>Abre o link do último e-mail de confirmação que o endereço recebeu.</summary>
+    public static async Task ConfirmarEmail(ClienteApi api, string email)
+    {
+        var corpo = EmailsDeTeste.Recebidos(email).Last(e => e.Assunto.Contains("confirme", StringComparison.OrdinalIgnoreCase)).Corpo;
+        var codigo = System.Text.RegularExpressions.Regex.Match(corpo, @"codigo=([A-Za-z0-9_\-]+)").Groups[1].Value;
+
+        Assert.Equal(204, (await api.Post("/api/auth/confirmar-email", new { email, codigo })).Codigo);
+    }
+
+    /// <summary>Cadastra a conta, confirma o e-mail como a pessoa faria e entra: devolve o token.</summary>
+    public static async Task<string> CriarContaEEntrar(ClienteApi api, string rota, string nome, string email, string senha = "Senha123")
     {
         api.UsarToken(null);
 
-        var r = await api.Post("/api/auth/registrar", new
-        {
-            nomeCompleto = nome,
-            email = Geradores.Email("empresa"),
-            senha = "Senha123",
-            confirmarSenha = "Senha123"
-        });
-
+        var r = await api.Post(rota, new { nomeCompleto = nome, email, senha, confirmarSenha = senha });
         Assert.Equal(200, r.Codigo);
 
-        return r.Texto("chave");
+        await ConfirmarEmail(api, email);
+
+        var login = await api.Post("/api/auth/autenticar", new { email, senha });
+        Assert.Equal(200, login.Codigo);
+
+        return login.Texto("chave");
     }
+
+    public static Task<string> RegistrarEmpresa(ClienteApi api, string nome = "Empresa Teste") =>
+        CriarContaEEntrar(api, "/api/auth/registrar", nome, Geradores.Email("empresa"));
 
     public static async Task<Cenario> Criar(ApiFactory fabrica, bool comFuncionario = false)
     {

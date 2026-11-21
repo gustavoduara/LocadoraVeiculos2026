@@ -14,8 +14,12 @@ public class SenhaETipoDeAcessoIntegracaoTestes(ApiFactory fabrica) : IClassFixt
     {
         var email = Geradores.Email("conta");
 
-        var r = await NovaApi().Post(rota, new { nomeCompleto = "Fulana de Tal", email, senha, confirmarSenha = senha });
+        var api = NovaApi();
+
+        var r = await api.Post(rota, new { nomeCompleto = "Fulana de Tal", email, senha, confirmarSenha = senha });
         Assert.Equal(200, r.Codigo);
+
+        await ConfirmarEmail(api, email);
 
         return email;
     }

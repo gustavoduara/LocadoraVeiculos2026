@@ -47,6 +47,7 @@ public abstract class MainController : ControllerBase
                 "ExclusaoBloqueada" => UnprocessableEntity(detalhes),   // 422
                 "OperacaoBloqueada" => UnprocessableEntity(detalhes),   // 422
                 "NaoAutorizado" => Unauthorized(detalhes),              // 401
+                "EmailNaoConfirmado" => StatusCode(403, detalhes),      // 403
                 "ExcecaoInterna" => StatusCode(500, detalhes),          // 500
                 _ => BadRequest(detalhes)
             };

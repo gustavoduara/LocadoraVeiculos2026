@@ -16,36 +16,61 @@ public class AutenticacaoController(IMediator mediator) : MainController
 {
     [EnableRateLimiting(SegurancaConfig.PoliticaDeCadastro)]
     [HttpPost("registrar")]
-    public async Task<ActionResult<AccessToken>> Registrar(RegistrarUsuarioRequest request)
-    {
-        var command = new RegistrarUsuarioCommand(
-            request.NomeCompleto,
-            request.Email,
-            request.Senha,
-            request.ConfirmarSenha
-        );
-
-        var result = await mediator.Send(command);
-
-        return ProcessarResultado(result, ResponderComToken);
-    }
-
-    /// <summary>Conta de cliente: quem procura e aluga carros no catálogo (não é uma locadora).</summary>
-    [EnableRateLimiting(SegurancaConfig.PoliticaDeCadastro)]
-    [HttpPost("registrar-cliente")]
-    public async Task<ActionResult<AccessToken>> RegistrarCliente(RegistrarUsuarioRequest request)
+    public async Task<ActionResult> Registrar(RegistrarUsuarioRequest request, [FromServices] IConfiguration configuracao)
     {
         var command = new RegistrarUsuarioCommand(
             request.NomeCompleto,
             request.Email,
             request.Senha,
             request.ConfirmarSenha,
+            EnderecoDoSite(configuracao)
+        );
+
+        var result = await mediator.Send(command);
+
+        return ProcessarResultado(result, () => ResponderCadastro(request.Email));
+    }
+
+    /// <summary>Conta de cliente: quem procura e aluga carros no catálogo (não é uma locadora).</summary>
+    [EnableRateLimiting(SegurancaConfig.PoliticaDeCadastro)]
+    [HttpPost("registrar-cliente")]
+    public async Task<ActionResult> RegistrarCliente(RegistrarUsuarioRequest request, [FromServices] IConfiguration configuracao)
+    {
+        var command = new RegistrarUsuarioCommand(
+            request.NomeCompleto,
+            request.Email,
+            request.Senha,
+            request.ConfirmarSenha,
+            EnderecoDoSite(configuracao),
             CargoUsuario.Cliente
         );
 
         var result = await mediator.Send(command);
 
-        return ProcessarResultado(result, ResponderComToken);
+        return ProcessarResultado(result, () => ResponderCadastro(request.Email));
+    }
+
+    /// <summary>A pessoa abriu o link do e-mail: confirma o endereço. Pode repetir sem erro.</summary>
+    [EnableRateLimiting(SegurancaConfig.PoliticaDeRecuperacao)]
+    [HttpPost("confirmar-email")]
+    public async Task<ActionResult> ConfirmarEmail(ConfirmarEmailRequest request)
+    {
+        var result = await mediator.Send(new ConfirmarEmailCommand(request.Email, request.Codigo));
+
+        return ProcessarResultado(result, () => NoContent());
+    }
+
+    /// <summary>Manda de novo o e-mail de confirmação. A resposta é sempre a mesma.</summary>
+    [EnableRateLimiting(SegurancaConfig.PoliticaDeRecuperacao)]
+    [HttpPost("reenviar-confirmacao")]
+    public async Task<ActionResult> ReenviarConfirmacao(ReenviarConfirmacaoRequest request, [FromServices] IConfiguration configuracao)
+    {
+        var result = await mediator.Send(new ReenviarConfirmacaoCommand(request.Email, EnderecoDoSite(configuracao)));
+
+        return ProcessarResultado(result, () => Ok(new
+        {
+            mensagem = "Se a conta existir e ainda não estiver confirmada, enviamos um novo link para o e-mail."
+        }));
     }
 
     [EnableRateLimiting(SegurancaConfig.PoliticaDeLogin)]
@@ -64,10 +89,7 @@ public class AutenticacaoController(IMediator mediator) : MainController
     [HttpPost("esqueci-senha")]
     public async Task<ActionResult> EsqueciSenha(EsqueciSenhaRequest request, [FromServices] IConfiguration configuracao)
     {
-        // APP_URL (se existir) vence: atrás de um proxy o endereço público pode ser outro.
-        string endereco = configuracao["APP_URL"] ?? $"{Request.Scheme}://{Request.Host}";
-
-        var result = await mediator.Send(new SolicitarRedefinicaoSenhaCommand(request.Email, endereco));
+        var result = await mediator.Send(new SolicitarRedefinicaoSenhaCommand(request.Email, EnderecoDoSite(configuracao)));
 
         return ProcessarResultado(result, () => Ok(new
         {
@@ -130,6 +152,16 @@ public class AutenticacaoController(IMediator mediator) : MainController
             return NoContent();
         });
     }
+
+    /// <summary>APP_URL (se existir) vence: atrás de um proxy o endereço público pode ser outro.</summary>
+    private string EnderecoDoSite(IConfiguration configuracao) =>
+        configuracao["APP_URL"] ?? $"{Request.Scheme}://{Request.Host}";
+
+    private ActionResult ResponderCadastro(string email) => Ok(new
+    {
+        email,
+        mensagem = "Conta criada! Enviamos um e-mail de confirmação: abra o link para poder entrar."
+    });
 
     private ActionResult ResponderComToken((AccessToken AccessToken, RefreshToken RefreshToken) valor)
     {

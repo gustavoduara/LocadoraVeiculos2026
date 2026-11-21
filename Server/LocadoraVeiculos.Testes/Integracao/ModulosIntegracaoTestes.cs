@@ -21,8 +21,11 @@ public class ModulosIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFact
         var registro = await api.Post("/api/auth/registrar",
             new { nomeCompleto = "Dono", email, senha = "Senha123", confirmarSenha = "Senha123" });
 
+        // O cadastro não entra direto: devolve um aviso e manda o e-mail de confirmação.
         Assert.Equal(200, registro.Codigo);
-        Assert.False(string.IsNullOrEmpty(registro.Texto("chave")));
+        Assert.False(registro.Corpo.TryGetProperty("chave", out _));
+
+        await ConfirmarEmail(api, email);
 
         Assert.Equal(200, (await api.Post("/api/auth/autenticar", new { email, senha = "Senha123" })).Codigo);
         Assert.Equal(400, (await api.Post("/api/auth/autenticar", new { email, senha = "Errada123" })).Codigo);

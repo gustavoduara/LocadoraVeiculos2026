@@ -1,4 +1,4 @@
-﻿using FluentResults;
+using FluentResults;
 using LocadoraDeVeiculos.Aplicacao.Compartilhado;
 using LocadoraDeVeiculos.Aplicacao.ModuloAutenticacao.Commands;
 using LocadoraDeVeiculos.Dominio.ModuloAutenticacao;
@@ -35,6 +35,10 @@ public class AutenticarUsuarioCommandHandler(
 
             if (!credenciaisValidas)
                 return Result.Fail(ResultadosErro.RequisicaoInvalidaErro("Login ou senha incorretos."));
+
+            // Só depois de a senha conferir: quem não sabe a senha não descobre se o e-mail está confirmado.
+            if (!usuarioEncontrado.EmailConfirmed)
+                return Result.Fail(ResultadosErro.EmailNaoConfirmadoErro());
 
             // Só depois de a senha conferir: quem não sabe a senha não descobre o tipo da conta.
             if (command.Tipo is { } tipo)

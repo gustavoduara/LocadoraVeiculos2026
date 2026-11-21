@@ -16,17 +16,7 @@ public class CatalogoIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFac
     {
         var api = new ClienteApi(fabrica.CreateClient());
 
-        var r = await api.Post("/api/auth/registrar-cliente", new
-        {
-            nomeCompleto = "Pessoa Que Aluga",
-            email = Geradores.Email("cliente"),
-            senha = "Senha123",
-            confirmarSenha = "Senha123"
-        });
-
-        Assert.Equal(200, r.Codigo);
-
-        api.UsarToken(r.Texto("chave"));
+        api.UsarToken(await CriarContaEEntrar(api, "/api/auth/registrar-cliente", "Pessoa Que Aluga", Geradores.Email("cliente")));
 
         return api;
     }
@@ -105,6 +95,7 @@ public class CatalogoIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFac
         var email = Geradores.Email("login");
 
         await api.Post("/api/auth/registrar-cliente", new { nomeCompleto = "Maria", email, senha = "Senha123", confirmarSenha = "Senha123" });
+        await ConfirmarEmail(api, email);
 
         var login = await api.Post("/api/auth/autenticar", new { email, senha = "Senha123" });
 

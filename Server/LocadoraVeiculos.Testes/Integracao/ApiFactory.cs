@@ -67,9 +67,17 @@ public class EmailsDeTeste : IEnviadorDeEmail
         get { lock (enviados) return enviados.ToList(); }
     }
 
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, List<(string Assunto, string Corpo)>> PorDestinatario = new();
+
+    /// <summary>Os e-mails que um endereço recebeu (os endereços de teste são únicos, então não se misturam entre testes).</summary>
+    public static IReadOnlyList<(string Assunto, string Corpo)> Recebidos(string para) =>
+        PorDestinatario.TryGetValue(para, out var lista) ? [.. lista.ToArray()] : [];
+
     public Task EnviarAsync(string para, string assunto, string corpoTexto, CancellationToken cancellationToken = default)
     {
         lock (enviados) enviados.Add((para, assunto, corpoTexto));
+
+        PorDestinatario.GetOrAdd(para, _ => []).Add((assunto, corpoTexto));
 
         return Task.CompletedTask;
     }

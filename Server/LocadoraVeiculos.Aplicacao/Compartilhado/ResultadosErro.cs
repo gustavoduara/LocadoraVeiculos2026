@@ -64,6 +64,14 @@ public abstract class ResultadosErro
             .WithMetadata("TipoErro", "NaoAutorizado");
     }
 
+    /// <summary>A senha está certa, mas o e-mail da conta ainda não foi confirmado (vira 403).</summary>
+    public static Error EmailNaoConfirmadoErro()
+    {
+        return new Error("E-mail não confirmado")
+            .CausedBy("Confirme o seu e-mail para entrar. Enviamos um link para o endereço cadastrado.")
+            .WithMetadata("TipoErro", "EmailNaoConfirmado");
+    }
+
     public static Error ExcecaoInternaErro(Exception ex)
     {
         return new Error("Ocorreu um erro interno do servidor")

@@ -1,4 +1,4 @@
-﻿using FluentResults;
+using FluentResults;
 using FluentValidation;
 using FluentValidation.Results;
 using LocadoraDeVeiculos.Aplicacao.Compartilhado;
@@ -48,7 +48,9 @@ public class CadastrarFuncionarioCommandHandler(
             {
                 FullName = command.NomeCompleto,
                 UserName = command.Email,
-                Email = command.Email
+                Email = command.Email,
+                // Quem cria a conta é o administrador da empresa, que responde pelo e-mail informado.
+                EmailConfirmed = true
             };
 
             var resultadoCriacaoUsuario =
