@@ -10,9 +10,13 @@ import { NotificacaoService } from '../../shared/notificacao/notificacao.service
 import { SelecionarFuncionariosModel } from '../funcionario.models';
 import { FuncionarioService } from '../funcionario.service';
 
+import { BuscaLista, ListaPaginada, PaginacaoLista } from '../../shared/lista/lista-paginada';
+
 @Component({
     selector: 'app-listar-funcionarios',
-    imports: [MatButtonModule, MatIconModule, MatCardModule, RouterLink, CurrencyPipe, DatePipe],
+    imports: [
+        BuscaLista,
+        PaginacaoLista,MatButtonModule, MatIconModule, MatCardModule, RouterLink, CurrencyPipe, DatePipe],
     templateUrl: './listar-funcionarios.html',
 })
 export class ListarFuncionarios {
@@ -43,4 +47,7 @@ export class ListarFuncionarios {
                 ),
         });
     }
+
+    /** Busca por texto e páginas (a lista toda já está carregada na tela). */
+    protected readonly lista = new ListaPaginada(this.funcionarios);
 }

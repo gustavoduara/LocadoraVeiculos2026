@@ -15,8 +15,10 @@
         <p class="text-gray-600">Nenhum parceiro cadastrado ainda.</p>
         }
 
+        <app-busca-lista [lista]="lista" rotulo="Buscar parceiro" />
+
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            @for (parceiro of parceiros; track parceiro.id) {
+            @for (parceiro of lista.itens(); track parceiro.id) {
             <mat-card class="p-3 rounded-2xl shadow-sm">
                 <mat-card-header class="pb-2">
                     <mat-card-title class="text-lg font-medium">{{ parceiro.nome }}</mat-card-title>
@@ -33,5 +35,7 @@
             </mat-card>
             }
         </div>
+
+        <app-paginacao-lista [lista]="lista" />
     </div>
 </section>

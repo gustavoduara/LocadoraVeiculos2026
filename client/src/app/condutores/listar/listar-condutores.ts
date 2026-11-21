@@ -12,9 +12,13 @@ import { NotificacaoService } from '../../shared/notificacao/notificacao.service
 import { CondutorModel, isoParaDataBr } from '../condutor.models';
 import { CondutorService } from '../condutor.service';
 
+import { BuscaLista, ListaPaginada, PaginacaoLista } from '../../shared/lista/lista-paginada';
+
 @Component({
     selector: 'app-listar-condutores',
     imports: [
+        BuscaLista,
+        PaginacaoLista,
         MatButtonModule,
         MatCardModule,
         MatFormFieldModule,
@@ -49,4 +53,7 @@ export class ListarCondutores {
                 this.notificacaoService.erro(mensagemDeErro(err, 'Não foi possível filtrar os condutores.')),
         });
     }
+
+    /** Busca por texto e páginas (a lista toda já está carregada na tela). */
+    protected readonly lista = new ListaPaginada(this.condutores);
 }

@@ -12,8 +12,10 @@
 
         <hr class="my-6 border-muted/30" />
 
+        <app-busca-lista [lista]="lista" rotulo="Buscar por nome, CPF ou e-mail" />
+
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            @for (funcionario of funcionarios(); track funcionario.id) {
+            @for (funcionario of lista.itens(); track funcionario.id) {
             <mat-card class="p-3 rounded-2xl shadow-sm" [class.opacity-60]="!funcionario.ativo">
                 <mat-card-header class="pb-2">
                     <mat-card-title class="text-lg font-medium">
@@ -53,5 +55,7 @@
             </mat-card>
             }
         </div>
+
+        <app-paginacao-lista [lista]="lista" />
     </div>
 </section>

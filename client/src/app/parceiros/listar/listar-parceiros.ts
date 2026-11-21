@@ -6,13 +6,20 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { ParceiroModel } from '../parceiro.models';
 
+import { BuscaLista, ListaPaginada, PaginacaoLista } from '../../shared/lista/lista-paginada';
+
 @Component({
     selector: 'app-listar-parceiros',
-    imports: [MatButtonModule, MatCardModule, MatIconModule, RouterLink],
+    imports: [
+        BuscaLista,
+        PaginacaoLista,MatButtonModule, MatCardModule, MatIconModule, RouterLink],
     templateUrl: './listar-parceiros.html',
 })
 export class ListarParceiros {
     protected readonly route = inject(ActivatedRoute);
 
     protected readonly parceiros = (this.route.snapshot.data['parceiros'] ?? []) as ParceiroModel[];
+
+    /** Busca por texto e páginas (a lista toda já está carregada na tela). */
+    protected readonly lista = new ListaPaginada(this.parceiros);
 }

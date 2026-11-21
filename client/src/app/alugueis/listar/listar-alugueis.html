@@ -24,8 +24,10 @@
         <p class="text-gray-600">Nenhum aluguel encontrado.</p>
         }
 
+        <app-busca-lista [lista]="lista" rotulo="Buscar por cliente, condutor, veículo ou cupom" />
+
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            @for (aluguel of alugueis(); track aluguel.id) {
+            @for (aluguel of lista.itens(); track aluguel.id) {
             <mat-card class="p-3 rounded-2xl shadow-sm">
                 <mat-card-header class="pb-2">
                     <mat-card-title class="text-lg font-medium">{{ aluguel.descricaoVeiculo }}</mat-card-title>
@@ -118,5 +120,7 @@
             </mat-card>
             }
         </div>
+
+        <app-paginacao-lista [lista]="lista" />
     </div>
 </section>

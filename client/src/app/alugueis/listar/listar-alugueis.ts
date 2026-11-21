@@ -20,9 +20,13 @@ import {
 } from '../aluguel.models';
 import { AluguelService } from '../aluguel.service';
 
+import { BuscaLista, ListaPaginada, PaginacaoLista } from '../../shared/lista/lista-paginada';
+
 @Component({
     selector: 'app-listar-alugueis',
     imports: [
+        BuscaLista,
+        PaginacaoLista,
         MatButtonModule,
         MatCardModule,
         MatFormFieldModule,
@@ -59,4 +63,7 @@ export class ListarAlugueis {
                 this.notificacaoService.erro(mensagemDeErro(err, 'Não foi possível filtrar os aluguéis.')),
         });
     }
+
+    /** Busca por texto e páginas (a lista toda já está carregada na tela). */
+    protected readonly lista = new ListaPaginada(this.alugueis);
 }

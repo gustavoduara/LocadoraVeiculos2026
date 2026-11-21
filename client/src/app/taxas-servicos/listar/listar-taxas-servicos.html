@@ -18,8 +18,10 @@
         </p>
         }
 
+        <app-busca-lista [lista]="lista" rotulo="Buscar taxa ou serviço" />
+
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            @for (taxa of taxas; track taxa.id) {
+            @for (taxa of lista.itens(); track taxa.id) {
             <mat-card class="p-3 rounded-2xl shadow-sm">
                 <mat-card-header class="pb-2">
                     <mat-card-title class="text-lg font-medium">{{ taxa.nome }}</mat-card-title>
@@ -46,5 +48,7 @@
             </mat-card>
             }
         </div>
+
+        <app-paginacao-lista [lista]="lista" />
     </div>
 </section>

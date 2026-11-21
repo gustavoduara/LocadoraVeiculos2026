@@ -16,9 +16,13 @@ import {
 } from '../cliente.models';
 import { ClienteService } from '../cliente.service';
 
+import { BuscaLista, ListaPaginada, PaginacaoLista } from '../../shared/lista/lista-paginada';
+
 @Component({
     selector: 'app-listar-clientes',
     imports: [
+        BuscaLista,
+        PaginacaoLista,
         MatButtonModule,
         MatCardModule,
         MatFormFieldModule,
@@ -52,4 +56,7 @@ export class ListarClientes {
                 this.notificacaoService.erro(mensagemDeErro(err, 'Não foi possível filtrar os clientes.')),
         });
     }
+
+    /** Busca por texto e páginas (a lista toda já está carregada na tela). */
+    protected readonly lista = new ListaPaginada(this.clientes);
 }

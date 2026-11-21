@@ -20,11 +20,14 @@ import {
     StatusReservaModel,
 } from '../reserva.models';
 import { ReservaService } from '../reserva.service';
+import { BuscaLista, ListaPaginada, PaginacaoLista } from '../../shared/lista/lista-paginada';
 
 /** A locadora vê os pedidos dos clientes e aprova (vira aluguel) ou recusa. */
 @Component({
     selector: 'app-reservas-recebidas',
     imports: [
+        BuscaLista,
+        PaginacaoLista,
         CurrencyPipe,
         FormsModule,
         MatButtonModule,
@@ -63,8 +66,10 @@ import { ReservaService } from '../reserva.service';
     } @else if (pedidos().length === 0) {
     <p class="text-sm text-gray-600">Nenhum pedido por aqui.</p>
     } @else {
+    <app-busca-lista [lista]="lista" rotulo="Buscar por cliente, veículo ou CPF" />
+
     <div class="flex flex-col gap-4">
-        @for (p of pedidos(); track p.id) {
+        @for (p of lista.itens(); track p.id) {
         <mat-card class="rounded-2xl shadow-sm">
             <mat-card-content class="p-4">
                 <div class="flex flex-wrap items-start justify-between gap-2">
@@ -139,6 +144,8 @@ import { ReservaService } from '../reserva.service';
         </mat-card>
         }
     </div>
+
+    <app-paginacao-lista [lista]="lista" />
     }
 </section>
 `,
@@ -156,6 +163,7 @@ export class ReservasRecebidas implements OnInit {
 
     protected readonly filtro = signal<StatusReservaModel | ''>('Pendente');
     protected readonly pedidos = signal<ReservaModel[]>([]);
+    protected readonly lista = new ListaPaginada(this.pedidos);
     protected readonly carregando = signal(true);
     protected readonly erro = signal<string | null>(null);
     protected readonly enviando = signal(false);

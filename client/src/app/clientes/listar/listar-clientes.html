@@ -27,8 +27,10 @@
         </p>
         }
 
+        <app-busca-lista [lista]="lista" rotulo="Buscar por nome, documento, e-mail ou cidade" />
+
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            @for (cliente of clientes(); track cliente.id) {
+            @for (cliente of lista.itens(); track cliente.id) {
             <mat-card class="p-3 rounded-2xl shadow-sm">
                 <mat-card-header class="pb-2">
                     <mat-card-title class="text-lg font-medium">{{ cliente.nome }}</mat-card-title>
@@ -72,5 +74,7 @@
             </mat-card>
             }
         </div>
+
+        <app-paginacao-lista [lista]="lista" />
     </div>
 </section>

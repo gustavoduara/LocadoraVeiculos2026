@@ -28,8 +28,10 @@
         </p>
         }
 
+        <app-busca-lista [lista]="lista" rotulo="Buscar por nome, CPF, CNH ou cliente" />
+
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            @for (condutor of condutores(); track condutor.id) {
+            @for (condutor of lista.itens(); track condutor.id) {
             <mat-card class="p-3 rounded-2xl shadow-sm">
                 <mat-card-header class="pb-2">
                     <mat-card-title class="text-lg font-medium">{{ condutor.nome }}</mat-card-title>
@@ -63,5 +65,7 @@
             </mat-card>
             }
         </div>
+
+        <app-paginacao-lista [lista]="lista" />
     </div>
 </section>

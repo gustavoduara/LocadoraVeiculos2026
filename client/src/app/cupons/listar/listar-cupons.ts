@@ -7,9 +7,13 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { isoParaDataBr } from '../../condutores/condutor.models';
 import { CupomModel, CuponsMaisUtilizadosModel, descricaoDoDesconto } from '../cupom.models';
 
+import { BuscaLista, ListaPaginada, PaginacaoLista } from '../../shared/lista/lista-paginada';
+
 @Component({
     selector: 'app-listar-cupons',
-    imports: [MatButtonModule, MatCardModule, MatIconModule, RouterLink],
+    imports: [
+        BuscaLista,
+        PaginacaoLista,MatButtonModule, MatCardModule, MatIconModule, RouterLink],
     templateUrl: './listar-cupons.html',
 })
 export class ListarCupons {
@@ -28,4 +32,7 @@ export class ListarCupons {
     protected descricao(cupom: CupomModel): string {
         return descricaoDoDesconto(cupom.tipo, cupom.valor);
     }
+
+    /** Busca por texto e páginas (a lista toda já está carregada na tela). */
+    protected readonly lista = new ListaPaginada(this.cupons);
 }

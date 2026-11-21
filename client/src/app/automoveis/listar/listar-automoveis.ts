@@ -13,9 +13,13 @@ import { AutomovelModel, formatarPlaca, rotuloCombustivel } from '../automovel.m
 import { AutomovelService } from '../automovel.service';
 import { FotoAutomovel } from '../foto/foto-automovel';
 
+import { BuscaLista, ListaPaginada, PaginacaoLista } from '../../shared/lista/lista-paginada';
+
 @Component({
     selector: 'app-listar-automoveis',
     imports: [
+        BuscaLista,
+        PaginacaoLista,
         MatButtonModule,
         MatCardModule,
         MatFormFieldModule,
@@ -53,4 +57,7 @@ export class ListarAutomoveis {
                 this.notificacaoService.erro(mensagemDeErro(err, 'Não foi possível filtrar os automóveis.')),
         });
     }
+
+    /** Busca por texto e páginas (a lista toda já está carregada na tela). */
+    protected readonly lista = new ListaPaginada(this.automoveis);
 }

@@ -28,8 +28,10 @@
         </p>
         }
 
+        <app-busca-lista [lista]="lista" rotulo="Buscar por placa, marca, modelo ou cor" />
+
         <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            @for (automovel of automoveis(); track automovel.id) {
+            @for (automovel of lista.itens(); track automovel.id) {
             <mat-card class="rounded-2xl shadow-sm overflow-hidden">
                 <app-foto-automovel class="h-44" [automovelId]="automovel.id" [temFoto]="automovel.temFoto"
                     [descricao]="'Foto de ' + automovel.marca + ' ' + automovel.modelo" />
@@ -62,5 +64,7 @@
             </mat-card>
             }
         </div>
+
+        <app-paginacao-lista [lista]="lista" />
     </div>
 </section>
