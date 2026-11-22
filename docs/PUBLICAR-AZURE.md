@@ -39,9 +39,10 @@ Confira os preços atuais no portal antes de criar. Para uma demonstração, F1 
 | `LUCKYPENNY_LICENSE_KEY` | a sua licença do MediatR |
 | `APLICAR_MIGRACOES` | `true` (cria as tabelas na primeira subida) |
 | `ASPNETCORE_ENVIRONMENT` | `Production` |
+| `ASPNETCORE_FORWARDEDHEADERS_ENABLED` | `true` (faz a API enxergar o IP real de quem acessa; sem isso o limite de tentativas por IP trata todo mundo como um só) |
 
-4. Em **Configurações > Configuração geral**, ative **Somente HTTPS**.
-5. **Chaves de proteção** (recomendado): adicione `DATA_PROTECTION_PATH` = `/home/chaves-protecao`. A pasta `/home` do App Service é permanente, então os links de "esqueci minha senha" já enviados continuam valendo depois de um reinício. Os limites de tentativas (login, cadastro e recuperação de senha, por endereço) já vêm ligados e podem ser ajustados com `LIMITE_LOGIN_POR_MINUTO` (padrão 10), `LIMITE_RECUPERACAO_POR_15_MINUTOS` (5) e `LIMITE_CADASTRO_POR_HORA` (10).
+4. Em **Configurações > Configuração geral**, ative **Somente HTTPS** e **Soquetes da Web** (Web sockets). Os web sockets são o que faz as mensagens do chat chegarem na hora; sem eles o chat ainda funciona, só com atraso. No plano gratuito (F1) o número de conexões simultâneas é pequeno, o que basta para testar.
+5. **Chaves de proteção** (recomendado): adicione `DATA_PROTECTION_PATH` = `/home/chaves-protecao`. A pasta `/home` do App Service é permanente, então os links de "esqueci minha senha" já enviados continuam valendo depois de um reinício. Os limites de tentativas (login, cadastro e recuperação de senha, por endereço) já vêm ligados e podem ser ajustados com `LIMITE_LOGIN_POR_MINUTO` (padrão 10), `LIMITE_RECUPERACAO_POR_15_MINUTOS` (5) e `LIMITE_CADASTRO_POR_HORA` (10). Outros ajustes opcionais: `LIMITE_MENSAGENS_POR_MINUTO` (chat, por usuário; padrão 20), `LIMITE_TENTATIVAS_POR_CONTA` (senhas erradas seguidas antes de bloquear a conta; padrão 5) e `BLOQUEIO_DA_CONTA_EM_MINUTOS` (padrão 15).
 6. **E-mail do "esqueci minha senha"** (opcional, mas sem isto o link não chega a ninguém: ele só vai para o log do app). Adicione também:
 
 | Nome | Valor |
@@ -73,14 +74,30 @@ O envio por SMTP foi testado com o Gmail (senha de app), mas não com outros ser
 3. Crie a conta da empresa em **Registro** e use o sistema normalmente.
 4. Depois que as tabelas existirem, você pode **remover `APLICAR_MIGRACOES`** (ou deixar como está: aplicar migrations sem novidade não faz nada).
 
+## Passo 5: conferir se está tudo certo
+
+Faça este roteiro uma vez no endereço publicado, antes de divulgar:
+
+1. **Abre o site** (tela de login com a faixa verde e o logo). Se der tela em branco, veja "Problemas comuns".
+2. **Cadastro da locadora:** crie a conta em *Registro*. O e-mail de confirmação deve chegar (veja também o spam); clique no link e entre.
+3. **Monte o básico:** em *Grupos de Veículos*, *Automóveis* e *Planos de Cobrança* (sem plano o carro aparece como "ainda não disponível" no catálogo).
+4. **Cadastro de cliente:** em outro navegador (ou janela anônima), crie uma conta de cliente, confirme o e-mail e entre. O carro deve aparecer no catálogo.
+5. **Reserva:** o cliente completa *Meus dados* e pede a reserva; a locadora aprova em *Reservas*.
+6. **Chat:** o cliente toca em *Falar com a locadora* e envia uma mensagem. Na janela da locadora, o selo em *Conversas* deve aparecer **sem recarregar** (se só aparecer ao recarregar, os Web sockets não estão ligados). A locadora responde e a resposta deve surgir na hora para o cliente.
+7. **Esqueci minha senha:** peça o link com o seu e-mail e redefina a senha.
+8. **Bloqueio:** erre a senha 5 vezes de uma conta de teste; a 6ª tentativa deve ser recusada mesmo com a senha certa.
+
+Se algo falhar, abra **Fluxo de log** no App Service e procure o erro.
+
 ## Para outra pessoa testar
 
 Passe o endereço do app. Cada pessoa cria a **própria empresa** em *Registro*, e os dados dela ficam separados dos de todo mundo.
 
 ## Problemas comuns
 
-- **Chat sem tempo real:** em **Configuração > Configurações gerais**, ligue **Web sockets**. Sem isso o chat continua funcionando (o SignalR cai para outro transporte), só com um pouco de atraso. Com mais de uma instância do App Service, as mensagens em tempo real só chegam a quem está na mesma instância (seria preciso um backplane, como o Azure SignalR Service).
-
+- **Chat sem tempo real:** em **Configuração > Configurações gerais**, ligue **Soquetes da Web**. Sem isso o chat continua funcionando (o SignalR cai para outro transporte), só com um pouco de atraso. Com mais de uma instância do App Service, as mensagens em tempo real só chegam a quem está na mesma instância (seria preciso um backplane, como o Azure SignalR Service). Os limites de tentativas também são por instância.
+- **Não chega e-mail de confirmação:** confira `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `SMTP_FROM` e `APP_URL`. Sem `SMTP_HOST`, o link só aparece no **Fluxo de log**. Muitos serviços exigem um remetente verificado em `SMTP_FROM`.
+- **"Login ou senha incorretos" com a senha certa:** a conta pode estar bloqueada por 5 tentativas erradas; aguarde 15 minutos ou use "esqueci minha senha" (redefinir desbloqueia).
 - **Erro 500 ao entrar:** quase sempre é a `SQL_CONNECTION_STRING` (senha, firewall do SQL) ou a falta de alguma configuração da tabela acima. Veja **Fluxo de log** no App Service.
 - **Banco "dormindo" (serverless):** a primeira chamada depois de um tempo parado pode demorar ou falhar uma vez. Tente de novo.
 - **Tela em branco ao abrir uma rota direto (ex.: `/alugueis`):** confirme que o deploy foi feito pelo workflow, que coloca o front dentro de `wwwroot`.
