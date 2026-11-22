@@ -8,7 +8,7 @@ on:
 
 jobs:
   server:
-    name: Server (.NET 8)
+    name: Server (.NET 10)
     runs-on: ubuntu-latest
     defaults:
       run:
