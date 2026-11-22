@@ -79,6 +79,8 @@ Passe o endereço do app. Cada pessoa cria a **própria empresa** em *Registro*,
 
 ## Problemas comuns
 
+- **Chat sem tempo real:** em **Configuração > Configurações gerais**, ligue **Web sockets**. Sem isso o chat continua funcionando (o SignalR cai para outro transporte), só com um pouco de atraso. Com mais de uma instância do App Service, as mensagens em tempo real só chegam a quem está na mesma instância (seria preciso um backplane, como o Azure SignalR Service).
+
 - **Erro 500 ao entrar:** quase sempre é a `SQL_CONNECTION_STRING` (senha, firewall do SQL) ou a falta de alguma configuração da tabela acima. Veja **Fluxo de log** no App Service.
 - **Banco "dormindo" (serverless):** a primeira chamada depois de um tempo parado pode demorar ou falhar uma vez. Tente de novo.
 - **Tela em branco ao abrir uma rota direto (ex.: `/alugueis`):** confirme que o deploy foi feito pelo workflow, que coloca o front dentro de `wwwroot`.
