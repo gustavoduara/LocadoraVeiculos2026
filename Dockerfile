@@ -11,7 +11,7 @@ COPY client/ .
 RUN npx ng build --configuration production
 
 # 2) API
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS api
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS api
 WORKDIR /src
 
 COPY Server/ .
@@ -21,7 +21,7 @@ RUN dotnet restore LocadoraVeiculos2026/LocadoraDeVeiculos.WebApi.csproj \
         --configuration Release --no-restore --output /app
 
 # 3) Imagem final
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 WORKDIR /app
 
 COPY --from=api /app .

@@ -40,6 +40,14 @@ public class ApiFactory : WebApplicationFactory<Program>
         {
             services.RemoveAll<DbContextOptions<AppDbContext>>();
             services.RemoveAll<DbContextOptions>();
+            // No EF Core 9+ o AddDbContext também registra as configurações (UseSqlServer): sem remover, o provedor em memória conflita.
+            // (o tipo é interno do EF, então procuro pelo nome)
+            foreach (var d in services
+                .Where(d => d.ServiceType.IsGenericType
+                    && d.ServiceType.Name.StartsWith("IDbContextOptionsConfiguration")
+                    && d.ServiceType.GenericTypeArguments[0] == typeof(AppDbContext))
+                .ToList())
+                services.Remove(d);
 
             services.AddDbContext<AppDbContext>(o => o.UseInMemoryDatabase(nomeBanco));
 
