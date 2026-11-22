@@ -6,5 +6,5 @@ namespace LocadoraDeVeiculos.Dominio.ModuloAutenticacao;
 /// </summary>
 public static class TermosDeUso
 {
-    public const string VersaoAtual = "2026-11-21";
+    public const string VersaoAtual = "2026-11-22";
 }
