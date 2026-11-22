@@ -7,7 +7,7 @@
 **Sistema web para gestão de locadoras de veículos**
 Funcionários, frota, clientes, condutores, planos de cobrança e aluguéis com devolução, com acesso por perfil e dados isolados por empresa.
 
-![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet&logoColor=white)
+![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet&logoColor=white)
 ![C#](https://img.shields.io/badge/C%23-ASP.NET%20Core-239120?logo=csharp&logoColor=white)
 ![Angular](https://img.shields.io/badge/Angular-20-DD0031?logo=angular&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)
@@ -131,7 +131,7 @@ Os desafios da especificação (parceiros e cupons) também estão prontos. Veja
 ## 🛠 Tecnologias
 
 **Back-end**
-- [.NET 8](https://dotnet.microsoft.com/) · ASP.NET Core Web API
+- [.NET 10](https://dotnet.microsoft.com/) · ASP.NET Core Web API
 - [Entity Framework Core 8](https://learn.microsoft.com/ef/core/) com SQL Server (LocalDB em desenvolvimento) e *migrations*
 - [ASP.NET Core Identity](https://learn.microsoft.com/aspnet/core/security/authentication/identity) + **JWT** com *refresh token* em cookie
 - [MediatR](https://github.com/jbogard/MediatR) (padrão CQRS)
@@ -179,7 +179,7 @@ flowchart LR
 
 ### Pré-requisitos
 
-- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
 - [Node.js](https://nodejs.org/) 20.19 ou superior
 - SQL Server **LocalDB** (já vem com o Visual Studio)
 
@@ -288,7 +288,7 @@ A documentação interativa completa está no Swagger.
 
 ```
 LocadoraVeiculos2026/
-├── Server/                                  # Back-end (.NET 8)
+├── Server/                                  # Back-end (.NET 10)
 │   ├── LocadoraVeiculos2026/                #   WebApi: controllers, config, Program.cs
 │   ├── LocadoraVeiculos.Aplicacao/          #   Casos de uso (comandos, handlers, validadores)
 │   ├── LocadoraVeiculos.Dominio/            #   Entidades e regras

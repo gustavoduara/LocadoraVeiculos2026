@@ -12,7 +12,7 @@ Navegador ──HTTPS──► Azure App Service (API + front) ──► Azure S
 | Recurso | Para quê | Custo aproximado |
 |---|---|---|
 | **Azure SQL Database** | O banco de dados | Existe uma oferta gratuita (serverless, com limite mensal). Fora dela, a partir de alguns dólares por mês. |
-| **App Service (Linux, .NET 8)** | Roda a API e o front | O plano **F1** é gratuito (limite de CPU por dia, "dorme" quando ocioso). O **B1** custa cerca de US$ 13 por mês e fica sempre ligado. |
+| **App Service (Linux, .NET 10)** | Roda a API e o front | O plano **F1** é gratuito (limite de CPU por dia, "dorme" quando ocioso). O **B1** custa cerca de US$ 13 por mês e fica sempre ligado. |
 
 Confira os preços atuais no portal antes de criar. Para uma demonstração, F1 + banco gratuito costuma bastar.
 
@@ -26,7 +26,7 @@ Confira os preços atuais no portal antes de criar. Para uma demonstração, F1 
 
 ## Passo 2: criar o App Service
 
-1. Crie um **App Service** com: publicar = **Código**, pilha = **.NET 8 (LTS)**, sistema = **Linux**.
+1. Crie um **App Service** com: publicar = **Código**, pilha = **.NET 10 (LTS)**, sistema = **Linux**.
 2. Escolha o plano (F1 ou B1). Anote o endereço, algo como `https://meu-app.azurewebsites.net`.
 3. Em **Configuração > Configurações do aplicativo**, adicione:
 

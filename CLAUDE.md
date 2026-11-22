@@ -4,7 +4,7 @@ Sistema de locadora de veículos. Monorepo: API .NET (`Server/`) + SPA Angular (
 
 ## Arquitetura
 
-### Server (.NET 8, solution `Server/LocadoraVeiculos2026.sln`)
+### Server (.NET 10, solution `Server/LocadoraVeiculos2026.sln`)
 Camadas (pastas ≠ nome dos projetos/namespaces: pastas `LocadoraVeiculos.*`, namespaces `LocadoraDeVeiculos.*`):
 
 | Pasta | Papel |
@@ -63,6 +63,6 @@ Publicação: a API serve o front Angular (pasta `wwwroot`, ver `Program.cs`: `U
 2. A API usa `UseHttpsRedirection`: chame por **https://localhost:9099** (cert de dev não confiável → `curl -k`). Chamar http:9050 redireciona e quebra o preflight de CORS.
 3. Resolvido: o banco local estava divergente e as migrations antigas eram inválidas (`Add_Identity` só criava `Funcionarios`; `Add_Funcionarios` vazia) → 500 `Invalid object name 'RefreshTokens'`. Foram substituídas por uma única `Initial_Create` e o banco foi recriado. Se o banco divergir de novo: `dotnet ef database drop --force` + `database update`. Registro e login verificados com 200 OK em `https://localhost:9099/api/auth/*`.
 3. `CORS_ALLOWED_ORIGINS` precisa bater exatamente com a origem do front (`http://localhost:4200`); `AllowCredentials` é usado por causa do cookie de refresh.
-4. Versões de EF Tools misturadas entre csproj (8.0.30 e 10.0.11) e `dotnet-ef` global 10.0.14 — funciona, mas atenção a avisos.
+4. O projeto foi migrado do .NET 8 para o **.NET 10** (todos os csproj em `net10.0`, pacotes Microsoft em 10.0.15; o App Service não oferece mais o .NET 8). `Microsoft.Extensions.Configuration` 10.0.15 está fixado em Aplicacao e Orm para evitar o erro NU1605 (downgrade). No EF Core 9+ o `AddDbContext` registra também `IDbContextOptionsConfiguration<AppDbContext>` (tipo interno): o `ApiFactory` dos testes a remove por nome, senão o provedor em memória conflita com o SQL Server.
 5. `package-lock.json` na raiz do repo é lixo (vazio) e está untracked; o lock real é `client/package-lock.json`.
 7. **LocalDB e testes do Claude:** não iniciar/usar a instância `mssqllocaldb` a partir do Claude — quando ela é iniciada pela sessão do Claude, o Visual Studio do dev falha com "LocalDB instance startup: SQL Server process failed to start" (erro 575). Para testar a API: `SqlLocalDB create ClaudeDev`, rodar com `SQL_CONNECTION_STRING` apontando para `(localdb)\ClaudeDev` (env var sobrescreve o user-secret), porta separada (`--no-launch-profile --urls "https://localhost:9199;http://localhost:9150"`) e, ao final, `SqlLocalDB stop ClaudeDev -k` + `SqlLocalDB delete ClaudeDev`. Compilar (`dotnet build`) **antes** de `dotnet run --no-build`, senão migrations novas não são aplicadas. Apagar também os arquivos `LocadoraClaudeTeste.mdf` e `LocadoraClaudeTeste_log.ldf` que ficam soltos na pasta do usuário do Windows (o `SqlLocalDB delete` não os remove; se ficarem, a próxima criação do banco falha com erro 5170 "Cannot create file ... already exists").
