@@ -40,6 +40,8 @@ public class ClienteApi
     public void UsarToken(string? token) =>
         http.DefaultRequestHeaders.Authorization = token is null ? null : new AuthenticationHeaderValue("Bearer", token);
 
+    public string? TokenAtual => http.DefaultRequestHeaders.Authorization?.Parameter;
+
     public async Task<Resposta> Enviar(HttpMethod metodo, string url, object? corpo = null)
     {
         using var requisicao = new HttpRequestMessage(metodo, url);

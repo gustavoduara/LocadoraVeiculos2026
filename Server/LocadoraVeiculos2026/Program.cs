@@ -1,4 +1,6 @@
 using LocadoraDeVeiculos.Aplicacao;
+using LocadoraDeVeiculos.Aplicacao.ModuloConversa;
+using LocadoraDeVeiculos.WebApi.Config.Chat;
 using LocadoraDeVeiculos.Infraestrutura.Jwt;
 using LocadoraDeVeiculos.Infraestrutura.Orm;
 using LocadoraDeVeiculos.WebApi.Config.Email;
@@ -28,6 +30,11 @@ public class Program
         builder.Services.AddEnvioDeEmail(builder.Configuration);
         builder.Services.AddLimiteDeTentativas(builder.Configuration);
         builder.Services.AddChavesPersistentes(builder.Configuration);
+
+        // Chat em tempo real (SignalR): as mensagens novas chegam às telas abertas sem recarregar.
+        builder.Services.AddSignalR().AddJsonProtocol(opcoes =>
+            opcoes.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+        builder.Services.AddScoped<IChatNotificador, ChatNotificador>();
 
         // Executa de hora em hora as exclusões de locadora agendadas (os testes desligam e chamam o serviço direto).
         if (!string.Equals(builder.Configuration["EXCLUSOES_AGENDADAS_DESLIGADAS"], "true", StringComparison.OrdinalIgnoreCase))
@@ -69,11 +76,13 @@ public class Program
         app.UseRouting();
 
         app.UseCors();
-        app.UseRateLimiter();
         app.UseAuthentication();
+        // Depois da autenticação: o limite de mensagens é por usuário logado.
+        app.UseRateLimiter();
         app.UseAuthorization();
 
         app.MapControllers();
+        app.MapHub<ChatHub>("/hubs/chat");
 
         // Rotas do Angular (ex.: /alugueis) voltam para o index.html; rotas /api desconhecidas continuam 404.
         if (servirFront)

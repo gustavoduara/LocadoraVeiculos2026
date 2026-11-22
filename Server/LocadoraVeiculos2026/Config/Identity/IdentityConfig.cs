@@ -74,6 +74,17 @@ public static class IdentityConfig
 
             options.Events = new JwtBearerEvents
             {
+                // O WebSocket do chat não leva cabeçalho Authorization: o token vem em ?access_token=, só nas rotas /hubs.
+                OnMessageReceived = context =>
+                {
+                    string? token = context.Request.Query["access_token"];
+
+                    if (!string.IsNullOrEmpty(token) && context.HttpContext.Request.Path.StartsWithSegments("/hubs"))
+                        context.Token = token;
+
+                    return Task.CompletedTask;
+                },
+
                 OnTokenValidated = async context =>
                 {
                     var userManager = context.HttpContext.RequestServices.GetRequiredService<UserManager<Usuario>>();

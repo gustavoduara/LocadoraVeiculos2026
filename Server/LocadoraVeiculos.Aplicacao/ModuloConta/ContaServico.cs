@@ -89,6 +89,10 @@ public class ContaServico(
 
         PerfilClienteRemover(usuario.Id);
 
+        // As conversas com as locadoras (e as mensagens, em cascata) são apagadas de verdade.
+        dbContext.Conversas.RemoveRange(
+            await dbContext.Conversas.IgnoreQueryFilters().Include(c => c.Mensagens).Where(c => c.UsuarioClienteId == usuario.Id).ToListAsync(cancellationToken));
+
         await AnonimizarContaAsync(usuario, DateTime.UtcNow, cancellationToken);
 
         await AvisarAsync(
@@ -272,6 +276,10 @@ public class ContaServico(
             if (contaDoFuncionario is not null && contaDoFuncionario.ContaExcluidaEmUtc is null)
                 MarcarContaComoExcluida(contaDoFuncionario, agora);
         }
+
+        // Conversas da locadora com os clientes somem (as mensagens vão em cascata).
+        dbContext.Conversas.RemoveRange(
+            await dbContext.Conversas.IgnoreQueryFilters().Include(c => c.Mensagens).Where(c => c.EmpresaId == empresaId).ToListAsync(cancellationToken));
 
         MarcarContaComoExcluida(empresa, agora);
 

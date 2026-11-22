@@ -1,7 +1,8 @@
-﻿using LocadoraDeVeiculos.Dominio.ModuloAutenticacao;
+using LocadoraDeVeiculos.Dominio.ModuloAutenticacao;
 using LocadoraDeVeiculos.Dominio.ModuloAluguel;
 using LocadoraDeVeiculos.Dominio.ModuloAutomovel;
 using LocadoraDeVeiculos.Dominio.ModuloCliente;
+using LocadoraDeVeiculos.Dominio.ModuloConversa;
 using LocadoraDeVeiculos.Dominio.ModuloCondutor;
 using LocadoraDeVeiculos.Dominio.ModuloCupom;
 using LocadoraDeVeiculos.Dominio.ModuloParceiro;
@@ -36,6 +37,8 @@ public class AppDbContext(
     public DbSet<Cupom> Cupons { get; set; }
     public DbSet<Reserva> Reservas { get; set; }
     public DbSet<PerfilCliente> PerfisClientes { get; set; }
+    public DbSet<Conversa> Conversas { get; set; }
+    public DbSet<Mensagem> Mensagens { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -47,6 +50,9 @@ public class AppDbContext(
                         .HasQueryFilter(f => f.EmpresaId == tenantProvider.EmpresaId.GetValueOrDefault() && !f.Excluido);
 
             modelBuilder.Entity<Reserva>()
+                        .HasQueryFilter(f => f.EmpresaId == tenantProvider.EmpresaId.GetValueOrDefault() && !f.Excluido);
+
+            modelBuilder.Entity<Conversa>()
                         .HasQueryFilter(f => f.EmpresaId == tenantProvider.EmpresaId.GetValueOrDefault() && !f.Excluido);
 
             modelBuilder.Entity<Parceiro>()

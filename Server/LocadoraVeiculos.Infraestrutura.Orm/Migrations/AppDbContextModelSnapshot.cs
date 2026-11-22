@@ -589,6 +589,95 @@ namespace LocadoraDeVeiculos.Infraestrutura.Orm.Migrations
                     b.ToTable("Configuracoes");
                 });
 
+            modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloConversa.Conversa", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ClienteNome")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<DateTimeOffset>("CriadoEmUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("EmpresaId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Excluido")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("ExcluidoEmUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("NaoLidasCliente")
+                        .HasColumnType("int");
+
+                    b.Property<int>("NaoLidasLocadora")
+                        .HasColumnType("int");
+
+                    b.Property<string>("NomeLocadora")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<DateTimeOffset>("UltimaMensagemEmUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("UltimaMensagemResumo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid>("UsuarioClienteId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmpresaId", "UsuarioClienteId")
+                        .IsUnique()
+                        .HasFilter("[Excluido] = 0");
+
+                    b.HasIndex("UsuarioClienteId", "UltimaMensagemEmUtc");
+
+                    b.ToTable("Conversas");
+                });
+
+            modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloConversa.Mensagem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("AutomovelId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Autor")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AutorNome")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<Guid>("ConversaId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DescricaoVeiculo")
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<DateTimeOffset>("EnviadaEmUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Texto")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConversaId", "EnviadaEmUtc");
+
+                    b.ToTable("Mensagens");
+                });
+
             modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloCupom.Cupom", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1309,6 +1398,26 @@ namespace LocadoraDeVeiculos.Infraestrutura.Orm.Migrations
                     b.Navigation("Empresa");
                 });
 
+            modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloConversa.Conversa", b =>
+                {
+                    b.HasOne("LocadoraDeVeiculos.Dominio.ModuloAutenticacao.Usuario", "Empresa")
+                        .WithMany()
+                        .HasForeignKey("EmpresaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Empresa");
+                });
+
+            modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloConversa.Mensagem", b =>
+                {
+                    b.HasOne("LocadoraDeVeiculos.Dominio.ModuloConversa.Conversa", null)
+                        .WithMany("Mensagens")
+                        .HasForeignKey("ConversaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloCupom.Cupom", b =>
                 {
                     b.HasOne("LocadoraDeVeiculos.Dominio.ModuloAutenticacao.Usuario", "Empresa")
@@ -1495,6 +1604,11 @@ namespace LocadoraDeVeiculos.Infraestrutura.Orm.Migrations
             modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloAluguel.Aluguel", b =>
                 {
                     b.Navigation("Taxas");
+                });
+
+            modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloConversa.Conversa", b =>
+                {
+                    b.Navigation("Mensagens");
                 });
 
             modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloReserva.Reserva", b =>

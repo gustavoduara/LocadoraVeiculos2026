@@ -9,6 +9,7 @@ public static class SegurancaConfig
     public const string PoliticaDeLogin = "login";
     public const string PoliticaDeRecuperacao = "recuperacao";
     public const string PoliticaDeCadastro = "cadastro";
+    public const string PoliticaDeMensagens = "mensagens";
 
     /// <summary>
     /// Limita as tentativas por endereço (IP) nas rotas que atacantes e robôs mais martelam:
@@ -19,6 +20,7 @@ public static class SegurancaConfig
         int loginPorMinuto = Ler(configuracao, "LIMITE_LOGIN_POR_MINUTO", 10);
         int recuperacaoPorQuinzeMinutos = Ler(configuracao, "LIMITE_RECUPERACAO_POR_15_MINUTOS", 5);
         int cadastroPorHora = Ler(configuracao, "LIMITE_CADASTRO_POR_HORA", 10);
+        int mensagensPorMinuto = Ler(configuracao, "LIMITE_MENSAGENS_POR_MINUTO", 20);
 
         services.AddRateLimiter(opcoes =>
         {
@@ -37,6 +39,7 @@ public static class SegurancaConfig
             opcoes.AddPolicy(PoliticaDeLogin, contexto => Janela(contexto, loginPorMinuto, TimeSpan.FromMinutes(1)));
             opcoes.AddPolicy(PoliticaDeRecuperacao, contexto => Janela(contexto, recuperacaoPorQuinzeMinutos, TimeSpan.FromMinutes(15)));
             opcoes.AddPolicy(PoliticaDeCadastro, contexto => Janela(contexto, cadastroPorHora, TimeSpan.FromHours(1)));
+            opcoes.AddPolicy(PoliticaDeMensagens, contexto => Janela(contexto, mensagensPorMinuto, TimeSpan.FromMinutes(1), porUsuario: true));
         });
 
         return services;
@@ -62,9 +65,14 @@ public static class SegurancaConfig
         return services;
     }
 
-    private static RateLimitPartition<string> Janela(HttpContext contexto, int limite, TimeSpan janela)
+    private static RateLimitPartition<string> Janela(HttpContext contexto, int limite, TimeSpan janela, bool porUsuario = false)
     {
         string chave = contexto.Connection.RemoteIpAddress?.ToString() ?? "desconhecido";
+
+        // Por usuário logado quando der (o limiter roda depois da autenticação); sem login, cai para o IP.
+        if (porUsuario && contexto.User.Identity?.IsAuthenticated == true)
+            chave = "usuario-" + (contexto.User.FindFirst(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub)?.Value
+                                  ?? contexto.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? chave);
 
         return RateLimitPartition.GetFixedWindowLimiter(chave, _ => new FixedWindowRateLimiterOptions
         {
