@@ -18,6 +18,10 @@ public class AutenticarUsuarioCommandHandler(
     ILogger<AutenticarUsuarioCommandHandler> logger
 ) : IRequestHandler<AutenticarUsuarioCommand, Result<(AccessToken, RefreshToken)>>
 {
+    /// <summary>A mesma frase para e-mail sem conta, senha errada e conta bloqueada: não revela qual deles aconteceu.</summary>
+    public const string MensagemDeFalha =
+        "Login ou senha incorretos. Depois de várias tentativas erradas, a conta fica bloqueada por alguns minutos.";
+
     public async Task<Result<(AccessToken, RefreshToken)>> Handle(
         AutenticarUsuarioCommand command, CancellationToken cancellationToken)
     {
@@ -31,8 +35,12 @@ public class AutenticarUsuarioCommandHandler(
                 // Gasta o mesmo tempo de uma conferência de senha, para o tempo de resposta também não denunciar.
                 userManager.PasswordHasher.HashPassword(new Usuario(), command.Senha);
 
-                return Result.Fail(ResultadosErro.RequisicaoInvalidaErro("Login ou senha incorretos."));
+                return Result.Fail(ResultadosErro.RequisicaoInvalidaErro(MensagemDeFalha));
             }
+
+            // Conta bloqueada por excesso de tentativas: mesma resposta de qualquer falha (não confere nem a senha certa).
+            if (await userManager.IsLockedOutAsync(usuarioEncontrado))
+                return Result.Fail(ResultadosErro.RequisicaoInvalidaErro(MensagemDeFalha));
 
             var credenciaisValidas = await userManager.CheckPasswordAsync(
                 usuarioEncontrado,
@@ -40,7 +48,14 @@ public class AutenticarUsuarioCommandHandler(
             );
 
             if (!credenciaisValidas)
-                return Result.Fail(ResultadosErro.RequisicaoInvalidaErro("Login ou senha incorretos."));
+            {
+                // Soma uma tentativa errada; ao chegar no limite o Identity bloqueia a conta.
+                await userManager.AccessFailedAsync(usuarioEncontrado);
+
+                return Result.Fail(ResultadosErro.RequisicaoInvalidaErro(MensagemDeFalha));
+            }
+
+            await userManager.ResetAccessFailedCountAsync(usuarioEncontrado);
 
             // Só depois de a senha conferir: quem não sabe a senha não descobre se o e-mail está confirmado.
             if (!usuarioEncontrado.EmailConfirmed)

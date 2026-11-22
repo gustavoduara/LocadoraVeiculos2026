@@ -13,6 +13,9 @@ namespace LocadoraDeVeiculos.WebApi.Config.Identity;
 
 public static class IdentityConfig
 {
+    private static int LerInteiro(IConfiguration configuracao, string chave, int padrao) =>
+        int.TryParse(configuracao[chave], out int valor) && valor > 0 ? valor : padrao;
+
     public static void AddIdentityProviderConfig(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<ITenantProvider, IdentityTenantProvider>();
@@ -21,6 +24,12 @@ public static class IdentityConfig
         services.AddIdentity<Usuario, Cargo>(options =>
         {
             options.User.RequireUniqueEmail = true;
+
+            // Bloqueio por conta: depois de N senhas erradas seguidas a conta fica bloqueada por alguns minutos
+            // (vale também para a senha certa, para não dar para adivinhar por tentativa). Complementa o limite por IP.
+            options.Lockout.AllowedForNewUsers = true;
+            options.Lockout.MaxFailedAccessAttempts = LerInteiro(configuration, "LIMITE_TENTATIVAS_POR_CONTA", 5);
+            options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(LerInteiro(configuration, "BLOQUEIO_DA_CONTA_EM_MINUTOS", 15));
             options.Password.RequireDigit = true;
             options.Password.RequireLowercase = true;
             options.Password.RequireUppercase = true;

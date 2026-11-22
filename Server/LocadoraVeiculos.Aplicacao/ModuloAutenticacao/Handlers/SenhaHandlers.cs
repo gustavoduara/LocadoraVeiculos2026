@@ -102,6 +102,13 @@ public class RedefinirSenhaCommandHandler(
 
             usuario.AccessTokenVersionId = Guid.NewGuid();
 
+            // Quem prova que é dono do e-mail também desbloqueia a conta (menos as já excluídas).
+            if (usuario.ContaExcluidaEmUtc is null)
+            {
+                usuario.LockoutEnd = null;
+                usuario.AccessFailedCount = 0;
+            }
+
             // O link chegou ao e-mail da conta: quem o usou prova que o endereço é dele.
             usuario.EmailConfirmed = true;
 
