@@ -29,7 +29,7 @@ public class ModulosIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFact
 
         Assert.Equal(200, (await api.Post("/api/auth/autenticar", new { email, senha = "Senha123" })).Codigo);
         Assert.Equal(400, (await api.Post("/api/auth/autenticar", new { email, senha = "Errada123" })).Codigo);
-        Assert.Equal(404, (await api.Post("/api/auth/autenticar", new { email = "naoexiste@x.com", senha = "Senha123" })).Codigo);
+        Assert.Equal(400, (await api.Post("/api/auth/autenticar", new { email = "naoexiste@x.com", senha = "Senha123" })).Codigo);
     }
 
     [Fact]

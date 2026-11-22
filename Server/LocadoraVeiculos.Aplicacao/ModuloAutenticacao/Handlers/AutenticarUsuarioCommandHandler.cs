@@ -25,8 +25,14 @@ public class AutenticarUsuarioCommandHandler(
         {
             var usuarioEncontrado = await userManager.FindByEmailAsync(command.Email);
 
+            // E-mail sem conta e senha errada dão a MESMA resposta (400), para o login não revelar quem tem conta.
             if (usuarioEncontrado is null)
-                return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro("Não foi possível encontrar o usuário requisitado."));
+            {
+                // Gasta o mesmo tempo de uma conferência de senha, para o tempo de resposta também não denunciar.
+                userManager.PasswordHasher.HashPassword(new Usuario(), command.Senha);
+
+                return Result.Fail(ResultadosErro.RequisicaoInvalidaErro("Login ou senha incorretos."));
+            }
 
             var credenciaisValidas = await userManager.CheckPasswordAsync(
                 usuarioEncontrado,

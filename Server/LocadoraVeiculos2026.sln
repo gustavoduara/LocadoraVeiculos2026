@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.36804.6
+# Visual Studio Version 18
+VisualStudioVersion = 18.11.12315.225 stable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocadoraDeVeiculos.WebApi", "LocadoraVeiculos2026\LocadoraDeVeiculos.WebApi.csproj", "{58DAF050-77A1-4C30-A48D-9059A101B072}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -30,10 +30,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LocadoraVeiculos.Testes", "LocadoraVeiculos.Testes", "{0B2DF260-67CC-3244-2CAD-786C9CC94430}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LocadoraDeVeiculos.Testes", "LocadoraVeiculos.Testes\LocadoraDeVeiculos.Testes.csproj", "{A5FE5695-B9A8-42EC-9612-7DFF9367031F}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LocadoraVeiculos.Dominio", "LocadoraVeiculos.Dominio", "{CE0A0FA1-0BE9-A01A-8F93-C4FC0830BC66}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LocadoraVeiculos.Aplicacao", "LocadoraVeiculos.Aplicacao", "{67F58AD6-0CEB-A2FD-3828-D3EB094F26EF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

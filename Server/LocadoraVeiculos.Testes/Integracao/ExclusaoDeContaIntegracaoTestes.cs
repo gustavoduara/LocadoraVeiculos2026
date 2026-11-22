@@ -102,7 +102,7 @@ public class ExclusaoDeContaIntegracaoTestes(ApiFactory fabrica) : IClassFixture
         // A sessão acabou, a conta não entra mais e o e-mail ficou livre para um novo cadastro.
         Assert.Equal(401, (await cliente.Get("/api/meus-dados")).Codigo);
         var login = NovaApi();
-        Assert.Equal(404, (await login.Post("/api/auth/autenticar", new { email, senha = "Senha123" })).Codigo);
+        Assert.Equal(400, (await login.Post("/api/auth/autenticar", new { email, senha = "Senha123" })).Codigo);
 
         // "Meus dados" foi apagado, e a conta de login ficou anonimizada.
         var (perfis, conta) = await NoBanco(async (db, usuarios) =>
@@ -275,7 +275,7 @@ public class ExclusaoDeContaIntegracaoTestes(ApiFactory fabrica) : IClassFixture
 
         // Ninguém da empresa entra mais, nem o administrador nem o funcionário, e as sessões abertas caem.
         Assert.Equal(401, (await c.Api.Get("/api/grupos-veiculos")).Codigo);
-        Assert.Equal(404, (await NovaApi().Post("/api/auth/autenticar", new { email, senha = "Senha123" })).Codigo);
+        Assert.Equal(400, (await NovaApi().Post("/api/auth/autenticar", new { email, senha = "Senha123" })).Codigo);
 
         var (empresa, restantes, anonimizados, funcionariosSemAcesso) = await NoBanco(async (db, _) =>
         {
