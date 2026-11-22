@@ -13,6 +13,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
 import { UsuarioAutenticadoModel } from '../../auth/auth.models';
+import { ChatTempoRealService } from '../../chat/chat-tempo-real.service';
 import { ContaService } from '../../conta/conta.service';
 import { Rodape } from '../rodape/rodape';
 import { TemaService } from '../tema/tema.service';
@@ -49,6 +50,10 @@ export class ShellComponent {
     public itensNavbar = [{ titulo: 'Início', icone: 'home', link: '/inicio' }];
 
     private readonly contaService = inject(ContaService);
+    private readonly chat = inject(ChatTempoRealService);
+
+    /** Mensagens não lidas (selo do menu). */
+    protected readonly naoLidas = this.chat.naoLidas;
 
     /** Locadora com exclusão agendada: o dia em que ela acontece (aparece como aviso no topo). */
     protected readonly exclusaoAgendada = signal<string | null>(null);
@@ -57,6 +62,15 @@ export class ShellComponent {
 
     @Input({ required: true }) set usuarioAutenticado(valor: UsuarioAutenticadoModel | undefined) {
         this.usuario = valor;
+
+        // Chat em tempo real: abre a conexão do lado certo enquanto a pessoa está logada (e fecha ao sair).
+        if (valor?.cargo === 'Cliente') {
+            void this.chat.conectar('cliente');
+        } else if (valor?.cargo === 'Empresa' || valor?.cargo === 'Funcionario') {
+            void this.chat.conectar('locadora');
+        } else {
+            void this.chat.desconectar();
+        }
 
         // Só o administrador da locadora tem exclusão agendada: não pergunta para os outros.
         if (valor?.cargo === 'Empresa') {

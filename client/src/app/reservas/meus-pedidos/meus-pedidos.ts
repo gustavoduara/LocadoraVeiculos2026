@@ -79,6 +79,13 @@ import { ReservaService } from '../reserva.service';
                     <span class="text-gray-500"> (com caução de {{ p.valorCaucao | currency: 'BRL' }})</span>
                 </p>
 
+                <div class="mt-3 flex justify-end">
+                    <a mat-stroked-button routerLink="/mensagens/nova" [queryParams]="{ automovelId: p.automovelId }">
+                        <mat-icon>chat</mat-icon>
+                        Falar com a locadora
+                    </a>
+                </div>
+
                 @if (p.status === 'Aprovada') {
                 <p class="mt-3 rounded-lg px-3 py-2 text-sm selo-verde">
                     Reserva aprovada! Retire o carro na data combinada

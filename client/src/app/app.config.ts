@@ -188,6 +188,37 @@ const routes: Routes = [
     providers: [ReservaService],
     canMatch: [usuarioAutenticadoGuard, cargoGuard('Cliente')],
   },
+  // Chat: o cliente fala com a locadora (do carro ou do pedido); a locadora responde pela caixa de entrada.
+  {
+    path: 'mensagens/nova',
+    loadComponent: () => import('./chat/nova/nova-conversa').then((c) => c.NovaConversa),
+    providers: [CatalogoService],
+    canMatch: [usuarioAutenticadoGuard, cargoGuard('Cliente')],
+  },
+  {
+    path: 'mensagens/:id',
+    loadComponent: () => import('./chat/conversa/conversa').then((c) => c.Conversa),
+    data: { lado: 'cliente' },
+    canMatch: [usuarioAutenticadoGuard, cargoGuard('Cliente')],
+  },
+  {
+    path: 'mensagens',
+    loadComponent: () => import('./chat/caixa/caixa-de-entrada').then((c) => c.CaixaDeEntrada),
+    data: { lado: 'cliente' },
+    canMatch: [usuarioAutenticadoGuard, cargoGuard('Cliente')],
+  },
+  {
+    path: 'conversas/:id',
+    loadComponent: () => import('./chat/conversa/conversa').then((c) => c.Conversa),
+    data: { lado: 'locadora' },
+    canMatch: [usuarioAutenticadoGuard, cargoGuard('Empresa', 'Funcionario')],
+  },
+  {
+    path: 'conversas',
+    loadComponent: () => import('./chat/caixa/caixa-de-entrada').then((c) => c.CaixaDeEntrada),
+    data: { lado: 'locadora' },
+    canMatch: [usuarioAutenticadoGuard, cargoGuard('Empresa', 'Funcionario')],
+  },
   {
     path: 'reservas',
     loadComponent: () =>

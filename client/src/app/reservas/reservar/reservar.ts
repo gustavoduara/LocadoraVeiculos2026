@@ -64,6 +64,10 @@ interface OpcaoDePlano {
     } @else if (carro(); as c) {
     <h2 class="mt-2 text-2xl font-semibold">Reservar {{ c.marca }} {{ c.modelo }}</h2>
     <p class="text-sm text-gray-600">{{ c.locadora }} · {{ c.categoria }}</p>
+    <a mat-stroked-button class="mt-2" routerLink="/mensagens/nova" [queryParams]="{ automovelId: c.id }">
+        <mat-icon>chat</mat-icon>
+        Falar com a locadora
+    </a>
 
     @if (perfil() && !perfil()!.completo) {
     <div class="mt-4 rounded-lg px-4 py-3 text-sm selo-ambar flex flex-wrap items-center justify-between gap-3">

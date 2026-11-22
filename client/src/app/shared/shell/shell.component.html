@@ -34,6 +34,13 @@
           <mat-icon class="material-icons-outlined" matListItemIcon>event_available</mat-icon>
           Meus pedidos
         </a>
+        <a mat-list-item [routerLink]="['/mensagens']" routerLinkActive="nav-link-active" class="my-1">
+          <mat-icon class="material-icons-outlined" matListItemIcon>chat</mat-icon>
+          Mensagens
+          @if (naoLidas() > 0) {
+            <span class="ml-auto rounded-full px-2 py-0.5 text-xs font-medium selo-verde" aria-label="{{ naoLidas() }} mensagens não lidas">{{ naoLidas() }}</span>
+          }
+        </a>
         <a mat-list-item [routerLink]="['/meus-dados']" routerLinkActive="nav-link-active" class="my-1">
           <mat-icon class="material-icons-outlined" matListItemIcon>badge</mat-icon>
           Meus dados
@@ -43,6 +50,13 @@
         <a mat-list-item [routerLink]="['/reservas']" routerLinkActive="nav-link-active" class="my-1">
           <mat-icon class="material-icons-outlined" matListItemIcon>event_available</mat-icon>
           Reservas
+        </a>
+        <a mat-list-item [routerLink]="['/conversas']" routerLinkActive="nav-link-active" class="my-1">
+          <mat-icon class="material-icons-outlined" matListItemIcon>chat</mat-icon>
+          Conversas
+          @if (naoLidas() > 0) {
+            <span class="ml-auto rounded-full px-2 py-0.5 text-xs font-medium selo-verde" aria-label="{{ naoLidas() }} mensagens não lidas">{{ naoLidas() }}</span>
+          }
         </a>
         }
       @for (item of itensNavbar; track $index) {

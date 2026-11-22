@@ -39,6 +39,10 @@ import { PaginaLegal } from './pagina-legal';
                     dados do pedido (veículo, período, plano, seguro e valores).
                 </li>
                 <li>
+                    <strong>Mensagens:</strong> o texto das conversas entre cliente e locadora (e o carro citado). Elas são
+                    apagadas quando qualquer uma das duas contas é excluída.
+                </li>
+                <li>
                     <strong>Locadora:</strong> dados da empresa e de funcionários (nome, CPF, e-mail, salário e data de
                     admissão), clientes, condutores, aluguéis, frota, preços e cupons.
                 </li>
