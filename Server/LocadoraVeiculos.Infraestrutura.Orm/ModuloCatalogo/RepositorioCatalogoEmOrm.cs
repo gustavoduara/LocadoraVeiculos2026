@@ -18,6 +18,8 @@ public record CarroDoCatalogo(
     Guid GrupoVeiculosId,
     string Categoria,
     bool TemFoto,
+    /// <summary>Total de fotos (capa + extras).</summary>
+    int QuantidadeFotos,
     /// <summary>Menor diária entre os três planos do grupo; vazio se o grupo não tem plano de cobrança.</summary>
     decimal? DiariaAPartirDe
 );
@@ -51,7 +53,8 @@ public class RepositorioCatalogoEmOrm(AppDbContext dbContext)
                 a.TipoCombustivel,
                 a.GrupoVeiculosId,
                 Categoria = a.GrupoVeiculos!.Nome,
-                TemFoto = a.Foto != null
+                TemCapa = a.Foto != null,
+                Extras = a.FotosExtras.Count
             })
             .ToListAsync();
 
@@ -82,7 +85,8 @@ public class RepositorioCatalogoEmOrm(AppDbContext dbContext)
                 c.TipoCombustivel,
                 c.GrupoVeiculosId,
                 c.Categoria,
-                c.TemFoto,
+                c.TemCapa || c.Extras > 0,
+                (c.TemCapa ? 1 : 0) + c.Extras,
                 menorDiariaPorGrupo.TryGetValue(c.GrupoVeiculosId, out var menor) ? menor : null))
             .ToList();
     }
@@ -98,16 +102,47 @@ public class RepositorioCatalogoEmOrm(AppDbContext dbContext)
             .ToListAsync();
     }
 
-    public async Task<FotoDoCarro?> SelecionarFotoAsync(Guid automovelId)
+    /// <summary>
+    /// A foto na posição pedida da galeria do carro: 0 é a capa (se houver) e depois vêm as extras, na ordem.
+    /// Sem capa, a primeira extra ocupa a posição 0.
+    /// </summary>
+    public async Task<FotoDoCarro?> SelecionarFotoAsync(Guid automovelId, int posicao = 0)
     {
-        var foto = await dbContext.Automoveis
+        if (posicao < 0) return null;
+
+        var capa = await dbContext.Automoveis
             .IgnoreQueryFilters()
             .AsNoTracking()
-            .Where(a => a.Id == automovelId && !a.Excluido && a.Foto != null)
-            .Select(a => new { a.Foto, a.FotoTipoConteudo })
+            .Where(a => a.Id == automovelId && !a.Excluido)
+            .Select(a => new { TemCapa = a.Foto != null })
             .FirstOrDefaultAsync();
 
-        return foto is null ? null : new FotoDoCarro(foto.Foto!, foto.FotoTipoConteudo ?? "application/octet-stream");
+        if (capa is null) return null;
+
+        if (capa.TemCapa && posicao == 0)
+        {
+            var principal = await dbContext.Automoveis
+                .IgnoreQueryFilters()
+                .AsNoTracking()
+                .Where(a => a.Id == automovelId)
+                .Select(a => new { a.Foto, a.FotoTipoConteudo })
+                .FirstAsync();
+
+            return new FotoDoCarro(principal.Foto!, principal.FotoTipoConteudo ?? "application/octet-stream");
+        }
+
+        int indiceExtra = capa.TemCapa ? posicao - 1 : posicao;
+
+        var extra = await dbContext.AutomovelFotos
+            .AsNoTracking()
+            .Where(f => f.AutomovelId == automovelId)
+            .OrderBy(f => f.Ordem).ThenBy(f => f.CriadaEmUtc)
+            .Skip(indiceExtra)
+            .Take(1)
+            .Select(f => new { f.Conteudo, f.TipoConteudo })
+            .FirstOrDefaultAsync();
+
+        return extra is null ? null : new FotoDoCarro(extra.Conteudo, extra.TipoConteudo);
     }
 
     public async Task<string> SelecionarNomeDaLocadoraAsync(Guid empresaId)

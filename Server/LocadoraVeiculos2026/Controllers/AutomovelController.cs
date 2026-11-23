@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace LocadoraDeVeiculos.WebApi.Controllers;
 
 /// <summary>O cadastro de veículos é uma tarefa operacional: Empresa e Funcionário podem gerenciá-lo.</summary>
+public record FotosExtrasResponse(IReadOnlyList<FotoExtraDto> Registros);
+
 [Authorize(Roles = "Empresa,Funcionario")]
 [Route("api/automoveis")]
 public sealed class AutomovelController(IMediator mediator) : MainController
@@ -140,6 +142,62 @@ public sealed class AutomovelController(IMediator mediator) : MainController
 
             return File(valor.Conteudo, valor.TipoConteudo);
         });
+    }
+
+    // ---------------- fotos extras (carrossel) ----------------
+
+    /// <summary>As fotos extras do carro, na ordem do carrossel (a foto principal é a do endpoint <c>foto</c>).</summary>
+    [HttpGet("{id:guid}/fotos")]
+    public async Task<ActionResult<FotosExtrasResponse>> ListarFotosExtras(Guid id, CancellationToken cancellationToken)
+    {
+        Result<IReadOnlyList<FotoExtraDto>> result = await mediator.Send(new ListarFotosExtrasQuery(id), cancellationToken);
+
+        return ProcessarResultado(result, (lista) => Ok(new FotosExtrasResponse(lista)));
+    }
+
+    /// <summary>Acrescenta uma foto extra (até 5): multipart/form-data com o campo <c>arquivo</c>.</summary>
+    [HttpPost("{id:guid}/fotos")]
+    [RequestSizeLimit(3 * 1024 * 1024)]
+    public async Task<ActionResult<FotoExtraDto>> AdicionarFotoExtra(
+        Guid id,
+        IFormFile arquivo,
+        CancellationToken cancellationToken
+    )
+    {
+        if (arquivo is null || arquivo.Length == 0)
+            return BadRequest(new[] { "Requisição inválida", "Nenhuma foto foi enviada." });
+
+        if (arquivo.Length > ImagemUtil.TamanhoMaximoEmBytes)
+            return BadRequest(new[] { "Requisição inválida", "A foto deve ter no máximo 2 MB." });
+
+        using MemoryStream memoria = new();
+        await arquivo.CopyToAsync(memoria, cancellationToken);
+
+        Result<FotoExtraDto> result = await mediator.Send(
+            new AdicionarFotoExtraCommand(id, memoria.ToArray(), arquivo.FileName), cancellationToken);
+
+        return ProcessarResultado(result, (valor) => StatusCode(201, valor));
+    }
+
+    [HttpGet("{id:guid}/fotos/{fotoId:guid}")]
+    public async Task<ActionResult> ObterFotoExtra(Guid id, Guid fotoId, CancellationToken cancellationToken)
+    {
+        Result<FotoAutomovelResult> result = await mediator.Send(new ObterFotoExtraQuery(id, fotoId), cancellationToken);
+
+        return ProcessarResultado(result, (valor) =>
+        {
+            Response.Headers["X-Content-Type-Options"] = "nosniff";
+
+            return File(valor.Conteudo, valor.TipoConteudo);
+        });
+    }
+
+    [HttpDelete("{id:guid}/fotos/{fotoId:guid}")]
+    public async Task<ActionResult> RemoverFotoExtra(Guid id, Guid fotoId, CancellationToken cancellationToken)
+    {
+        Result result = await mediator.Send(new RemoverFotoExtraCommand(id, fotoId), cancellationToken);
+
+        return ProcessarResultado(result, () => NoContent());
     }
 
     [HttpDelete("{id:guid}/foto")]

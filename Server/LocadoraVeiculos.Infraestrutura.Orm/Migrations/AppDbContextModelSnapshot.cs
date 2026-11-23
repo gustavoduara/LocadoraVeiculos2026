@@ -17,7 +17,7 @@ namespace LocadoraDeVeiculos.Infraestrutura.Orm.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.30")
+                .HasAnnotation("ProductVersion", "10.0.15")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -399,6 +399,40 @@ namespace LocadoraDeVeiculos.Infraestrutura.Orm.Migrations
                         .HasFilter("[Excluido] = 0");
 
                     b.ToTable("Automoveis");
+                });
+
+            modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloAutomovel.AutomovelFoto", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AutomovelId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<byte[]>("Conteudo")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<DateTime>("CriadaEmUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("NomeArquivo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int>("Ordem")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TipoConteudo")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AutomovelId", "Ordem");
+
+                    b.ToTable("AutomovelFotos");
                 });
 
             modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloCliente.Cliente", b =>
@@ -1350,6 +1384,17 @@ namespace LocadoraDeVeiculos.Infraestrutura.Orm.Migrations
                     b.Navigation("GrupoVeiculos");
                 });
 
+            modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloAutomovel.AutomovelFoto", b =>
+                {
+                    b.HasOne("LocadoraDeVeiculos.Dominio.ModuloAutomovel.Automovel", "Automovel")
+                        .WithMany("FotosExtras")
+                        .HasForeignKey("AutomovelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Automovel");
+                });
+
             modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloCliente.Cliente", b =>
                 {
                     b.HasOne("LocadoraDeVeiculos.Dominio.ModuloAutenticacao.Usuario", "Empresa")
@@ -1604,6 +1649,11 @@ namespace LocadoraDeVeiculos.Infraestrutura.Orm.Migrations
             modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloAluguel.Aluguel", b =>
                 {
                     b.Navigation("Taxas");
+                });
+
+            modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloAutomovel.Automovel", b =>
+                {
+                    b.Navigation("FotosExtras");
                 });
 
             modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloConversa.Conversa", b =>

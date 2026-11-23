@@ -67,6 +67,7 @@ public class PesquisarCatalogoQueryHandler(
                 c.TipoCombustivel,
                 c.Categoria,
                 c.TemFoto,
+                c.QuantidadeFotos,
                 c.DiariaAPartirDe,
                 c.DiariaAPartirDe is { } diaria && dias is { } n ? Math.Round(diaria * n, 2, MidpointRounding.AwayFromZero) : null,
                 dias is null ? null : !ocupados.Contains(c.Id)))
@@ -162,7 +163,7 @@ public class FotoDoCatalogoQueryHandler(
 {
     public async Task<Result<FotoDoCatalogoResult>> Handle(FotoDoCatalogoQuery query, CancellationToken cancellationToken)
     {
-        FotoDoCarro? foto = await repositorio.SelecionarFotoAsync(query.AutomovelId);
+        FotoDoCarro? foto = await repositorio.SelecionarFotoAsync(query.AutomovelId, query.Posicao);
 
         if (foto is null)
             return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro(query.AutomovelId));
@@ -206,6 +207,7 @@ public class DetalharCarroQueryHandler(
             basico.TipoCombustivel,
             basico.Categoria,
             basico.TemFoto,
+            basico.QuantidadeFotos,
             plano is null ? null : new PlanoDiarioOpcaoDto(plano.DiarioPrecoDiaria, plano.DiarioPrecoPorKm),
             plano is null ? null : new PlanoControladoOpcaoDto(plano.ControladoKmDisponiveis, plano.ControladoPrecoDiaria, plano.ControladoPrecoPorKmExtrapolado),
             plano is null ? null : new PlanoLivreOpcaoDto(plano.LivrePrecoDiaria),

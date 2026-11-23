@@ -29,6 +29,7 @@ public class AppDbContext(
     public DbSet<Configuracao> Configuracoes { get; set; }
     public DbSet<PlanoCobranca> PlanosCobranca { get; set; }
     public DbSet<Automovel> Automoveis { get; set; }
+    public DbSet<AutomovelFoto> AutomovelFotos { get; set; }
     public DbSet<TaxaServico> TaxasServicos { get; set; }
     public DbSet<Cliente> Clientes { get; set; }
     public DbSet<Condutor> Condutores { get; set; }

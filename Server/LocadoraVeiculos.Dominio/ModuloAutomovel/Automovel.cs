@@ -24,6 +24,9 @@ public class Automovel : EntidadeBase<Automovel>
 
     public bool TemFoto => Foto is { Length: > 0 };
 
+    /// <summary>Fotos extras do carrossel (a foto principal fica nos campos acima).</summary>
+    public List<AutomovelFoto> FotosExtras { get; set; } = [];
+
     protected Automovel() { }
 
     public Automovel(

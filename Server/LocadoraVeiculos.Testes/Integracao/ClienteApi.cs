@@ -65,7 +65,7 @@ public class ClienteApi
     }
 
     /// <summary>Envia um arquivo em multipart/form-data no campo "arquivo".</summary>
-    public async Task<Resposta> EnviarArquivo(string url, byte[] bytes, string nome, string tipo)
+    public async Task<Resposta> EnviarArquivo(string url, byte[] bytes, string nome, string tipo, bool post = false)
     {
         using var conteudo = new MultipartFormDataContent();
         var arquivo = new ByteArrayContent(bytes);
@@ -73,7 +73,7 @@ public class ClienteApi
         arquivo.Headers.ContentType = new MediaTypeHeaderValue(tipo);
         conteudo.Add(arquivo, "arquivo", nome);
 
-        using var resposta = await http.PutAsync(url, conteudo);
+        using var resposta = post ? await http.PostAsync(url, conteudo) : await http.PutAsync(url, conteudo);
         var texto = await resposta.Content.ReadAsStringAsync();
 
         JsonElement? json = string.IsNullOrWhiteSpace(texto) ? null : JsonDocument.Parse(texto).RootElement.Clone();

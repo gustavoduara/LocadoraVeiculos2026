@@ -40,6 +40,8 @@ public record CarroCatalogoDto(
     TipoCombustivel Combustivel,
     string Categoria,
     bool TemFoto,
+    /// <summary>Total de fotos do carro (capa + extras): o carrossel mostra de 0 a QuantidadeFotos − 1.</summary>
+    int QuantidadeFotos,
     decimal? DiariaAPartirDe,
     /// <summary>Diárias do período × menor diária (sem km, taxas, seguro e caução). Só com datas.</summary>
     decimal? TotalDoPeriodo,
@@ -65,7 +67,7 @@ public record FiltrosDoCatalogoResult(
     IReadOnlyList<LocadoraFiltroDto> Locadoras
 );
 
-public record FotoDoCatalogoQuery(Guid AutomovelId) : IRequest<Result<FotoDoCatalogoResult>>;
+public record FotoDoCatalogoQuery(Guid AutomovelId, int Posicao = 0) : IRequest<Result<FotoDoCatalogoResult>>;
 
 public record FotoDoCatalogoResult(byte[] Conteudo, string TipoConteudo);
 
@@ -90,6 +92,7 @@ public record CarroDetalheDto(
     TipoCombustivel Combustivel,
     string Categoria,
     bool TemFoto,
+    int QuantidadeFotos,
     PlanoDiarioOpcaoDto? Diario,
     PlanoControladoOpcaoDto? Controlado,
     PlanoLivreOpcaoDto? Livre,

@@ -69,7 +69,10 @@ public static class DependencyInjection
         if (string.IsNullOrWhiteSpace(connectionString))
             throw new Exception("A variável SQL_CONNECTION_STRING não foi fornecida.");
 
-        services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlServer(connectionString, (opt) => opt.EnableRetryOnFailure(3)));
+        services.AddDbContext<AppDbContext>(options => options
+            .UseSqlServer(connectionString, (opt) => opt.EnableRetryOnFailure(3))
+            // Fotos extras do carro e mensagens do chat só são lidas pelo carro/conversa (que já filtram por empresa),
+            // e o catálogo as lê de propósito entre locadoras: o aviso do EF sobre "filtro no lado obrigatório" não se aplica.
+            .ConfigureWarnings(w => w.Ignore(Microsoft.EntityFrameworkCore.Diagnostics.CoreEventId.PossibleIncorrectRequiredNavigationWithQueryFilterInteractionWarning)));
     }
 }

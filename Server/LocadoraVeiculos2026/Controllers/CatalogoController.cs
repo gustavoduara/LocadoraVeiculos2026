@@ -60,10 +60,20 @@ public sealed class CatalogoController(IMediator mediator) : MainController
         return ProcessarResultado(result, (valor) => Ok(valor));
     }
 
+    /// <summary>A primeira foto do carro (a capa, ou a primeira extra se não houver capa).</summary>
     [HttpGet("{id:guid}/foto")]
     public async Task<ActionResult> Foto(Guid id, CancellationToken cancellationToken)
     {
         Result<FotoDoCatalogoResult> result = await mediator.Send(new FotoDoCatalogoQuery(id), cancellationToken);
+
+        return ProcessarResultado(result, (valor) => File(valor.Conteudo, valor.TipoConteudo));
+    }
+
+    /// <summary>A foto na posição pedida da galeria (0 = a primeira): usada pelo carrossel.</summary>
+    [HttpGet("{id:guid}/fotos/{posicao:int}")]
+    public async Task<ActionResult> FotoDaGaleria(Guid id, int posicao, CancellationToken cancellationToken)
+    {
+        Result<FotoDoCatalogoResult> result = await mediator.Send(new FotoDoCatalogoQuery(id, posicao), cancellationToken);
 
         return ProcessarResultado(result, (valor) => File(valor.Conteudo, valor.TipoConteudo));
     }
