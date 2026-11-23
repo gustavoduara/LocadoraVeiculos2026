@@ -57,7 +57,7 @@ Cada empresa enxerga **apenas os próprios dados** (multiempresa), e o que cada 
 | 🔐 **Autenticação** | Registro da empresa, login, renovação automática da sessão e logout. |
 | 👥 **Funcionários** | Cadastro, edição, exclusão e listagem. Ativar e desativar contas. O funcionário acessa o sistema e edita o próprio perfil (**Meu Perfil**). |
 | 🚙 **Grupos de Veículos** | Cadastro, edição, exclusão e listagem de grupos (ex.: utilitário, esportivo, adaptado para PCD). |
-| ⛽ **Configurações** | Preço por litro da gasolina, gás, diesel e álcool e diária do seguro (cliente e terceiros), usados no cálculo dos aluguéis. |
+| ⛽ **Configurações** | Preço por litro da gasolina, GNV (gás natural), diesel e álcool, cobrado no reabastecimento da devolução. O **seguro** é definido em cada carro, no cadastro do automóvel. |
 | 💲 **Planos de Cobrança** | Um plano por grupo de veículos, com três modalidades: Diário, Controlado e Livre. |
 | 🚘 **Automóveis** | Cadastro da frota com foto principal (JPEG, PNG ou WebP) e **até 5 fotos extras** (outros ângulos, opcionais), placa única e filtro por grupo. No catálogo o cliente vê um **carrossel**: ao passar o mouse sobre o carro as fotos **deslizam para o lado** sozinhas, uma a cada ~2 s, como nos stories do Instagram (setas e bolinhas; no celular, setas sempre visíveis e dá para arrastar). |
 | 🧾 **Taxas e Serviços** | Catálogo de itens extras (GPS, cadeirinha...), de cobrança fixa ou diária. |
@@ -72,7 +72,7 @@ Cada empresa enxerga **apenas os próprios dados** (multiempresa), e o que cada 
 | 🔐 **Entrada e senhas** | O login pergunta primeiro se a pessoa é **cliente** ou **locadora** (empresa ou funcionário) e recusa a conta do lado errado com uma mensagem clara. Há "Esqueci minha senha" (link por e-mail, válido por 1 hora e de uso único) e "Alterar senha" para qualquer conta logada. |
 | 🔎 **Catálogo (conta de cliente)** | A pessoa cria uma conta de cliente e procura carros de **todas as locadoras**: por período (só os livres), texto, categoria, combustível, ano, preço da diária e locadora, com ordenação e paginação. Mostra foto, locadora, preço e total do período. Do carro, o cliente escolhe plano e seguro e pede a reserva. |
 | 💬 **Chat com a locadora** | O cliente toca em **Falar com a locadora** na tela do carro ou no pedido e escreve para a locadora (uma conversa por cliente e locadora, citando o carro). A locadora responde pela caixa de entrada **Conversas**, compartilhada entre administrador e funcionários, com contador de não lidas no menu. As mensagens chegam **em tempo real** (SignalR, com queda automática para outro transporte se o WebSocket não estiver disponível). A pessoa só é avisada por e-mail na **primeira** mensagem não lida de cada conversa; há limite de 1000 caracteres e de mensagens por minuto por usuário. Ao excluir a conta, as conversas somem. |
-| 📅 **Reserva online** | O cliente preenche **Meus dados** (CPF, RG, CNH, telefone, endereço), escolhe plano, seguro, **taxas e serviços** e um **cupom** da locadora, vê o valor previsto na hora (com os preços riscados quando há desconto) e envia o pedido. A locadora **aprova** (o aluguel é criado sozinho, com o cliente, o condutor, as mesmas taxas e o mesmo cupom, e o total é o que o cliente viu) ou **recusa** com um motivo. O cliente acompanha em **Meus pedidos**, pode cancelar enquanto está pendente e, aprovada, vê o telefone da locadora. |
+| 📅 **Reserva online** | O cliente preenche **Meus dados** (CPF, RG, CNH, telefone, endereço), escolhe plano, **com ou sem seguro** (vendo o total previsto de cada opção), **taxas e serviços** e um **cupom** da locadora, vê o valor previsto na hora (com os preços riscados quando há desconto) e envia o pedido. A locadora **aprova** (o aluguel é criado sozinho, com o cliente, o condutor, as mesmas taxas e o mesmo cupom, e o total é o que o cliente viu) ou **recusa** com um motivo. O cliente acompanha em **Meus pedidos**, pode cancelar enquanto está pendente e, aprovada, vê o telefone da locadora. |
 | 🏠 **Início** | Pesquisa de período (retirada e devolução) e vitrine da frota real: foto, preço a partir da menor diária do plano do grupo, total do período e disponibilidade. O botão Alugar leva o carro e as datas ao formulário de aluguel. |
 | 🌙 **Modo noturno** | Tema escuro em Configurações (e no menu do usuário), salvo no navegador. |
 | 🔑 **Aluguéis** | Registro com valor previsto ao vivo (diárias, taxas, seguro e caução), edição enquanto em aberto e devolução com km, combustível e multa por atraso. |
@@ -111,7 +111,7 @@ Os desafios da especificação (parceiros e cupons) também estão prontos. Veja
   - **Plano Diário:** diárias + cada km rodado.
   - **Plano Controlado:** o km só é cobrado acima da franquia (km por dia × dias).
   - **Plano Livre:** só as diárias.
-  - O **seguro** é cobrado por dia, e as taxas são fixas (uma vez) ou diárias.
+  - O **seguro** é um valor por dia definido em cada carro (o cliente escolhe contratar ou não), e as taxas são fixas (uma vez) ou diárias.
   - Se o tanque não voltar cheio, cobra-se o reabastecimento completo pelo preço configurado.
   - O **atraso** gera multa de 10% sobre diárias, km, taxas e seguro.
   - Os preços ficam "congelados" no aluguel: mudar o catálogo depois não altera aluguéis já feitos.
@@ -275,7 +275,7 @@ Todas as rotas (exceto autenticação) exigem o cabeçalho `Authorization: Beare
 | | `POST` · `PUT {id}` · `DELETE {id}` | Empresa |
 | **Cupons** | `GET /api/cupons` · `GET {id}` | Empresa e Funcionário |
 | | `POST` · `PUT {id}` · `DELETE {id}` · `GET /api/cupons/mais-utilizados` | Empresa |
-| **Catálogo** | `GET /api/catalogo` (filtros por query string) · `GET /api/catalogo/filtros` · `GET /api/catalogo/{id}` (detalhe com planos e seguros) · `GET /api/catalogo/{id}/foto` · `GET /api/catalogo/{id}/fotos/{posicao}` (carrossel) | Cliente |
+| **Catálogo** | `GET /api/catalogo` (filtros por query string) · `GET /api/catalogo/filtros` · `GET /api/catalogo/{id}` (detalhe com planos e o seguro do carro) · `GET /api/catalogo/{id}/foto` · `GET /api/catalogo/{id}/fotos/{posicao}` (carrossel) | Cliente |
 | **Meus dados e reservas (cliente)** | `GET · PUT /api/meus-dados` · `POST /api/minhas-reservas/calcular` · `GET · POST /api/minhas-reservas` · `POST {id}/cancelar` | Cliente |
 | **Chat (cliente)** | `GET · POST /api/minhas-conversas` · `GET {id}` · `POST {id}/mensagens` · `GET nao-lidas/total` · tempo real em `/hubs/chat` | Cliente |
 | **Chat (locadora)** | `GET /api/conversas` · `GET {id}` · `POST {id}/mensagens` · `GET nao-lidas/total` · tempo real em `/hubs/chat` | Empresa e Funcionário |
@@ -305,7 +305,7 @@ LocadoraVeiculos2026/
         ├── auth/                            #   Login, registro, interceptor e guards
         ├── funcionarios/                    #   CRUD de funcionários e Meu Perfil
         ├── grupo-veiculos/                  #   CRUD de grupos de veículos
-        ├── configuracoes/                   #   Preço dos combustíveis e do seguro
+        ├── configuracoes/                   #   Preço dos combustíveis
         ├── planos-cobranca/ · automoveis/   #   Planos e frota (com foto)
         ├── clientes/ · condutores/          #   Clientes (PF/PJ) e condutores
         ├── taxas-servicos/                  #   Catálogo de taxas e serviços
