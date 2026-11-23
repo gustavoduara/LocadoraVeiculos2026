@@ -7,7 +7,8 @@
             <mat-card-header>
                 <mat-card-title class="text-lg font-medium">Preço dos combustíveis</mat-card-title>
                 <mat-card-subtitle>
-                    Valor por litro, usado no cálculo do valor dos aluguéis.
+                    Valor por litro, cobrado quando o carro volta com o tanque abaixo do nível em que saiu. O seguro de cada
+                    carro é definido no cadastro do automóvel.
                 </mat-card-subtitle>
             </mat-card-header>
 
@@ -19,29 +20,11 @@
                     <input matInput type="number" step="0.01" min="0.01" max="999.99"
                         [formControlName]="combustivel.campo" />
 
-                    @if (erroDo(combustivel.campo); as erro) {
-                    <mat-error>{{ erro }}</mat-error>
+                    @if (combustivel.dica) {
+                    <mat-hint>{{ combustivel.dica }}</mat-hint>
                     }
-                </mat-form-field>
-                }
-            </mat-card-content>
 
-            <mat-card-header class="mt-4">
-                <mat-card-title class="text-lg font-medium">Seguro</mat-card-title>
-                <mat-card-subtitle>
-                    Valor cobrado por dia de aluguel quando o cliente contrata o seguro.
-                </mat-card-subtitle>
-            </mat-card-header>
-
-            <mat-card-content class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                @for (seguro of seguros; track seguro.campo) {
-                <mat-form-field class="w-full">
-                    <mat-label>{{ seguro.rotulo }}</mat-label>
-                    <span matTextPrefix>R$&nbsp;</span>
-                    <input matInput type="number" step="0.01" min="0.01" max="999.99"
-                        [formControlName]="seguro.campo" />
-
-                    @if (erroDo(seguro.campo); as erro) {
+                    @if (erroDo(combustivel.campo); as erro) {
                     <mat-error>{{ erro }}</mat-error>
                     }
                 </mat-form-field>

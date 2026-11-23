@@ -1,3 +1,4 @@
+import { CurrencyPipe } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -18,6 +19,7 @@ import { BuscaLista, ListaPaginada, PaginacaoLista } from '../../shared/lista/li
 @Component({
     selector: 'app-listar-automoveis',
     imports: [
+        CurrencyPipe,
         BuscaLista,
         PaginacaoLista,
         MatButtonModule,

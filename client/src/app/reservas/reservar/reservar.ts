@@ -120,21 +120,25 @@ interface OpcaoDePlano {
             <mat-card class="rounded-2xl shadow-sm">
                 <mat-card-content class="p-4">
                     <h3 class="text-base font-medium">Seguro</h3>
+                    @if (c.seguroDiaria !== null) {
                     <mat-radio-group class="mt-2 flex flex-col" [ngModel]="seguro()" (ngModelChange)="mudarSeguro($event)">
-                        <mat-radio-button value="Nenhum">Sem seguro</mat-radio-button>
-                        @if (c.seguroClienteDiaria !== null) {
-                        <mat-radio-button value="Cliente">
-                            Seguro para o cliente
-                            <span class="text-xs text-gray-600">· {{ c.seguroClienteDiaria | currency: 'BRL' }} por dia</span>
+                        <mat-radio-button value="Nenhum">
+                            Sem seguro
+                            <span class="block text-xs text-gray-600">
+                                Total previsto: {{ totalSemSeguro() !== null ? (totalSemSeguro() | currency: 'BRL') : '…' }}
+                            </span>
                         </mat-radio-button>
-                        }
-                        @if (c.seguroTerceirosDiaria !== null) {
-                        <mat-radio-button value="Terceiros">
-                            Seguro para terceiros
-                            <span class="text-xs text-gray-600">· {{ c.seguroTerceirosDiaria | currency: 'BRL' }} por dia</span>
+                        <mat-radio-button value="Contratado">
+                            Com seguro
+                            <span class="text-xs text-gray-600">· {{ c.seguroDiaria | currency: 'BRL' }} por dia</span>
+                            <span class="block text-xs text-gray-600">
+                                Total previsto: {{ totalComSeguro() !== null ? (totalComSeguro() | currency: 'BRL') : '…' }}
+                            </span>
                         </mat-radio-button>
-                        }
                     </mat-radio-group>
+                    } @else {
+                    <p class="mt-2 text-sm text-gray-600">A locadora não oferece seguro para este carro.</p>
+                    }
                 </mat-card-content>
             </mat-card>
 
@@ -277,6 +281,18 @@ export class Reservar implements OnInit {
     protected readonly descricaoDesconto = descricaoDoDesconto;
 
     protected readonly estimativa = signal<EstimativaReservaModel | null>(null);
+
+    /** Total previsto da opção de seguro que NÃO está marcada, para o cliente comparar com e sem seguro. */
+    private readonly totalDaOutraOpcao = signal<number | null>(null);
+    private pedidoDaOutraOpcao = 0;
+
+    protected readonly totalSemSeguro = computed(() =>
+        this.seguro() === 'Nenhum' ? (this.estimativa()?.valorTotalPrevisto ?? null) : this.totalDaOutraOpcao(),
+    );
+
+    protected readonly totalComSeguro = computed(() =>
+        this.seguro() === 'Contratado' ? (this.estimativa()?.valorTotalPrevisto ?? null) : this.totalDaOutraOpcao(),
+    );
     protected readonly erroEstimativa = signal<string | null>(null);
     protected readonly enviando = signal(false);
 
@@ -422,10 +438,13 @@ export class Reservar implements OnInit {
 
     private recalcular(): void {
         this.estimativa.set(null);
+        this.totalDaOutraOpcao.set(null);
         this.erroEstimativa.set(null);
         this.erroCupom.set(null);
 
         if (!this.carro() || this.erroDeDatas()) return;
+
+        this.calcularOutraOpcao();
 
         this.reservas.calcular(this.dados()).subscribe({
             next: (e) => this.estimativa.set(e),
@@ -449,6 +468,30 @@ export class Reservar implements OnInit {
                     },
                 });
             },
+        });
+    }
+
+    /** Calcula o total da outra opção de seguro (com o mesmo plano, taxas e cupom) só para mostrar a diferença. */
+    private calcularOutraOpcao(): void {
+        const carro = this.carro();
+
+        if (!carro || carro.seguroDiaria === null) return;
+
+        const pedido = ++this.pedidoDaOutraOpcao;
+        const outra: TipoSeguroModel = this.seguro() === 'Nenhum' ? 'Contratado' : 'Nenhum';
+
+        const guardar = (total: number | null) => {
+            if (pedido === this.pedidoDaOutraOpcao) this.totalDaOutraOpcao.set(total);
+        };
+
+        this.reservas.calcular({ ...this.dados(), tipoSeguro: outra }).subscribe({
+            next: (e) => guardar(e.valorTotalPrevisto),
+            // Se o cupom não vale para esta opção, mostra o valor sem ele (igual ao que a tela principal faz).
+            error: () =>
+                this.reservas.calcular({ ...this.dados(), tipoSeguro: outra, cupom: null }).subscribe({
+                    next: (e) => guardar(e.valorTotalPrevisto),
+                    error: () => guardar(null),
+                }),
         });
     }
 

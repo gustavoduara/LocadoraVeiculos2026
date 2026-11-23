@@ -2,7 +2,7 @@ export type TipoCombustivelModel = 'Gasolina' | 'Gas' | 'Diesel' | 'Alcool';
 
 export const COMBUSTIVEIS: { valor: TipoCombustivelModel; rotulo: string }[] = [
     { valor: 'Gasolina', rotulo: 'Gasolina' },
-    { valor: 'Gas', rotulo: 'Gás' },
+    { valor: 'Gas', rotulo: 'GNV (gás natural)' },
     { valor: 'Diesel', rotulo: 'Diesel' },
     { valor: 'Alcool', rotulo: 'Álcool' },
 ];
@@ -29,6 +29,8 @@ export interface AutomovelModel {
     nomeGrupo: string;
     temFoto: boolean;
     nomeArquivoFoto: string | null;
+    /** Valor por dia do seguro deste carro. Zero = o carro não oferece seguro. */
+    seguroDiaria: number;
 }
 
 export interface SelecionarAutomoveisResponseModel {
@@ -44,6 +46,7 @@ export interface CadastrarAutomovelModel {
     tipoCombustivel: TipoCombustivelModel;
     capacidadeCombustivelLitros: number;
     grupoVeiculosId: string;
+    seguroDiaria: number;
 }
 
 export interface CadastrarAutomovelResponseModel {

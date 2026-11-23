@@ -52,20 +52,17 @@ export class EditarConfiguracao {
         precoGas: [this.valorInicial(this.atual?.precoGas), validadoresPreco],
         precoDiesel: [this.valorInicial(this.atual?.precoDiesel), validadoresPreco],
         precoAlcool: [this.valorInicial(this.atual?.precoAlcool), validadoresPreco],
-        seguroClienteDiaria: [this.valorInicial(this.atual?.seguroClienteDiaria), validadoresPreco],
-        seguroTerceirosDiaria: [this.valorInicial(this.atual?.seguroTerceirosDiaria), validadoresPreco],
     });
 
-    protected readonly combustiveis = [
+    protected readonly combustiveis: { campo: string; rotulo: string; dica?: string }[] = [
         { campo: 'precoGasolina', rotulo: 'Gasolina' },
-        { campo: 'precoGas', rotulo: 'Gás' },
+        {
+            campo: 'precoGas',
+            rotulo: 'GNV (gás natural)',
+            dica: 'Só para carros convertidos para gás natural veicular. Se nenhum carro seu usa, pode deixar o valor que quiser.',
+        },
         { campo: 'precoDiesel', rotulo: 'Diesel' },
         { campo: 'precoAlcool', rotulo: 'Álcool' },
-    ];
-
-    protected readonly seguros = [
-        { campo: 'seguroClienteDiaria', rotulo: 'Seguro para o cliente (por dia)' },
-        { campo: 'seguroTerceirosDiaria', rotulo: 'Seguro para terceiros (por dia)' },
     ];
 
     // Nome e telefone da locadora: o que o cliente vê no catálogo e depois que a reserva é aprovada.

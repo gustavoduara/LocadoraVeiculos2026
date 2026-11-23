@@ -1,7 +1,7 @@
 import { TipoClienteModel } from '../clientes/cliente.models';
 
 export type TipoPlanoModel = 'Diario' | 'Controlado' | 'Livre';
-export type TipoSeguroModel = 'Nenhum' | 'Cliente' | 'Terceiros';
+export type TipoSeguroModel = 'Nenhum' | 'Contratado';
 export type StatusAluguelModel = 'EmAberto' | 'Concluido';
 export type TipoCobrancaTaxaAluguelModel = 'Fixo' | 'Diario';
 
@@ -13,8 +13,7 @@ export const TIPOS_PLANO: { valor: TipoPlanoModel; rotulo: string }[] = [
 
 export const TIPOS_SEGURO: { valor: TipoSeguroModel; rotulo: string }[] = [
     { valor: 'Nenhum', rotulo: 'Sem seguro' },
-    { valor: 'Cliente', rotulo: 'Seguro para o cliente' },
-    { valor: 'Terceiros', rotulo: 'Seguro para terceiros' },
+    { valor: 'Contratado', rotulo: 'Com seguro' },
 ];
 
 export function rotuloPlano(valor: string): string {

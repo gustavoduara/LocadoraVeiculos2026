@@ -108,6 +108,8 @@ export class AutomovelForm implements OnDestroy {
             null,
             [Validators.required, Validators.min(1), Validators.max(1000), Validators.pattern(/^\d+$/)],
         ],
+        // Valor do seguro por dia; 0 = este carro não oferece seguro.
+        seguroDiaria: [0, [Validators.required, Validators.min(0), Validators.max(999.99)]],
     });
 
     protected erroDo(campo: string): string | null {

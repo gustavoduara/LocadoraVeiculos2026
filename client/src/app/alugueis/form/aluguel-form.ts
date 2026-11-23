@@ -127,6 +127,13 @@ export class AluguelForm {
 
     protected readonly tiposPlano = TIPOS_PLANO;
     protected readonly tiposSeguro = TIPOS_SEGURO;
+
+    /** Valor por dia do seguro do carro escolhido (0 quando o carro não oferece seguro ou ainda não foi escolhido). */
+    protected get seguroDoCarro(): number {
+        const id = this.form.get('automovelId')?.value;
+
+        return this.automoveis.find((a) => a.id === id)?.seguroDiaria ?? 0;
+    }
     protected readonly formatarPlaca = formatarPlaca;
 
     protected readonly simulacao = signal<SimulacaoAluguelModel | null>(null);

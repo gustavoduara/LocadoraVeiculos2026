@@ -96,7 +96,12 @@
             <mat-label>Seguro</mat-label>
             <mat-select formControlName="tipoSeguro">
                 @for (tipo of tiposSeguro; track tipo.valor) {
-                <mat-option [value]="tipo.valor">{{ tipo.rotulo }}</mat-option>
+                <mat-option [value]="tipo.valor" [disabled]="tipo.valor === 'Contratado' && seguroDoCarro <= 0">
+                    {{ tipo.rotulo }}
+                    @if (tipo.valor === 'Contratado') {
+                    · {{ seguroDoCarro > 0 ? (seguroDoCarro | currency: 'BRL') + ' por dia' : 'este carro não tem seguro' }}
+                    }
+                </mat-option>
                 }
             </mat-select>
         </mat-form-field>

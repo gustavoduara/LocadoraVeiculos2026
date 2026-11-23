@@ -78,8 +78,8 @@ export interface CarroDetalheModel {
     diario: { precoDiaria: number; precoPorKm: number } | null;
     controlado: { kmDisponiveisPorDia: number; precoDiaria: number; precoPorKmExtrapolado: number } | null;
     livre: { precoDiaria: number } | null;
-    seguroClienteDiaria: number | null;
-    seguroTerceirosDiaria: number | null;
+    /** Valor por dia do seguro deste carro; vazio quando a locadora não oferece seguro para ele. */
+    seguroDiaria: number | null;
     valorCaucao: number;
     /** Taxas e serviços que a locadora oferece (o cliente marca as que quer). */
     taxas: TaxaOpcaoModel[];

@@ -3,8 +3,6 @@ export interface ConfiguracaoModel {
     precoGas: number;
     precoDiesel: number;
     precoAlcool: number;
-    seguroClienteDiaria: number;
-    seguroTerceirosDiaria: number;
 }
 
 export interface DadosDaLocadoraModel {

@@ -51,6 +51,10 @@
                         {{ rotuloCombustivel(automovel.tipoCombustivel) }} ·
                         {{ automovel.capacidadeCombustivelLitros }} L
                     </p>
+                    <p>
+                        <span class="font-medium">Seguro:</span>
+                        {{ automovel.seguroDiaria > 0 ? (automovel.seguroDiaria | currency: 'BRL') + ' por dia' : 'não oferecido' }}
+                    </p>
                 </mat-card-content>
 
                 <mat-card-actions align="end" class="flex items-center justify-end gap-2 pt-2">
