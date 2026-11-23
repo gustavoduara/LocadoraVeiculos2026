@@ -19,6 +19,8 @@ Funcionários, frota, clientes, condutores, planos de cobrança e aluguéis com 
 
 </div>
 
+> **Projeto de demonstração.** Os carros, as locadoras e as reservas do site publicado **não são reais**, e o site mostra esse aviso em todas as telas. Se for testar, use dados fictícios (CPF, CNH, telefone e e-mail de teste), nunca dados pessoais verdadeiros.
+
 ---
 
 ## 📑 Sumário

@@ -19,6 +19,7 @@ import { Router } from '@angular/router';
 import { ESTADOS } from '../../clientes/cliente.models';
 import { dataBrParaIso, isoParaDataBr } from '../../condutores/condutor.models';
 import { mensagemDeErro } from '../../shared/erros/mensagem-erro';
+import { AvisoDemonstracao } from '../../shared/demonstracao/aviso-demonstracao';
 import { NotificacaoService } from '../../shared/notificacao/notificacao.service';
 import { ReservaService } from '../reserva.service';
 
@@ -34,6 +35,7 @@ function dataBrValida(controle: AbstractControl): ValidationErrors | null {
 @Component({
     selector: 'app-meus-dados',
     imports: [
+        AvisoDemonstracao,
         ReactiveFormsModule,
         MatButtonModule,
         MatCardModule,
@@ -46,6 +48,7 @@ function dataBrValida(controle: AbstractControl): ValidationErrors | null {
     template: `
 <section class="mx-auto max-w-3xl px-4 py-6">
     <h2 class="text-2xl font-semibold">Meus dados</h2>
+    <app-aviso-demonstracao [detalhado]="true" />
     <p class="text-sm text-gray-600">
         A locadora usa estes dados para liberar o carro. Preencha uma vez e use em todas as suas reservas.
     </p>

@@ -15,6 +15,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { UsuarioAutenticadoModel } from '../../auth/auth.models';
 import { ChatTempoRealService } from '../../chat/chat-tempo-real.service';
 import { ContaService } from '../../conta/conta.service';
+import { AvisoDemonstracao } from '../demonstracao/aviso-demonstracao';
 import { Rodape } from '../rodape/rodape';
 import { TemaService } from '../tema/tema.service';
 
@@ -33,6 +34,7 @@ import { TemaService } from '../tema/tema.service';
         RouterLink,
         RouterLinkActive,
         Rodape,
+        AvisoDemonstracao,
     ],
 })
 export class ShellComponent {

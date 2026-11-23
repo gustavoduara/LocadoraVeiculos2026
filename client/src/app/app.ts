@@ -4,13 +4,14 @@ import { Router, RouterOutlet } from '@angular/router';
 
 import { AuthService } from './auth/auth.service';
 import { NotificacaoService } from './shared/notificacao/notificacao.service';
+import { AvisoDemonstracao } from './shared/demonstracao/aviso-demonstracao';
 import { Rodape } from './shared/rodape/rodape';
 import { TemaService } from './shared/tema/tema.service';
 import { ShellComponent } from './shared/shell/shell.component';
 
 @Component({
   selector: 'app-root',
-  imports: [ShellComponent, RouterOutlet, AsyncPipe, Rodape],
+  imports: [ShellComponent, RouterOutlet, AsyncPipe, Rodape, AvisoDemonstracao],
   template: `
     @if (accessToken$ | async; as accessToken) {
       <app-shell
@@ -20,6 +21,7 @@ import { ShellComponent } from './shared/shell/shell.component';
         <router-outlet></router-outlet>
       </app-shell>
     } @else {
+      <app-aviso-demonstracao />
       <header class="marca-entrada">
         <img src="img/serradrive-logo.png" alt="SerraDrive - Locadora de Veículos" />
       </header>

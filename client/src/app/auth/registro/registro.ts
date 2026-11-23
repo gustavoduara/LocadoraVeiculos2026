@@ -14,11 +14,13 @@ import { RegistroModel } from '../auth.models';
 import { AuthService } from '../auth.service';
 import { AvisoConfirmarEmail } from '../confirmacao/aviso-confirmar-email';
 import { compararConfirmacaoSenha } from '../validators/comparar-confirmacao-senha-validator';
+import { AvisoDemonstracao } from '../../shared/demonstracao/aviso-demonstracao';
 import { BotaoVerSenha } from '../../shared/senha/botao-ver-senha';
 
 @Component({
     selector: 'app-registro',
     imports: [
+        AvisoDemonstracao,
         MatCardModule,
         MatCheckboxModule,
         MatButtonModule,
