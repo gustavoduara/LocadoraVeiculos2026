@@ -38,6 +38,11 @@ export class CatalogoService {
         return this.http.get<OpcoesFiltroCatalogoModel>(`${this.apiUrl}/filtros`);
     }
 
+    /** A foto na posição pedida da galeria (0 = a primeira): usada pelo carrossel. */
+    public obterFotoDaGaleria(id: string, posicao: number): Observable<Blob> {
+        return this.http.get(`${this.apiUrl}/${id}/fotos/${posicao}`, { responseType: 'blob' });
+    }
+
     /** A foto exige login, então é baixada como Blob (um <img src> não enviaria o token). */
     public obterFoto(id: string): Observable<Blob> {
         return this.http.get(`${this.apiUrl}/${id}/foto`, { responseType: 'blob' });

@@ -74,6 +74,7 @@ export interface CarroDetalheModel {
     combustivel: TipoCombustivelModel;
     categoria: string;
     temFoto: boolean;
+    quantidadeFotos: number;
     diario: { precoDiaria: number; precoPorKm: number } | null;
     controlado: { kmDisponiveisPorDia: number; precoDiaria: number; precoPorKmExtrapolado: number } | null;
     livre: { precoDiaria: number } | null;

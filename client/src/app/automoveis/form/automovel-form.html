@@ -22,7 +22,7 @@
                 <input #seletor type="file" accept="image/jpeg,image/png,image/webp" hidden
                     (change)="selecionarArquivo($event)" />
 
-                <button type="button" mat-stroked-button (click)="seletor.click()" [disabled]="processandoFoto()">
+                <button type="button" mat-stroked-button (click)="seletor.click()" [disabled]="processandoFoto() || processandoExtras()">
                     <mat-icon>photo_camera</mat-icon>
                     {{ processandoFoto() ? 'Processando...' : 'Selecionar foto' }}
                 </button>
@@ -40,6 +40,54 @@
             }
             <p class="text-xs text-gray-500">JPEG, PNG ou WebP. A imagem é reduzida automaticamente.</p>
         </div>
+    </div>
+
+    <!-- Mais fotos (carrossel) -->
+    <div class="space-y-2">
+        <p class="text-sm font-medium text-gray-800">Mais fotos (opcional)</p>
+        <p class="text-xs text-gray-500">
+            Outros ângulos do carro: o cliente as vê passando num carrossel. Até {{ maximoExtras }} fotos extras,
+            além da principal.
+        </p>
+
+        <div class="flex flex-wrap gap-3">
+            @for (foto of extrasMantidas; track foto.id) {
+            <div class="relative h-20 w-28 overflow-hidden rounded-lg border border-gray-200">
+                @if (original) {
+                <app-foto-automovel class="h-full w-full" [automovelId]="original.id" [fotoId]="foto.id" [temFoto]="true" />
+                }
+                <button type="button" class="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-white"
+                    aria-label="Remover foto {{ foto.nomeArquivo }}" (click)="removerExtraSalva(foto.id)">
+                    <mat-icon class="!h-4 !w-4 !text-[16px]">close</mat-icon>
+                </button>
+            </div>
+            }
+
+            @for (nova of extrasNovas(); track nova.previa; let i = $index) {
+            <div class="relative h-20 w-28 overflow-hidden rounded-lg border border-gray-200">
+                <img [src]="nova.previa" alt="Prévia da foto extra" class="h-full w-full object-cover" />
+                <button type="button" class="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-white"
+                    aria-label="Remover esta foto" (click)="removerExtraNova(i)">
+                    <mat-icon class="!h-4 !w-4 !text-[16px]">close</mat-icon>
+                </button>
+            </div>
+            }
+
+            @if (vagasDeExtras > 0) {
+            <input #seletorExtras type="file" accept="image/jpeg,image/png,image/webp" multiple hidden
+                (change)="selecionarExtras($event)" />
+
+            <button type="button" class="flex h-20 w-28 flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-gray-400 text-sm text-gray-600"
+                [disabled]="processandoExtras()" (click)="seletorExtras.click()">
+                <mat-icon>add_a_photo</mat-icon>
+                {{ processandoExtras() ? 'Processando...' : 'Adicionar' }}
+            </button>
+            }
+        </div>
+
+        @if (erroExtras(); as erro) {
+        <p class="text-sm text-red-600">{{ erro }}</p>
+        }
     </div>
 
     <mat-form-field class="w-full">

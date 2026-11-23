@@ -15,10 +15,13 @@ import {
     CadastrarAutomovelModel,
     COMBUSTIVEIS,
     formatarPlaca,
+    FotoExtraModel,
     FotoSelecionadaModel,
     GrupoOpcaoModel,
+    MAXIMO_DE_FOTOS_EXTRAS,
     SalvarAutomovelEvento,
 } from '../automovel.models';
+import { AutomovelService } from '../automovel.service';
 import { FotoAutomovel } from '../foto/foto-automovel';
 
 const anoMaximo = new Date().getFullYear() + 1;
@@ -41,6 +44,7 @@ const anoMaximo = new Date().getFullYear() + 1;
 })
 export class AutomovelForm implements OnDestroy {
     private readonly formBuilder = inject(FormBuilder);
+    private readonly automovelService = inject(AutomovelService);
 
     @Input() grupos: GrupoOpcaoModel[] = [];
 
@@ -52,6 +56,12 @@ export class AutomovelForm implements OnDestroy {
         this.edicao = true;
 
         this.form.patchValue({ ...valor, placa: formatarPlaca(valor.placa) });
+
+        // Fotos extras já salvas (para mostrar e poder remover).
+        this.automovelService.listarFotosExtras(valor.id).subscribe({
+            next: (fotos) => this.extrasSalvas.set(fotos),
+            error: () => this.extrasSalvas.set([]),
+        });
     }
 
     @Output() salvar = new EventEmitter<SalvarAutomovelEvento>();
@@ -65,6 +75,23 @@ export class AutomovelForm implements OnDestroy {
     protected readonly fotoRemovida = signal(false);
     protected readonly erroFoto = signal<string | null>(null);
     protected readonly processandoFoto = signal(false);
+
+    // ---- fotos extras (carrossel) ----
+    protected readonly maximoExtras = MAXIMO_DE_FOTOS_EXTRAS;
+    protected readonly extrasSalvas = signal<FotoExtraModel[]>([]);
+    protected readonly extrasRemovidas = signal<string[]>([]);
+    protected readonly extrasNovas = signal<{ arquivo: File; previa: string }[]>([]);
+    protected readonly erroExtras = signal<string | null>(null);
+    protected readonly processandoExtras = signal(false);
+
+    /** As já salvas que não foram marcadas para remover. */
+    protected get extrasMantidas(): FotoExtraModel[] {
+        return this.extrasSalvas().filter((f) => !this.extrasRemovidas().includes(f.id));
+    }
+
+    protected get vagasDeExtras(): number {
+        return this.maximoExtras - this.extrasMantidas.length - this.extrasNovas().length;
+    }
 
     protected form: FormGroup = this.formBuilder.group({
         grupoVeiculosId: ['', [Validators.required]],
@@ -137,6 +164,52 @@ export class AutomovelForm implements OnDestroy {
         }
     }
 
+    protected async selecionarExtras(evento: Event): Promise<void> {
+        const entrada = evento.target as HTMLInputElement;
+        const arquivos = Array.from(entrada.files ?? []);
+
+        entrada.value = '';
+
+        if (arquivos.length === 0) return;
+
+        this.erroExtras.set(null);
+
+        const aceitos = arquivos.slice(0, Math.max(0, this.vagasDeExtras));
+
+        if (arquivos.length > aceitos.length)
+            this.erroExtras.set(`Cada carro pode ter até ${this.maximoExtras} fotos extras: só as primeiras foram adicionadas.`);
+
+        this.processandoExtras.set(true);
+
+        try {
+            for (const arquivo of aceitos) {
+                try {
+                    const pronta = await comprimirImagem(arquivo);
+
+                    this.extrasNovas.update((lista) => [...lista, { arquivo: pronta, previa: URL.createObjectURL(pronta) }]);
+                } catch (erro) {
+                    this.erroExtras.set((erro as Error).message);
+                }
+            }
+        } finally {
+            this.processandoExtras.set(false);
+        }
+    }
+
+    protected removerExtraSalva(id: string): void {
+        this.extrasRemovidas.update((lista) => [...lista, id]);
+        this.erroExtras.set(null);
+    }
+
+    protected removerExtraNova(indice: number): void {
+        const removida = this.extrasNovas()[indice];
+
+        if (removida) URL.revokeObjectURL(removida.previa);
+
+        this.extrasNovas.update((lista) => lista.filter((_, i) => i !== indice));
+        this.erroExtras.set(null);
+    }
+
     protected removerFoto(): void {
         this.liberarPrevia();
         this.fotoNova.set(null);
@@ -154,11 +227,19 @@ export class AutomovelForm implements OnDestroy {
         if (this.fotoNova()) foto = { acao: 'enviar', arquivo: this.fotoNova()! };
         else if (this.fotoRemovida() && this.original?.temFoto) foto = { acao: 'remover' };
 
-        this.salvar.emit({ dados: this.form.getRawValue() as CadastrarAutomovelModel, foto });
+        this.salvar.emit({
+            dados: this.form.getRawValue() as CadastrarAutomovelModel,
+            foto,
+            fotosExtras: {
+                novas: this.extrasNovas().map((n) => n.arquivo),
+                removidas: this.extrasRemovidas(),
+            },
+        });
     }
 
     ngOnDestroy(): void {
         this.liberarPrevia();
+        this.extrasNovas().forEach((n) => URL.revokeObjectURL(n.previa));
     }
 
     private liberarPrevia(): void {

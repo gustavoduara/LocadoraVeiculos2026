@@ -1,4 +1,4 @@
-import { map, Observable } from 'rxjs';
+import { catchError, concatMap, from, map, Observable, of, reduce } from 'rxjs';
 
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
@@ -11,6 +11,8 @@ import {
     EditarAutomovelModel,
     EditarAutomovelResponseModel,
     EnviarFotoResponseModel,
+    FotoExtraModel,
+    FotosExtrasSelecionadasModel,
     SelecionarAutomoveisResponseModel,
 } from './automovel.models';
 
@@ -61,5 +63,50 @@ export class AutomovelService {
 
     public removerFoto(id: string): Observable<null> {
         return this.http.delete<null>(`${this.apiUrl}/${id}/foto`);
+    }
+
+    // ---------------- fotos extras (carrossel) ----------------
+
+    public listarFotosExtras(id: string): Observable<FotoExtraModel[]> {
+        return this.http
+            .get<{ registros: FotoExtraModel[] }>(`${this.apiUrl}/${id}/fotos`)
+            .pipe(map((res) => res.registros));
+    }
+
+    public obterFotoExtra(id: string, fotoId: string): Observable<Blob> {
+        return this.http.get(`${this.apiUrl}/${id}/fotos/${fotoId}`, { responseType: 'blob' });
+    }
+
+    public adicionarFotoExtra(id: string, arquivo: File): Observable<FotoExtraModel> {
+        const formulario = new FormData();
+
+        formulario.append('arquivo', arquivo, arquivo.name);
+
+        return this.http.post<FotoExtraModel>(`${this.apiUrl}/${id}/fotos`, formulario);
+    }
+
+    public removerFotoExtra(id: string, fotoId: string): Observable<null> {
+        return this.http.delete<null>(`${this.apiUrl}/${id}/fotos/${fotoId}`);
+    }
+
+    /**
+     * Aplica as mudanças das fotos extras (primeiro remove, depois envia, uma de cada vez).
+     * Uma falha não derruba as outras: devolve quantas operações falharam.
+     */
+    public salvarFotosExtras(id: string, extras: FotosExtrasSelecionadasModel): Observable<number> {
+        const operacoes: Observable<unknown>[] = [
+            ...extras.removidas.map((fotoId) => this.removerFotoExtra(id, fotoId)),
+            ...extras.novas.map((arquivo) => this.adicionarFotoExtra(id, arquivo)),
+        ];
+
+        return from(operacoes).pipe(
+            concatMap((operacao) =>
+                operacao.pipe(
+                    map(() => 0),
+                    catchError(() => of(1)),
+                ),
+            ),
+            reduce((falhas, falhou) => falhas + falhou, 0),
+        );
     }
 }

@@ -64,9 +64,25 @@ export interface FotoSelecionadaModel {
     arquivo?: File;
 }
 
+/** Foto extra já salva de um carro (o carrossel do catálogo mostra a capa e depois estas). */
+export interface FotoExtraModel {
+    id: string;
+    nomeArquivo: string;
+}
+
+/** Quantas fotos extras um carro pode ter, além da foto principal. */
+export const MAXIMO_DE_FOTOS_EXTRAS = 5;
+
+/** O que o usuário fez com as fotos extras no formulário: arquivos novos para enviar e ids já salvos para remover. */
+export interface FotosExtrasSelecionadasModel {
+    novas: File[];
+    removidas: string[];
+}
+
 export interface SalvarAutomovelEvento {
     dados: CadastrarAutomovelModel;
     foto: FotoSelecionadaModel;
+    fotosExtras: FotosExtrasSelecionadasModel;
 }
 
 /** Opção do seletor de grupo de veículos. */

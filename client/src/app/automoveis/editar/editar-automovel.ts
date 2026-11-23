@@ -1,4 +1,4 @@
-import { catchError, of, switchMap } from 'rxjs';
+import { catchError, Observable, of, switchMap, tap } from 'rxjs';
 
 import { Component, inject } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
@@ -27,6 +27,19 @@ export class EditarAutomovel {
     protected readonly grupos = (this.route.snapshot.data['grupos'] ??
         []) as SelecionarGruposVeiculosModel[];
 
+    private salvarExtras(evento: SalvarAutomovelEvento) {
+        if (evento.fotosExtras.novas.length === 0 && evento.fotosExtras.removidas.length === 0) return of(null);
+
+        return this.automovelService.salvarFotosExtras(this.automovel.id, evento.fotosExtras).pipe(
+            tap((falhas) => {
+                if (falhas > 0)
+                    this.notificacaoService.aviso(
+                        `Os dados foram salvos, mas ${falhas} mudança(s) nas fotos extras não puderam ser feitas. Tente de novo.`,
+                    );
+            }),
+        );
+    }
+
     public editar(evento: SalvarAutomovelEvento) {
         this.automovelService
             .editar(this.automovel.id, evento.dados)
@@ -40,17 +53,18 @@ export class EditarAutomovel {
                         return of(null);
                     };
 
+                    let principal$: Observable<unknown> = of(null);
+
                     if (evento.foto.acao === 'enviar' && evento.foto.arquivo)
-                        return this.automovelService
+                        principal$ = this.automovelService
                             .enviarFoto(this.automovel.id, evento.foto.arquivo)
                             .pipe(catchError(falhaDaFoto));
-
-                    if (evento.foto.acao === 'remover')
-                        return this.automovelService
+                    else if (evento.foto.acao === 'remover')
+                        principal$ = this.automovelService
                             .removerFoto(this.automovel.id)
                             .pipe(catchError(falhaDaFoto));
 
-                    return of(null);
+                    return principal$.pipe(switchMap(() => this.salvarExtras(evento)));
                 }),
             )
             .subscribe({

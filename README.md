@@ -57,7 +57,7 @@ Cada empresa enxerga **apenas os próprios dados** (multiempresa), e o que cada 
 | 🚙 **Grupos de Veículos** | Cadastro, edição, exclusão e listagem de grupos (ex.: utilitário, esportivo, adaptado para PCD). |
 | ⛽ **Configurações** | Preço por litro da gasolina, gás, diesel e álcool e diária do seguro (cliente e terceiros), usados no cálculo dos aluguéis. |
 | 💲 **Planos de Cobrança** | Um plano por grupo de veículos, com três modalidades: Diário, Controlado e Livre. |
-| 🚘 **Automóveis** | Cadastro da frota com foto (JPEG, PNG ou WebP), placa única e filtro por grupo. |
+| 🚘 **Automóveis** | Cadastro da frota com foto principal (JPEG, PNG ou WebP) e **até 5 fotos extras** (outros ângulos, opcionais), placa única e filtro por grupo. No catálogo o cliente vê um **carrossel**: ao passar o mouse sobre o carro as fotos vão passando (setas e bolinhas; no celular, setas sempre visíveis e dá para arrastar). |
 | 🧾 **Taxas e Serviços** | Catálogo de itens extras (GPS, cadeirinha...), de cobrança fixa ou diária. |
 | 🔎 **Busca e páginas nas listas** | Todas as listas de gestão (aluguéis, clientes, condutores, automóveis, cupons, funcionários, grupos, planos, taxas, parceiros e reservas) têm busca por texto (várias palavras, sem diferenciar acento nem maiúscula) e páginas de 12 itens. |
 | 🏢 **Clientes** | Pessoa física (CPF, RG, CNH) e jurídica (CNPJ). **Não há cadastro avulso:** o cliente nasce junto com o primeiro aluguel (preenchido no próprio formulário do aluguel, ou aprovando uma reserva do site) e só a locadora que alugou o enxerga. Se o aluguel não puder ser registrado, o cliente não é criado. A lista permite editar e excluir. |
@@ -266,14 +266,14 @@ Todas as rotas (exceto autenticação) exigem o cabeçalho `Authorization: Beare
 | | `POST` · `PUT {id}` · `DELETE {id}` | Empresa |
 | **Taxas e serviços** | `GET /api/taxas-servicos` · `GET {id}` | Empresa e Funcionário |
 | | `POST` · `PUT {id}` · `DELETE {id}` | Empresa |
-| **Automóveis** | `GET /api/automoveis?grupoVeiculosId=` · `POST` · `GET · PUT · DELETE {id}`<br>`PUT · GET · DELETE {id}/foto` | Empresa e Funcionário |
+| **Automóveis** | `GET /api/automoveis?grupoVeiculosId=` · `POST` · `GET · PUT · DELETE {id}`<br>`PUT · GET · DELETE {id}/foto`<br>`GET · POST {id}/fotos` · `GET · DELETE {id}/fotos/{fotoId}` (fotos extras) | Empresa e Funcionário |
 | **Clientes** | `GET /api/clientes?tipo=` · `GET · PUT · DELETE {id}` (o cliente é criado pelo `POST /api/alugueis` com `novoCliente`) | Empresa e Funcionário |
 | **Condutores** | `GET /api/condutores?clienteId=` · `POST` · `GET · PUT · DELETE {id}` | Empresa e Funcionário |
 | **Parceiros** | `GET /api/parceiros` · `GET {id}` | Empresa e Funcionário |
 | | `POST` · `PUT {id}` · `DELETE {id}` | Empresa |
 | **Cupons** | `GET /api/cupons` · `GET {id}` | Empresa e Funcionário |
 | | `POST` · `PUT {id}` · `DELETE {id}` · `GET /api/cupons/mais-utilizados` | Empresa |
-| **Catálogo** | `GET /api/catalogo` (filtros por query string) · `GET /api/catalogo/filtros` · `GET /api/catalogo/{id}` (detalhe com planos e seguros) · `GET /api/catalogo/{id}/foto` | Cliente |
+| **Catálogo** | `GET /api/catalogo` (filtros por query string) · `GET /api/catalogo/filtros` · `GET /api/catalogo/{id}` (detalhe com planos e seguros) · `GET /api/catalogo/{id}/foto` · `GET /api/catalogo/{id}/fotos/{posicao}` (carrossel) | Cliente |
 | **Meus dados e reservas (cliente)** | `GET · PUT /api/meus-dados` · `POST /api/minhas-reservas/calcular` · `GET · POST /api/minhas-reservas` · `POST {id}/cancelar` | Cliente |
 | **Chat (cliente)** | `GET · POST /api/minhas-conversas` · `GET {id}` · `POST {id}/mensagens` · `GET nao-lidas/total` · tempo real em `/hubs/chat` | Cliente |
 | **Chat (locadora)** | `GET /api/conversas` · `GET {id}` · `POST {id}/mensagens` · `GET nao-lidas/total` · tempo real em `/hubs/chat` | Empresa e Funcionário |

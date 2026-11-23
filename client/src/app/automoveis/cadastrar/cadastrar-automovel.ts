@@ -1,4 +1,4 @@
-import { catchError, of, switchMap } from 'rxjs';
+import { catchError, of, switchMap, tap } from 'rxjs';
 
 import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -26,24 +26,40 @@ export class CadastrarAutomovel {
     protected readonly grupos = (this.route.snapshot.data['grupos'] ??
         []) as SelecionarGruposVeiculosModel[];
 
+    private salvarExtras(id: string, evento: SalvarAutomovelEvento) {
+        if (evento.fotosExtras.novas.length === 0 && evento.fotosExtras.removidas.length === 0) return of(null);
+
+        return this.automovelService.salvarFotosExtras(id, evento.fotosExtras).pipe(
+            tap((falhas) => {
+                if (falhas > 0)
+                    this.notificacaoService.aviso(
+                        `O automóvel foi cadastrado, mas ${falhas} foto(s) extra(s) não foram enviadas. Você pode enviá-las editando o automóvel.`,
+                    );
+            }),
+        );
+    }
+
     public cadastrar(evento: SalvarAutomovelEvento) {
         this.automovelService
             .cadastrar(evento.dados)
             .pipe(
                 switchMap((resposta) => {
-                    if (evento.foto.acao !== 'enviar' || !evento.foto.arquivo) return of(null);
-
                     // O veículo já existe: se só a foto falhar, avisa em vez de perder o cadastro.
-                    return this.automovelService.enviarFoto(resposta.id, evento.foto.arquivo).pipe(
-                        catchError((err) => {
-                            this.notificacaoService.aviso(
-                                mensagemDeErro(err, 'O automóvel foi cadastrado, mas a foto não foi enviada.') +
-                                    ' Você pode enviá-la editando o automóvel.',
-                            );
+                    const principal$ =
+                        evento.foto.acao !== 'enviar' || !evento.foto.arquivo
+                            ? of(null)
+                            : this.automovelService.enviarFoto(resposta.id, evento.foto.arquivo).pipe(
+                                  catchError((err) => {
+                                      this.notificacaoService.aviso(
+                                          mensagemDeErro(err, 'O automóvel foi cadastrado, mas a foto não foi enviada.') +
+                                              ' Você pode enviá-la editando o automóvel.',
+                                      );
 
-                            return of(null);
-                        }),
-                    );
+                                      return of(null);
+                                  }),
+                              );
+
+                    return principal$.pipe(switchMap(() => this.salvarExtras(resposta.id, evento)));
                 }),
             )
             .subscribe({

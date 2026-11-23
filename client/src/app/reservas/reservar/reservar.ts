@@ -185,7 +185,7 @@ interface OpcaoDePlano {
         <div class="md:col-span-2 flex flex-col gap-4">
             <mat-card class="overflow-hidden rounded-2xl shadow-sm">
                 <div class="aspect-[16/10] w-full">
-                    <app-foto-catalogo [carroId]="c.id" [temFoto]="c.temFoto"
+                    <app-foto-catalogo [carroId]="c.id" [temFoto]="c.temFoto" [quantidade]="c.quantidadeFotos" [setasSempre]="true"
                         [descricao]="'Foto de ' + c.marca + ' ' + c.modelo" />
                 </div>
                 <mat-card-content class="p-4 text-sm text-gray-600">

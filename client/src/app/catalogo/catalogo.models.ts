@@ -36,6 +36,8 @@ export interface CarroCatalogoModel {
     combustivel: TipoCombustivelModel;
     categoria: string;
     temFoto: boolean;
+    /** Total de fotos (capa + extras): o carrossel mostra as posições 0 a quantidadeFotos − 1. */
+    quantidadeFotos: number;
     diariaAPartirDe: number | null;
     /** Diárias do período × menor diária (sem km, taxas, seguro e caução). Só quando há datas. */
     totalDoPeriodo: number | null;

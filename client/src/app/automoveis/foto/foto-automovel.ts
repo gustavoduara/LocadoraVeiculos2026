@@ -36,6 +36,9 @@ export class FotoAutomovel implements OnChanges, OnDestroy {
     @Input() temFoto = false;
     @Input() descricao = 'Foto do automóvel';
 
+    /** Quando informado, mostra essa foto extra em vez da foto principal. */
+    @Input() fotoId: string | null = null;
+
     /** Mude este valor para forçar o recarregamento (ex.: depois de trocar a foto). */
     @Input() versao = 0;
 
@@ -48,7 +51,11 @@ export class FotoAutomovel implements OnChanges, OnDestroy {
 
         if (!this.temFoto || !this.automovelId) return;
 
-        this.assinatura = this.automovelService.obterFoto(this.automovelId).subscribe({
+        const origem = this.fotoId
+            ? this.automovelService.obterFotoExtra(this.automovelId, this.fotoId)
+            : this.automovelService.obterFoto(this.automovelId);
+
+        this.assinatura = origem.subscribe({
             next: (blob) => this.url.set(URL.createObjectURL(blob)),
             error: () => this.url.set(null),
         });
