@@ -64,12 +64,12 @@ public class RepositorioCatalogoEmOrm(AppDbContext dbContext)
             .Where(p => !p.Excluido)
             .Select(p => new
             {
-                p.GrupoVeiculosId,
+                p.AutomovelId,
                 Menor = Math.Min(p.DiarioPrecoDiaria, Math.Min(p.ControladoPrecoDiaria, p.LivrePrecoDiaria))
             })
             .ToListAsync();
 
-        var menorDiariaPorGrupo = planos.ToDictionary(p => p.GrupoVeiculosId, p => p.Menor);
+        var menorDiariaPorCarro = planos.ToDictionary(p => p.AutomovelId, p => p.Menor);
 
         var nomes = await NomesDasLocadorasAsync(carros.Select(c => c.EmpresaId).Distinct().ToList());
 
@@ -87,7 +87,7 @@ public class RepositorioCatalogoEmOrm(AppDbContext dbContext)
                 c.Categoria,
                 c.TemCapa || c.Extras > 0,
                 (c.TemCapa ? 1 : 0) + c.Extras,
-                menorDiariaPorGrupo.TryGetValue(c.GrupoVeiculosId, out var menor) ? menor : null))
+                menorDiariaPorCarro.TryGetValue(c.Id, out var menor) ? menor : null))
             .ToList();
     }
 

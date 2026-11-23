@@ -20,7 +20,7 @@ public sealed class PlanoCobrancaController(IMediator mediator) : MainController
     )
     {
         CadastrarPlanoCobrancaCommand command = new(
-            request.GrupoVeiculosId,
+            request.AutomovelId,
             request.Diario,
             request.Controlado,
             request.Livre

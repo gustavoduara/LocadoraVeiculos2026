@@ -105,7 +105,7 @@ public class AluguelIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFact
     }
 
     [Fact]
-    public async Task Automovel_de_grupo_sem_plano_de_cobranca_e_recusado()
+    public async Task Automovel_sem_plano_de_cobranca_e_recusado()
     {
         var c = await Criar(fabrica);
         var carro = await c.NovoAutomovel(grupo: c.GrupoSemPlanoId);
@@ -140,14 +140,14 @@ public class AluguelIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFact
         api.UsarToken(token);
 
         var grupo = (await api.Post("/api/grupos-veiculos", new { nome = "Compacto" })).Id;
+        var carro = (await api.Post("/api/automoveis", Automovel(grupo, seguroDiaria: 0m))).Id;
         await api.Post("/api/planos-cobranca", new
         {
-            grupoVeiculosId = grupo,
+            automovelId = carro,
             diario = new { precoDiaria = 100m, precoPorKm = 1m },
             controlado = new { kmDisponiveis = 50, precoDiaria = 120m, precoPorKmExtrapolado = 2m },
             livre = new { precoDiaria = 200m }
         });
-        var carro = (await api.Post("/api/automoveis", Automovel(grupo, seguroDiaria: 0m))).Id;
         var cliente = await SemearClientePj(fabrica, token, "Beta");
         var condutor = (await api.Post("/api/condutores", Condutor(cliente, "Joao", Dia(1000)))).Id;
 
@@ -346,14 +346,14 @@ public class AluguelIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFact
         api.UsarToken(token);
 
         var grupo = (await api.Post("/api/grupos-veiculos", new { nome = "Compacto" })).Id;
+        var carro = (await api.Post("/api/automoveis", Automovel(grupo, seguroDiaria: 0m))).Id;
         await api.Post("/api/planos-cobranca", new
         {
-            grupoVeiculosId = grupo,
+            automovelId = carro,
             diario = new { precoDiaria = 100m, precoPorKm = 1m },
             controlado = new { kmDisponiveis = 50, precoDiaria = 120m, precoPorKmExtrapolado = 2m },
             livre = new { precoDiaria = 200m }
         });
-        var carro = (await api.Post("/api/automoveis", Automovel(grupo, seguroDiaria: 0m))).Id;
         var cliente = await SemearClientePj(fabrica, token, "Beta");
         var condutor = (await api.Post("/api/condutores", Condutor(cliente, "Joao", Dia(1000)))).Id;
         var aluguel = await api.Post("/api/alugueis", PedidoAluguel(condutor, carro, "Livre", retorno: 1, seguro: "Nenhum"));

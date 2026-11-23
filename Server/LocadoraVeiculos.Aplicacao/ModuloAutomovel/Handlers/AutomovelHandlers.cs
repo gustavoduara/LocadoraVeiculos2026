@@ -6,10 +6,12 @@ using LocadoraDeVeiculos.Aplicacao.ModuloAutomovel.Commands;
 using LocadoraDeVeiculos.Dominio.ModuloAutenticacao;
 using LocadoraDeVeiculos.Dominio.ModuloAutomovel;
 using LocadoraDeVeiculos.Dominio.ModuloGrupoVeiculos;
+using LocadoraDeVeiculos.Dominio.ModuloPlanoCobranca;
 using LocadoraDeVeiculos.Infraestrutura.Orm.Compartilhado;
 using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloAluguel;
 using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloAutomovel;
 using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloGrupoVeiculos;
+using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloPlanoCobranca;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
@@ -200,6 +202,7 @@ public class ExcluirAutomovelCommandHandler(
     AppDbContext appDbContext,
     RepositorioAutomovelEmOrm repositorioAutomovel,
     RepositorioAluguelEmOrm repositorioAluguel,
+    RepositorioPlanoCobrancaEmOrm repositorioPlano,
     ILogger<ExcluirAutomovelCommandHandler> logger
 ) : IRequestHandler<ExcluirAutomovelCommand, Result<ExcluirAutomovelResult>>
 {
@@ -218,6 +221,12 @@ public class ExcluirAutomovelCommandHandler(
 
         try
         {
+            // O plano de cobrança é do carro: sai junto com ele.
+            PlanoCobranca? plano = await repositorioPlano.SelecionarPorAutomovelAsync(automovel.Id);
+
+            if (plano is not null)
+                await repositorioPlano.ExcluirAsync(plano.Id);
+
             await repositorioAutomovel.ExcluirAsync(automovel.Id);
 
             await appDbContext.SaveChangesAsync(cancellationToken);

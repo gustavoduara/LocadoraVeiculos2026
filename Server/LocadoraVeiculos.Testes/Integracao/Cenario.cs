@@ -197,14 +197,6 @@ public class Cenario
         GrupoId = (await Api.Post("/api/grupos-veiculos", new { nome = "Utilitario" })).Id;
         GrupoSemPlanoId = (await Api.Post("/api/grupos-veiculos", new { nome = "Sem plano" })).Id;
 
-        PlanoId = (await Api.Post("/api/planos-cobranca", new
-        {
-            grupoVeiculosId = GrupoId,
-            diario = new { precoDiaria = 150m, precoPorKm = 1.5m },
-            controlado = new { kmDisponiveis = 100, precoDiaria = 200m, precoPorKmExtrapolado = 2.5m },
-            livre = new { precoDiaria = 300m }
-        })).Id;
-
         ClientePjId = await NovoClientePj("Transportes Alfa");
         ClientePfId = await NovoClientePf("Maria Silva");
 
@@ -296,10 +288,28 @@ public class Cenario
         seguroDiaria
     };
 
-    public async Task<Guid> NovoAutomovel(string combustivel = "Diesel", int litros = 60, Guid? grupo = null)
+    /// <summary>
+    /// Cadastra um carro. O plano de cobrança é de cada carro: todo carro novo ganha o plano padrão do cenário
+    /// (diária R$ 150, 200 e 300), exceto os do grupo "Sem plano", que ficam sem plano para os testes dessa situação.
+    /// </summary>
+    public async Task<Guid> NovoAutomovel(string combustivel = "Diesel", int litros = 60, Guid? grupo = null, decimal seguroDiaria = 30m)
     {
-        var r = await Api.Post("/api/automoveis", Automovel(grupo ?? GrupoId, combustivel, litros));
+        var r = await Api.Post("/api/automoveis", Automovel(grupo ?? GrupoId, combustivel, litros, seguroDiaria: seguroDiaria));
         Assert.Equal(201, r.Codigo);
+
+        if ((grupo ?? GrupoId) != GrupoSemPlanoId)
+        {
+            var plano = await Api.Post("/api/planos-cobranca", new
+            {
+                automovelId = r.Id,
+                diario = new { precoDiaria = 150m, precoPorKm = 1.5m },
+                controlado = new { kmDisponiveis = 100, precoDiaria = 200m, precoPorKmExtrapolado = 2.5m },
+                livre = new { precoDiaria = 300m }
+            });
+            Assert.Equal(201, plano.Codigo);
+
+            PlanoId = plano.Id;
+        }
 
         return r.Id;
     }

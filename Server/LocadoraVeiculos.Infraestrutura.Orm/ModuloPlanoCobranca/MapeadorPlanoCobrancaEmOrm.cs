@@ -17,9 +17,9 @@ public class MapeadorPlanoCobrancaEmOrm : IEntityTypeConfiguration<PlanoCobranca
         builder.Property(p => p.ControladoPrecoPorKmExtrapolado).HasColumnType("decimal(18,2)").IsRequired();
         builder.Property(p => p.LivrePrecoDiaria).HasColumnType("decimal(18,2)").IsRequired();
 
-        builder.HasOne(p => p.GrupoVeiculos)
+        builder.HasOne(p => p.Automovel)
                .WithMany()
-               .HasForeignKey(p => p.GrupoVeiculosId)
+               .HasForeignKey(p => p.AutomovelId)
                .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasOne(p => p.Empresa)
@@ -27,8 +27,8 @@ public class MapeadorPlanoCobrancaEmOrm : IEntityTypeConfiguration<PlanoCobranca
                .HasForeignKey(p => p.EmpresaId)
                .OnDelete(DeleteBehavior.Restrict);
 
-        // Um plano por grupo. O filtro permite criar outro depois que o anterior foi excluído (exclusão lógica).
-        builder.HasIndex(p => new { p.EmpresaId, p.GrupoVeiculosId })
+        // Um plano por automóvel. O filtro permite criar outro depois que o anterior foi excluído (exclusão lógica).
+        builder.HasIndex(p => new { p.EmpresaId, p.AutomovelId })
                .IsUnique()
                .HasFilter("[Excluido] = 0");
     }

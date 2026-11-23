@@ -181,10 +181,12 @@ public class ModulosIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFact
         Assert.Equal(200, editado.Codigo);
         Assert.Equal("Esportivos Plus", (await c.Api.Get($"/api/grupos-veiculos/{criado.Id}")).Texto("nome"));
 
-        // Grupo com automóvel ou plano não pode ser excluído.
-        await c.NovoAutomovel(grupo: criado.Id);
+        // Grupo com automóvel não pode ser excluído; o plano é do carro e sai junto com ele.
+        var carro = await c.NovoAutomovel(grupo: criado.Id);
         Assert.Equal(422, (await c.Api.Delete($"/api/grupos-veiculos/{criado.Id}")).Codigo);
-        Assert.Equal(422, (await c.Api.Delete($"/api/grupos-veiculos/{c.GrupoId}")).Codigo);
+        Assert.Equal(204, (await c.Api.Delete($"/api/automoveis/{carro}")).Codigo);
+        Assert.Equal(404, (await c.Api.Get($"/api/planos-cobranca/{c.PlanoId}")).Codigo);
+        Assert.Equal(204, (await c.Api.Delete($"/api/grupos-veiculos/{criado.Id}")).Codigo);
 
         var vazio = await c.Api.Post("/api/grupos-veiculos", new { nome = "Vazio" });
         Assert.Equal(204, (await c.Api.Delete($"/api/grupos-veiculos/{vazio.Id}")).Codigo);
@@ -240,22 +242,25 @@ public class ModulosIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFact
     // ---------------- planos de cobrança ----------------
 
     [Fact]
-    public async Task Plano_crud_um_por_grupo_e_so_empresa_escreve()
+    public async Task Plano_crud_um_por_carro_e_so_empresa_escreve()
     {
         var c = await Criar(fabrica, comFuncionario: true);
 
-        object Plano(Guid grupo) => new
+        object Plano(Guid automovel) => new
         {
-            grupoVeiculosId = grupo,
+            automovelId = automovel,
             diario = new { precoDiaria = 100m, precoPorKm = 1m },
             controlado = new { kmDisponiveis = 50, precoDiaria = 120m, precoPorKmExtrapolado = 2m },
             livre = new { precoDiaria = 200m }
         };
 
-        Assert.Equal(409, (await c.Api.Post("/api/planos-cobranca", Plano(c.GrupoId))).Codigo);
+        var comPlano = await c.NovoAutomovel();
+        var semPlano = await c.NovoAutomovel(grupo: c.GrupoSemPlanoId);
+
+        Assert.Equal(409, (await c.Api.Post("/api/planos-cobranca", Plano(comPlano))).Codigo);
         Assert.Equal(404, (await c.Api.Post("/api/planos-cobranca", Plano(Guid.NewGuid()))).Codigo);
 
-        var novo = await c.Api.Post("/api/planos-cobranca", Plano(c.GrupoSemPlanoId));
+        var novo = await c.Api.Post("/api/planos-cobranca", Plano(semPlano));
         Assert.Equal(201, novo.Codigo);
 
         var editado = await c.Api.Put($"/api/planos-cobranca/{novo.Id}", new

@@ -11,15 +11,17 @@ public record PlanoLivreDto(decimal PrecoDiaria);
 
 public record PlanoCobrancaDto(
     Guid Id,
-    Guid GrupoVeiculosId,
-    string NomeGrupo,
+    Guid AutomovelId,
+    /// <summary>"Marca Modelo" do carro, para a lista mostrar de quem é o plano.</summary>
+    string NomeAutomovel,
+    string Placa,
     PlanoDiarioDto Diario,
     PlanoControladoDto Controlado,
     PlanoLivreDto Livre
 );
 
 public record CadastrarPlanoCobrancaCommand(
-    Guid GrupoVeiculosId,
+    Guid AutomovelId,
     PlanoDiarioDto Diario,
     PlanoControladoDto Controlado,
     PlanoLivreDto Livre
@@ -50,10 +52,3 @@ public record SelecionarPlanosCobrancaQuery() : IRequest<Result<SelecionarPlanos
 
 public record SelecionarPlanosCobrancaResult(IReadOnlyList<PlanoCobrancaDto> Registros);
 
-/// <summary>Valores do plano exibidos na listagem de grupos de veículos.</summary>
-public record PlanoCobrancaResumoDto(
-    Guid Id,
-    PlanoDiarioDto Diario,
-    PlanoControladoDto Controlado,
-    PlanoLivreDto Livre
-);

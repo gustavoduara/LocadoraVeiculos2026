@@ -3,7 +3,7 @@ using LocadoraDeVeiculos.Aplicacao.ModuloPlanoCobranca.Commands;
 namespace LocadoraDeVeiculos.WebApi.Models.ModuloPlanoCobranca;
 
 public record CadastrarPlanoCobrancaRequest(
-    Guid GrupoVeiculosId,
+    Guid AutomovelId,
     PlanoDiarioDto Diario,
     PlanoControladoDto Controlado,
     PlanoLivreDto Livre

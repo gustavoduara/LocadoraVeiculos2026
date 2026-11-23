@@ -1,17 +1,17 @@
 using LocadoraDeVeiculos.Dominio.Compartilhado;
-using LocadoraDeVeiculos.Dominio.ModuloGrupoVeiculos;
+using LocadoraDeVeiculos.Dominio.ModuloAutomovel;
 
 namespace LocadoraDeVeiculos.Dominio.ModuloPlanoCobranca;
 
 /// <summary>
-/// Plano de cobrança de um grupo de veículos. Reúne os valores das três modalidades
-/// (Diário, Controlado e Livre) que o cliente poderá escolher ao alugar um veículo do grupo.
-/// Há no máximo um plano de cobrança ativo por grupo.
+/// Plano de cobrança de um automóvel. Reúne os valores das três modalidades
+/// (Diário, Controlado e Livre) que o cliente poderá escolher ao alugar aquele veículo.
+/// Há no máximo um plano de cobrança ativo por automóvel.
 /// </summary>
 public class PlanoCobranca : EntidadeBase<PlanoCobranca>
 {
-    public Guid GrupoVeiculosId { get; set; }
-    public GrupoVeiculos? GrupoVeiculos { get; set; }
+    public Guid AutomovelId { get; set; }
+    public Automovel? Automovel { get; set; }
 
     // Plano Diário: diária + valor por km rodado
     public decimal DiarioPrecoDiaria { get; set; }
@@ -29,7 +29,7 @@ public class PlanoCobranca : EntidadeBase<PlanoCobranca>
 
     public PlanoCobranca(
         Guid empresaId,
-        Guid grupoVeiculosId,
+        Guid automovelId,
         decimal diarioPrecoDiaria,
         decimal diarioPrecoPorKm,
         int controladoKmDisponiveis,
@@ -39,7 +39,7 @@ public class PlanoCobranca : EntidadeBase<PlanoCobranca>
     )
     {
         EmpresaId = empresaId;
-        GrupoVeiculosId = grupoVeiculosId;
+        AutomovelId = automovelId;
         DiarioPrecoDiaria = diarioPrecoDiaria;
         DiarioPrecoPorKm = diarioPrecoPorKm;
         ControladoKmDisponiveis = controladoKmDisponiveis;
@@ -48,7 +48,7 @@ public class PlanoCobranca : EntidadeBase<PlanoCobranca>
         LivrePrecoDiaria = livrePrecoDiaria;
     }
 
-    /// <summary>Atualiza os valores; o grupo do plano não muda.</summary>
+    /// <summary>Atualiza os valores; o automóvel do plano não muda.</summary>
     public override void AtualizarRegistro(PlanoCobranca registroEditado)
     {
         DiarioPrecoDiaria = registroEditado.DiarioPrecoDiaria;

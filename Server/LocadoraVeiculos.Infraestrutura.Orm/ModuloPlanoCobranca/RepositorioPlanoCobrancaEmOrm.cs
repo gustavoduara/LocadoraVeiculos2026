@@ -16,27 +16,29 @@ public class RepositorioPlanoCobrancaEmOrm : RepositorioBaseEmOrm<PlanoCobranca>
     public override async Task<PlanoCobranca?> SelecionarPorIdAsync(Guid idRegistro)
     {
         return await dbContext.PlanosCobranca
-            .Include(p => p.GrupoVeiculos)
+            .Include(p => p.Automovel)
             .FirstOrDefaultAsync(p => p.Id == idRegistro);
     }
 
     public override async Task<List<PlanoCobranca>> SelecionarTodosAsync()
     {
         return await dbContext.PlanosCobranca
-            .Include(p => p.GrupoVeiculos)
-            .OrderBy(p => p.GrupoVeiculos!.Nome)
+            .Include(p => p.Automovel)
+            .OrderBy(p => p.Automovel!.Marca)
+            .ThenBy(p => p.Automovel!.Modelo)
+            .ThenBy(p => p.Automovel!.Placa)
             .ToListAsync();
     }
 
-    public async Task<PlanoCobranca?> SelecionarPorGrupoAsync(Guid grupoVeiculosId)
+    public async Task<PlanoCobranca?> SelecionarPorAutomovelAsync(Guid automovelId)
     {
         return await dbContext.PlanosCobranca
-            .FirstOrDefaultAsync(p => p.GrupoVeiculosId == grupoVeiculosId);
+            .FirstOrDefaultAsync(p => p.AutomovelId == automovelId);
     }
 
-    public async Task<bool> ExisteParaGrupoAsync(Guid grupoVeiculosId)
+    public async Task<bool> ExisteParaAutomovelAsync(Guid automovelId)
     {
         return await dbContext.PlanosCobranca
-            .AnyAsync(p => p.GrupoVeiculosId == grupoVeiculosId);
+            .AnyAsync(p => p.AutomovelId == automovelId);
     }
 }

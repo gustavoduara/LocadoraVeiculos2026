@@ -7,8 +7,8 @@ public class CadastrarPlanoCobrancaCommandValidator : AbstractValidator<Cadastra
 {
     public CadastrarPlanoCobrancaCommandValidator()
     {
-        RuleFor(p => p.GrupoVeiculosId)
-            .NotEmpty().WithMessage("O grupo de veículos é obrigatório.");
+        RuleFor(p => p.AutomovelId)
+            .NotEmpty().WithMessage("O automóvel é obrigatório.");
 
         RuleFor(p => p.Diario).NotNull().WithMessage("Os valores do Plano Diário são obrigatórios.");
         RuleFor(p => p.Controlado).NotNull().WithMessage("Os valores do Plano Controlado são obrigatórios.");

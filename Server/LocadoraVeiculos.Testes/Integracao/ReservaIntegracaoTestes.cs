@@ -123,8 +123,8 @@ public class ReservaIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFact
     {
         var c = await Criar(fabrica);
         var padrao = await c.NovoAutomovel();
-        var caro = (await c.Api.Post("/api/automoveis", Automovel(c.GrupoId, seguroDiaria: 55.5m))).Id;
-        var semSeguro = (await c.Api.Post("/api/automoveis", Automovel(c.GrupoId, seguroDiaria: 0m))).Id;
+        var caro = await c.NovoAutomovel(seguroDiaria: 55.5m);
+        var semSeguro = await c.NovoAutomovel(seguroDiaria: 0m);
         var (cliente, _, _) = await NovoCliente(comDados: false);
 
         Assert.Equal(30m, (await cliente.Get($"/api/catalogo/{padrao}")).Corpo.GetProperty("seguroDiaria").GetDecimal());

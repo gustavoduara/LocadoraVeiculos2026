@@ -118,7 +118,7 @@ public class RepositorioReservaEmOrm(AppDbContext dbContext) : RepositorioBaseEm
         PlanoCobranca? plano = await dbContext.PlanosCobranca
             .IgnoreQueryFilters()
             .AsNoTracking()
-            .FirstOrDefaultAsync(p => p.GrupoVeiculosId == carro.GrupoVeiculosId && !p.Excluido);
+            .FirstOrDefaultAsync(p => p.AutomovelId == carro.Id && !p.Excluido);
 
         Configuracao? configuracao = await dbContext.Configuracoes
             .IgnoreQueryFilters()

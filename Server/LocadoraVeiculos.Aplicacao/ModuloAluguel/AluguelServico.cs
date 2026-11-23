@@ -63,11 +63,11 @@ public class AluguelServico(
         if (automovel is null)
             return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro(dados.AutomovelId));
 
-        PlanoCobranca? plano = await repositorioPlano.SelecionarPorGrupoAsync(automovel.GrupoVeiculosId);
+        PlanoCobranca? plano = await repositorioPlano.SelecionarPorAutomovelAsync(automovel.Id);
 
         if (plano is null)
             return Result.Fail(ResultadosErro.RequisicaoInvalidaErro(
-                "O grupo deste veículo ainda não possui plano de cobrança cadastrado."));
+                "Este veículo ainda não possui plano de cobrança cadastrado."));
 
         List<Guid> idsTaxas = dados.TaxasIds.Distinct().ToList();
         List<TaxaServico> taxas = await repositorioTaxa.SelecionarPorIdsAsync(idsTaxas);

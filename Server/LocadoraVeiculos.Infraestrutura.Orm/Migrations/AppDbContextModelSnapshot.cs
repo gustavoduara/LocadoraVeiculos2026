@@ -926,6 +926,9 @@ namespace LocadoraDeVeiculos.Infraestrutura.Orm.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("AutomovelId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<int>("ControladoKmDisponiveis")
                         .HasColumnType("int");
 
@@ -953,17 +956,14 @@ namespace LocadoraDeVeiculos.Infraestrutura.Orm.Migrations
                     b.Property<DateTimeOffset?>("ExcluidoEmUtc")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<Guid>("GrupoVeiculosId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<decimal>("LivrePrecoDiaria")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GrupoVeiculosId");
+                    b.HasIndex("AutomovelId");
 
-                    b.HasIndex("EmpresaId", "GrupoVeiculosId")
+                    b.HasIndex("EmpresaId", "AutomovelId")
                         .IsUnique()
                         .HasFilter("[Excluido] = 0");
 
@@ -1531,21 +1531,21 @@ namespace LocadoraDeVeiculos.Infraestrutura.Orm.Migrations
 
             modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloPlanoCobranca.PlanoCobranca", b =>
                 {
+                    b.HasOne("LocadoraDeVeiculos.Dominio.ModuloAutomovel.Automovel", "Automovel")
+                        .WithMany()
+                        .HasForeignKey("AutomovelId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("LocadoraDeVeiculos.Dominio.ModuloAutenticacao.Usuario", "Empresa")
                         .WithMany()
                         .HasForeignKey("EmpresaId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("LocadoraDeVeiculos.Dominio.ModuloGrupoVeiculos.GrupoVeiculos", "GrupoVeiculos")
-                        .WithMany()
-                        .HasForeignKey("GrupoVeiculosId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                    b.Navigation("Automovel");
 
                     b.Navigation("Empresa");
-
-                    b.Navigation("GrupoVeiculos");
                 });
 
             modelBuilder.Entity("LocadoraDeVeiculos.Dominio.ModuloReserva.Reserva", b =>

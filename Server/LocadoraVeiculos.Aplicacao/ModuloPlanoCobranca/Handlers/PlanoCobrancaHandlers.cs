@@ -4,10 +4,10 @@ using FluentValidation.Results;
 using LocadoraDeVeiculos.Aplicacao.Compartilhado;
 using LocadoraDeVeiculos.Aplicacao.ModuloPlanoCobranca.Commands;
 using LocadoraDeVeiculos.Dominio.ModuloAutenticacao;
-using LocadoraDeVeiculos.Dominio.ModuloGrupoVeiculos;
+using LocadoraDeVeiculos.Dominio.ModuloAutomovel;
 using LocadoraDeVeiculos.Dominio.ModuloPlanoCobranca;
 using LocadoraDeVeiculos.Infraestrutura.Orm.Compartilhado;
-using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloGrupoVeiculos;
+using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloAutomovel;
 using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloAluguel;
 using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloPlanoCobranca;
 using MediatR;
@@ -18,7 +18,7 @@ namespace LocadoraDeVeiculos.Aplicacao.ModuloPlanoCobranca.Handlers;
 public class CadastrarPlanoCobrancaCommandHandler(
     AppDbContext appDbContext,
     RepositorioPlanoCobrancaEmOrm repositorioPlano,
-    RepositorioGrupoVeiculosEmOrm repositorioGrupo,
+    RepositorioAutomovelEmOrm repositorioAutomovel,
     ITenantProvider tenantProvider,
     IValidator<CadastrarPlanoCobrancaCommand> validator,
     ILogger<CadastrarPlanoCobrancaCommandHandler> logger
@@ -36,21 +36,21 @@ public class CadastrarPlanoCobrancaCommandHandler(
             return Result.Fail(ResultadosErro.RequisicaoInvalidaErro(erros));
         }
 
-        // O filtro por empresa garante que só grupos da própria locadora são encontrados.
-        GrupoVeiculos? grupo = await repositorioGrupo.SelecionarPorIdAsync(command.GrupoVeiculosId);
+        // O filtro por empresa garante que só carros da própria locadora são encontrados.
+        Automovel? automovel = await repositorioAutomovel.SelecionarPorIdAsync(command.AutomovelId);
 
-        if (grupo is null)
-            return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro(command.GrupoVeiculosId));
+        if (automovel is null)
+            return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro(command.AutomovelId));
 
-        if (await repositorioPlano.ExisteParaGrupoAsync(grupo.Id))
+        if (await repositorioPlano.ExisteParaAutomovelAsync(automovel.Id))
             return Result.Fail(ResultadosErro.RegistroDuplicadoErro(
-                "Já existe um plano de cobrança para este grupo de veículos."));
+                "Já existe um plano de cobrança para este automóvel."));
 
         try
         {
             PlanoCobranca plano = new(
                 tenantProvider.EmpresaId.GetValueOrDefault(),
-                grupo.Id,
+                automovel.Id,
                 command.Diario.PrecoDiaria,
                 command.Diario.PrecoPorKm,
                 command.Controlado.KmDisponiveis,
@@ -107,7 +107,7 @@ public class EditarPlanoCobrancaCommandHandler(
         {
             PlanoCobranca planoEditado = new(
                 tenantProvider.EmpresaId.GetValueOrDefault(),
-                plano.GrupoVeiculosId,
+                plano.AutomovelId,
                 command.Diario.PrecoDiaria,
                 command.Diario.PrecoPorKm,
                 command.Controlado.KmDisponiveis,

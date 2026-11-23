@@ -7,8 +7,9 @@ internal static class PlanoCobrancaMapeamento
 {
     public static PlanoCobrancaDto ParaDto(this PlanoCobranca plano) => new(
         plano.Id,
-        plano.GrupoVeiculosId,
-        plano.GrupoVeiculos?.Nome ?? string.Empty,
+        plano.AutomovelId,
+        plano.Automovel is null ? string.Empty : $"{plano.Automovel.Marca} {plano.Automovel.Modelo}",
+        plano.Automovel?.Placa ?? string.Empty,
         new PlanoDiarioDto(plano.DiarioPrecoDiaria, plano.DiarioPrecoPorKm),
         new PlanoControladoDto(
             plano.ControladoKmDisponiveis,

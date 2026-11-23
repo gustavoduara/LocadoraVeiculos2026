@@ -7,6 +7,8 @@ public class SmokeTestes(ApiFactory fabrica) : IClassFixture<ApiFactory>
     {
         var c = await Cenario.Criar(fabrica, comFuncionario: true);
 
+        await c.NovoAutomovel();
+
         Assert.NotEqual(Guid.Empty, c.PlanoId);
         Assert.NotNull(c.TokenFuncionario);
     }

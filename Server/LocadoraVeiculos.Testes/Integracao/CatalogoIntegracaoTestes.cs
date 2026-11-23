@@ -33,11 +33,11 @@ public class CatalogoIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFac
         grupoVeiculosId = grupo
     };
 
-    private static async Task Plano(ClienteApi api, Guid grupo, decimal diaria)
+    private static async Task Plano(ClienteApi api, Guid automovel, decimal diaria)
     {
         var r = await api.Post("/api/planos-cobranca", new
         {
-            grupoVeiculosId = grupo,
+            automovelId = automovel,
             diario = new { precoDiaria = diaria, precoPorKm = 1m },
             controlado = new { kmDisponiveis = 100, precoDiaria = diaria + 40, precoPorKmExtrapolado = 2m },
             livre = new { precoDiaria = diaria + 100 }
@@ -57,12 +57,14 @@ public class CatalogoIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFac
         var b = await Criar(fabrica);
 
         var economicoA = (await a.Api.Post("/api/grupos-veiculos", new { nome = "Economico" })).Id;
-        await Plano(a.Api, economicoA, 80m);
         var onix = (await a.Api.Post("/api/automoveis", Carro(economicoA, marca, "Onix", 2024, "Gasolina", "Prata"))).Id;
-        await a.Api.Post("/api/automoveis", Carro(economicoA, marca, "Mobi", 2020, "Gasolina", "Vermelho"));
+        var mobi = (await a.Api.Post("/api/automoveis", Carro(economicoA, marca, "Mobi", 2020, "Gasolina", "Vermelho"))).Id;
+        await Plano(a.Api, onix, 80m);
+        await Plano(a.Api, mobi, 80m);
 
-        // B usa o grupo "Utilitario" do cenário (plano com menor diária 150) e o "Sem plano".
+        // B: a Hilux tem plano (menor diária 150); o Kwid fica sem plano.
         var hilux = (await b.Api.Post("/api/automoveis", Carro(b.GrupoId, marca, "Hilux", 2022, "Diesel", "Preto"))).Id;
+        await Plano(b.Api, hilux, 150m);
         await b.Api.Post("/api/automoveis", Carro(b.GrupoSemPlanoId, marca, "Kwid", 2021, "Gasolina"));
 
         return new Frotas(a, b, marca, onix, hilux);
