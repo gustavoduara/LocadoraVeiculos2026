@@ -54,13 +54,39 @@ function dataBrValida(controle: AbstractControl): ValidationErrors | null {
     </p>
     <hr class="my-4 border-muted/30" />
 
+    @if (salvoAgora()) {
+    <mat-card class="mb-4 rounded-2xl shadow-sm" role="status">
+        <mat-card-content class="flex flex-col items-center gap-2 p-6 text-center">
+            <mat-icon class="!h-14 !w-14 !text-[56px] text-green-700">check_circle</mat-icon>
+            <h3 class="text-lg font-semibold">Dados salvos com sucesso!</h3>
+            <p class="text-sm text-gray-600">
+                @if (voltarPara) { Pronto, agora você já pode continuar a sua reserva. }
+                @else { Seus dados já estão valendo para as próximas reservas. Para mudar algo, use o lápis abaixo. }
+            </p>
+            @if (voltarPara) {
+            <button type="button" mat-flat-button class="mt-2 px-6" (click)="continuar()">
+                <mat-icon class="!text-base mr-1">arrow_forward</mat-icon>
+                Continuar a reserva
+            </button>
+            }
+        </mat-card-content>
+    </mat-card>
+    }
+
     @if (aviso()) {
     <p class="mb-4 rounded-lg px-4 py-3 text-sm selo-ambar">{{ aviso() }}</p>
     }
 
     <mat-card class="p-4 rounded-2xl shadow-sm">
         <form [formGroup]="form" (ngSubmit)="salvar()" class="flex flex-col gap-2">
-            <h3 class="text-base font-medium">Documentos</h3>
+            <div class="flex items-center justify-between">
+                <h3 class="text-base font-medium">Documentos</h3>
+                @if (!editando()) {
+                <button type="button" mat-icon-button aria-label="Editar meus dados" title="Editar meus dados" (click)="comecarEdicao()">
+                    <mat-icon>edit</mat-icon>
+                </button>
+                }
+            </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <mat-form-field>
                     <mat-label>CPF</mat-label>
@@ -133,12 +159,17 @@ function dataBrValida(controle: AbstractControl): ValidationErrors | null {
                 </mat-form-field>
             </div>
 
+            @if (editando()) {
             <div class="flex items-center justify-end gap-3 pt-4">
+                @if (jaTinhaDados()) {
+                <button type="button" mat-stroked-button class="px-4" (click)="cancelarEdicao()" [disabled]="salvando()">Cancelar</button>
+                }
                 <button type="submit" mat-flat-button class="px-6" [disabled]="salvando()">
                     <mat-icon class="!text-base mr-1">check</mat-icon>
                     Salvar
                 </button>
             </div>
+            }
         </form>
     </mat-card>
 </section>
@@ -154,8 +185,19 @@ export class MeusDados implements OnInit {
     protected readonly salvando = signal(false);
     protected readonly aviso = signal<string | null>(null);
 
+    /** Com os dados já completos a tela abre só para leitura; o lápis liberta os campos. */
+    protected readonly editando = signal(true);
+
+    /** Quem já tinha dados salvos pode cancelar a edição; no primeiro preenchimento não há o que cancelar. */
+    protected readonly jaTinhaDados = signal(false);
+
+    /** Mostra o cartão verde de "salvo com sucesso" logo depois de gravar. */
+    protected readonly salvoAgora = signal(false);
+
+    private valoresSalvos: Record<string, unknown> | null = null;
+
     /** Quando vem de "Reservar", volta para lá depois de salvar. */
-    private readonly voltarPara: string | null =
+    protected readonly voltarPara: string | null =
         this.router.getCurrentNavigation()?.extras.state?.['voltarPara'] ?? null;
 
     protected readonly form = this.formBuilder.group({
@@ -179,12 +221,39 @@ export class MeusDados implements OnInit {
                     validadeCnh: perfil.validadeCnh ? isoParaDataBr(perfil.validadeCnh) : '',
                 });
 
+                if (perfil.completo) this.mostrarSoLeitura();
+
                 if (!perfil.completo) this.aviso.set('Complete seus dados para poder reservar um carro.');
                 else if (perfil.cnhVencida) this.aviso.set(AVISO_CNH_VENCIDA);
             },
             error: (err) =>
                 this.notificacao.erro(mensagemDeErro(err, 'Não foi possível carregar seus dados.')),
         });
+    }
+
+    private mostrarSoLeitura(): void {
+        this.valoresSalvos = this.form.getRawValue();
+        this.jaTinhaDados.set(true);
+        this.editando.set(false);
+        this.form.disable({ emitEvent: false });
+    }
+
+    protected comecarEdicao(): void {
+        this.salvoAgora.set(false);
+        this.editando.set(true);
+        this.form.enable({ emitEvent: false });
+    }
+
+    protected cancelarEdicao(): void {
+        if (this.valoresSalvos) this.form.patchValue(this.valoresSalvos);
+
+        this.form.markAsUntouched();
+        this.editando.set(false);
+        this.form.disable({ emitEvent: false });
+    }
+
+    protected continuar(): void {
+        if (this.voltarPara) this.router.navigateByUrl(this.voltarPara);
     }
 
     protected erroDo(campo: string): string | null {
@@ -225,10 +294,13 @@ export class MeusDados implements OnInit {
             .subscribe({
                 next: (perfil) => {
                     this.salvando.set(false);
-                    this.notificacao.sucesso('Seus dados foram salvos!');
                     this.aviso.set(perfil.cnhVencida ? AVISO_CNH_VENCIDA : null);
 
-                    if (this.voltarPara) this.router.navigateByUrl(this.voltarPara);
+                    this.mostrarSoLeitura();
+                    this.salvoAgora.set(true);
+
+                    // O cartão de sucesso precisa aparecer no topo, onde a pessoa está olhando.
+                    setTimeout(() => document.querySelector('[role=status]')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
                 },
                 error: (err) => {
                     this.salvando.set(false);
