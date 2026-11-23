@@ -51,17 +51,13 @@ public class EntidadesTestes
     }
 
     [Fact]
-    public void Configuracao_devolve_o_preco_de_cada_combustivel_e_seguro()
+    public void Configuracao_devolve_o_preco_de_cada_combustivel()
     {
-        var config = new Configuracao(Empresa, 6m, 4m, 5.5m, 4.2m, 30m, 20m);
+        var config = new Configuracao(Empresa, 6m, 4m, 5.5m, 4.2m);
 
         Assert.Equal(6m, config.ObterPreco(TipoCombustivel.Gasolina));
         Assert.Equal(4m, config.ObterPreco(TipoCombustivel.Gas));
         Assert.Equal(5.5m, config.ObterPreco(TipoCombustivel.Diesel));
         Assert.Equal(4.2m, config.ObterPreco(TipoCombustivel.Alcool));
-
-        Assert.Equal(0m, config.ObterPrecoSeguro(TipoSeguro.Nenhum));
-        Assert.Equal(30m, config.ObterPrecoSeguro(TipoSeguro.Cliente));
-        Assert.Equal(20m, config.ObterPrecoSeguro(TipoSeguro.Terceiros));
     }
 }

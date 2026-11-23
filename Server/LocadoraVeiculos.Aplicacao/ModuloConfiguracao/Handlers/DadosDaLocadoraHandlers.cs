@@ -46,7 +46,7 @@ public class EditarDadosDaLocadoraCommandHandler(
             if (configuracao is null)
             {
                 // Ainda não há preços configurados: cria a linha só com os dados da locadora (preços em zero).
-                configuracao = new Configuracao(tenantProvider.EmpresaId.GetValueOrDefault(), 0m, 0m, 0m, 0m, 0m, 0m);
+                configuracao = new Configuracao(tenantProvider.EmpresaId.GetValueOrDefault(), 0m, 0m, 0m, 0m);
 
                 await repositorio.CadastrarAsync(configuracao);
             }

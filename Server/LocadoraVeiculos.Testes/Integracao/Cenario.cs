@@ -190,9 +190,7 @@ public class Cenario
             precoGasolina = 6m,
             precoGas = 4m,
             precoDiesel = 5.5m,
-            precoAlcool = 4m,
-            seguroClienteDiaria = 30m,
-            seguroTerceirosDiaria = 20m
+            precoAlcool = 4m
         });
         Assert.Equal(200, r.Codigo);
 
@@ -285,7 +283,7 @@ public class Cenario
         validadeCnh
     };
 
-    public static object Automovel(Guid grupoId, string combustivel = "Diesel", int litros = 60, string? placa = null) => new
+    public static object Automovel(Guid grupoId, string combustivel = "Diesel", int litros = 60, string? placa = null, decimal seguroDiaria = 30m) => new
     {
         placa = placa ?? Geradores.Placa(),
         marca = "Fiat",
@@ -294,7 +292,8 @@ public class Cenario
         ano = 2023,
         tipoCombustivel = combustivel,
         capacidadeCombustivelLitros = litros,
-        grupoVeiculosId = grupoId
+        grupoVeiculosId = grupoId,
+        seguroDiaria
     };
 
     public async Task<Guid> NovoAutomovel(string combustivel = "Diesel", int litros = 60, Guid? grupo = null)
@@ -312,7 +311,7 @@ public class Cenario
         int saida = 0,
         int retorno = 3,
         int kmInicial = 1000,
-        string seguro = "Cliente",
+        string seguro = "Contratado",
         Guid[]? taxas = null) => new
         {
             condutorId,

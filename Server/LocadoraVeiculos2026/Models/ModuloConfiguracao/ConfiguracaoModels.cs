@@ -4,9 +4,7 @@ public record EditarConfiguracaoRequest(
     decimal PrecoGasolina,
     decimal PrecoGas,
     decimal PrecoDiesel,
-    decimal PrecoAlcool,
-    decimal SeguroClienteDiaria,
-    decimal SeguroTerceirosDiaria
+    decimal PrecoAlcool
 );
 
 public record EditarDadosDaLocadoraRequest(string? NomeFantasia, string? Telefone);
@@ -15,7 +13,5 @@ public record ConfiguracaoResponse(
     decimal PrecoGasolina,
     decimal PrecoGas,
     decimal PrecoDiesel,
-    decimal PrecoAlcool,
-    decimal SeguroClienteDiaria,
-    decimal SeguroTerceirosDiaria
+    decimal PrecoAlcool
 );

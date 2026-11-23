@@ -32,7 +32,8 @@ internal static class AutomovelMapeamento
         a.GrupoVeiculosId,
         a.GrupoVeiculos?.Nome ?? string.Empty,
         a.TemFoto,
-        a.FotoNomeArquivo
+        a.FotoNomeArquivo,
+        a.SeguroDiaria
     );
 
     public static AutomovelDto ParaDto(this AutomovelResumo r) => new(
@@ -47,7 +48,8 @@ internal static class AutomovelMapeamento
         r.GrupoVeiculosId,
         r.NomeGrupo,
         r.TemFoto,
-        r.FotoNomeArquivo
+        r.FotoNomeArquivo,
+        r.SeguroDiaria
     );
 }
 
@@ -93,7 +95,8 @@ public class CadastrarAutomovelCommandHandler(
                 command.Ano,
                 command.TipoCombustivel,
                 command.CapacidadeCombustivelLitros,
-                grupo.Id
+                grupo.Id,
+                command.SeguroDiaria
             );
 
             await repositorioAutomovel.CadastrarAsync(automovel);
@@ -164,7 +167,8 @@ public class EditarAutomovelCommandHandler(
                 command.Ano,
                 command.TipoCombustivel,
                 command.CapacidadeCombustivelLitros,
-                grupo.Id
+                grupo.Id,
+                command.SeguroDiaria
             );
 
             automovel.AtualizarRegistro(automovelEditado);
@@ -179,7 +183,8 @@ public class EditarAutomovelCommandHandler(
                 automovelEditado.Ano,
                 automovelEditado.TipoCombustivel,
                 automovelEditado.CapacidadeCombustivelLitros,
-                grupo.Id
+                grupo.Id,
+                automovelEditado.SeguroDiaria
             ));
         }
         catch (Exception ex)

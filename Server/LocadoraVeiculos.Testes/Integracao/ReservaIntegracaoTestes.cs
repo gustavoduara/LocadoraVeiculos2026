@@ -119,7 +119,38 @@ public class ReservaIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFact
     }
 
     [Fact]
-    public async Task Detalhe_do_carro_mostra_os_planos_e_so_os_seguros_que_a_locadora_oferece()
+    public async Task Cada_carro_tem_o_proprio_seguro_e_sem_valor_so_se_reserva_sem_seguro()
+    {
+        var c = await Criar(fabrica);
+        var padrao = await c.NovoAutomovel();
+        var caro = (await c.Api.Post("/api/automoveis", Automovel(c.GrupoId, seguroDiaria: 55.5m))).Id;
+        var semSeguro = (await c.Api.Post("/api/automoveis", Automovel(c.GrupoId, seguroDiaria: 0m))).Id;
+        var (cliente, _, _) = await NovoCliente(comDados: false);
+
+        Assert.Equal(30m, (await cliente.Get($"/api/catalogo/{padrao}")).Corpo.GetProperty("seguroDiaria").GetDecimal());
+        Assert.Equal(55.5m, (await cliente.Get($"/api/catalogo/{caro}")).Corpo.GetProperty("seguroDiaria").GetDecimal());
+        Assert.Equal(System.Text.Json.JsonValueKind.Null, (await cliente.Get($"/api/catalogo/{semSeguro}")).Corpo.GetProperty("seguroDiaria").ValueKind);
+
+        // 3 dias × R$ 55,50 (o valor do carro, não de uma tabela da locadora).
+        var comSeguro = await cliente.Post("/api/minhas-reservas/calcular", Pedido(caro, seguro: "Contratado"));
+        Assert.Equal(200, comSeguro.Codigo);
+        Assert.Equal(166.5m, comSeguro.Numero("valorSeguro"));
+
+        // O mesmo pedido sem seguro não cobra nada a mais.
+        Assert.Equal(0m, (await cliente.Post("/api/minhas-reservas/calcular", Pedido(caro, seguro: "Nenhum"))).Numero("valorSeguro"));
+
+        // Carro sem valor de seguro: com seguro é recusado, sem seguro segue normal.
+        Assert.Equal(400, (await cliente.Post("/api/minhas-reservas/calcular", Pedido(semSeguro, seguro: "Contratado"))).Codigo);
+        Assert.Equal(200, (await cliente.Post("/api/minhas-reservas/calcular", Pedido(semSeguro, seguro: "Nenhum"))).Codigo);
+
+        // Valor do seguro negativo não é aceito no cadastro, e a edição muda o valor do carro.
+        Assert.Equal(400, (await c.Api.Post("/api/automoveis", Automovel(c.GrupoId, seguroDiaria: -1m))).Codigo);
+        Assert.Equal(200, (await c.Api.Put($"/api/automoveis/{semSeguro}", Automovel(c.GrupoId, seguroDiaria: 12m))).Codigo);
+        Assert.Equal(12m, (await cliente.Get($"/api/catalogo/{semSeguro}")).Corpo.GetProperty("seguroDiaria").GetDecimal());
+    }
+
+    [Fact]
+    public async Task Detalhe_do_carro_mostra_os_planos_e_o_seguro_do_proprio_carro()
     {
         var c = await Criar(fabrica);
         var carro = await c.NovoAutomovel();
@@ -131,7 +162,7 @@ public class ReservaIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFact
         Assert.Equal(150m, r.Corpo.GetProperty("diario").GetProperty("precoDiaria").GetDecimal());
         Assert.Equal(100, r.Corpo.GetProperty("controlado").GetProperty("kmDisponiveisPorDia").GetInt32());
         Assert.Equal(300m, r.Corpo.GetProperty("livre").GetProperty("precoDiaria").GetDecimal());
-        Assert.Equal(30m, r.Corpo.GetProperty("seguroClienteDiaria").GetDecimal());
+        Assert.Equal(30m, r.Corpo.GetProperty("seguroDiaria").GetDecimal());
         Assert.Equal(1000m, r.Corpo.GetProperty("valorCaucao").GetDecimal());
 
         // Carro de grupo sem plano: sem opções de plano. E carro inexistente: 404.
@@ -158,7 +189,7 @@ public class ReservaIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFact
         Assert.Equal(1000m, r.Numero("valorCaucao"));
         Assert.Equal(1450m, r.Numero("valorTotalPrevisto"));
 
-        var comSeguro = await cliente.Post("/api/minhas-reservas/calcular", Pedido(carro, seguro: "Cliente"));
+        var comSeguro = await cliente.Post("/api/minhas-reservas/calcular", Pedido(carro, seguro: "Contratado"));
         Assert.Equal(90m, comSeguro.Numero("valorSeguro"));
         Assert.Equal(1540m, comSeguro.Numero("valorTotalPrevisto"));
     }
@@ -199,7 +230,7 @@ public class ReservaIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFact
         var carro = await c.NovoAutomovel();
         var (cliente, email, cpf) = await NovoCliente();
 
-        var criado = await cliente.Post("/api/minhas-reservas", Pedido(carro, seguro: "Cliente"));
+        var criado = await cliente.Post("/api/minhas-reservas", Pedido(carro, seguro: "Contratado"));
         Assert.Equal(201, criado.Codigo);
 
         var meus = await cliente.Get("/api/minhas-reservas");
@@ -338,7 +369,7 @@ public class ReservaIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFact
         await c.Api.Put("/api/configuracoes/locadora", new { nomeFantasia = "Serra Aluguel", telefone = "(49) 99113-0685" });
 
         var (cliente, email, cpf) = await NovoCliente();
-        await cliente.Post("/api/minhas-reservas", Pedido(carro, seguro: "Cliente"));
+        await cliente.Post("/api/minhas-reservas", Pedido(carro, seguro: "Contratado"));
         var id = (await c.Api.Get("/api/reservas")).Registros[0].GetProperty("id").GetGuid();
 
         Assert.Equal(400, (await c.Api.Post($"/api/reservas/{id}/aprovar", new { kmInicial = -5 })).Codigo);
@@ -357,7 +388,7 @@ public class ReservaIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFact
         Assert.Equal(Dia(1), aluguel.Texto("dataSaida"));
         Assert.Equal(Dia(4), aluguel.Texto("dataRetornoPrevista"));
         Assert.Equal(12000, aluguel.Corpo.GetProperty("kmInicial").GetInt32());
-        Assert.Equal("Cliente", aluguel.Texto("tipoSeguro"));
+        Assert.Equal("Contratado", aluguel.Texto("tipoSeguro"));
         Assert.Equal(1540m, aluguel.Corpo.GetProperty("previsto").GetProperty("valorTotalPrevisto").GetDecimal());
 
         // O cliente e o condutor passaram a existir na locadora, com o CPF do pedido.

@@ -96,9 +96,8 @@ public record CarroDetalheDto(
     PlanoDiarioOpcaoDto? Diario,
     PlanoControladoOpcaoDto? Controlado,
     PlanoLivreOpcaoDto? Livre,
-    /// <summary>Vazio quando a locadora não oferece esse seguro.</summary>
-    decimal? SeguroClienteDiaria,
-    decimal? SeguroTerceirosDiaria,
+    /// <summary>Valor por dia do seguro deste carro; vazio quando a locadora não oferece seguro para ele.</summary>
+    decimal? SeguroDiaria,
     decimal ValorCaucao,
     IReadOnlyList<TaxaOpcaoDto>? Taxas = null
 );

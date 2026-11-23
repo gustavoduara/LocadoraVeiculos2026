@@ -12,7 +12,7 @@ public class ReservaTaxasCupomIntegracaoTestes(ApiFactory fabrica) : IClassFixtu
     };
 
     /// <summary>3 dias, plano Diário (R$ 150/dia), seguro do cliente (R$ 30/dia): 450 + 90 de consumo, mais a caução de 1000.</summary>
-    private static object Pedido(Guid carro, Guid[]? taxas = null, string? cupom = null, int retirada = 1, int devolucao = 4, string seguro = "Cliente") => new
+    private static object Pedido(Guid carro, Guid[]? taxas = null, string? cupom = null, int retirada = 1, int devolucao = 4, string seguro = "Contratado") => new
     {
         automovelId = carro,
         retirada = Dia(retirada),

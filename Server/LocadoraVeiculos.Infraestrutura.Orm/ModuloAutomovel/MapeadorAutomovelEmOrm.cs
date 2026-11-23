@@ -17,6 +17,7 @@ public class MapeadorAutomovelEmOrm : IEntityTypeConfiguration<Automovel>
         builder.Property(a => a.Ano).IsRequired();
         builder.Property(a => a.TipoCombustivel).IsRequired();
         builder.Property(a => a.CapacidadeCombustivelLitros).IsRequired();
+        builder.Property(a => a.SeguroDiaria).HasColumnType("decimal(18,2)").IsRequired();
 
         builder.Property(a => a.Foto).HasColumnType("varbinary(max)");
         builder.Property(a => a.FotoTipoConteudo).HasColumnType("varchar(50)");

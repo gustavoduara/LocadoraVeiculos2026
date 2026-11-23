@@ -35,7 +35,7 @@ public class AluguelTestes
                 _ => 0m
             },
             PlanoKmDisponiveisPorDia = plano == TipoPlano.Controlado ? 100 : 0,
-            TipoSeguro = seguro > 0 ? TipoSeguro.Cliente : TipoSeguro.Nenhum,
+            TipoSeguro = seguro > 0 ? TipoSeguro.Contratado : TipoSeguro.Nenhum,
             SeguroPrecoDiaria = seguro
         };
 

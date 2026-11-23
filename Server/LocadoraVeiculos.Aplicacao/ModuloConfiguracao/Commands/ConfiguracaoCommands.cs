@@ -9,25 +9,19 @@ public record SelecionarConfiguracaoResult(
     decimal PrecoGasolina,
     decimal PrecoGas,
     decimal PrecoDiesel,
-    decimal PrecoAlcool,
-    decimal SeguroClienteDiaria,
-    decimal SeguroTerceirosDiaria
+    decimal PrecoAlcool
 );
 
 public record EditarConfiguracaoCommand(
     decimal PrecoGasolina,
     decimal PrecoGas,
     decimal PrecoDiesel,
-    decimal PrecoAlcool,
-    decimal SeguroClienteDiaria,
-    decimal SeguroTerceirosDiaria
+    decimal PrecoAlcool
 ) : IRequest<Result<EditarConfiguracaoResult>>;
 
 public record EditarConfiguracaoResult(
     decimal PrecoGasolina,
     decimal PrecoGas,
     decimal PrecoDiesel,
-    decimal PrecoAlcool,
-    decimal SeguroClienteDiaria,
-    decimal SeguroTerceirosDiaria
+    decimal PrecoAlcool
 );

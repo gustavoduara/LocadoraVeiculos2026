@@ -16,7 +16,8 @@ public record AutomovelDto(
     Guid GrupoVeiculosId,
     string NomeGrupo,
     bool TemFoto,
-    string? NomeArquivoFoto
+    string? NomeArquivoFoto,
+    decimal SeguroDiaria
 );
 
 public record CadastrarAutomovelCommand(
@@ -27,7 +28,8 @@ public record CadastrarAutomovelCommand(
     int Ano,
     TipoCombustivel TipoCombustivel,
     int CapacidadeCombustivelLitros,
-    Guid GrupoVeiculosId
+    Guid GrupoVeiculosId,
+    decimal SeguroDiaria = 0m
 ) : IRequest<Result<CadastrarAutomovelResult>>;
 
 public record CadastrarAutomovelResult(Guid Id);
@@ -41,7 +43,8 @@ public record EditarAutomovelCommand(
     int Ano,
     TipoCombustivel TipoCombustivel,
     int CapacidadeCombustivelLitros,
-    Guid GrupoVeiculosId
+    Guid GrupoVeiculosId,
+    decimal SeguroDiaria = 0m
 ) : IRequest<Result<EditarAutomovelResult>>;
 
 public record EditarAutomovelResult(
@@ -52,7 +55,8 @@ public record EditarAutomovelResult(
     int Ano,
     TipoCombustivel TipoCombustivel,
     int CapacidadeCombustivelLitros,
-    Guid GrupoVeiculosId
+    Guid GrupoVeiculosId,
+    decimal SeguroDiaria = 0m
 );
 
 public record ExcluirAutomovelCommand(Guid Id) : IRequest<Result<ExcluirAutomovelResult>>;

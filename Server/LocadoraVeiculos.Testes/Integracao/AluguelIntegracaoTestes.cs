@@ -133,7 +133,7 @@ public class AluguelIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFact
     }
 
     [Fact]
-    public async Task Seguro_sem_preco_configurado_barra_o_aluguel()
+    public async Task Carro_sem_valor_de_seguro_barra_o_aluguel_com_seguro()
     {
         var api = new ClienteApi(fabrica.CreateClient());
         var token = await RegistrarEmpresa(api);
@@ -147,12 +147,12 @@ public class AluguelIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFact
             controlado = new { kmDisponiveis = 50, precoDiaria = 120m, precoPorKmExtrapolado = 2m },
             livre = new { precoDiaria = 200m }
         });
-        var carro = (await api.Post("/api/automoveis", Automovel(grupo))).Id;
+        var carro = (await api.Post("/api/automoveis", Automovel(grupo, seguroDiaria: 0m))).Id;
         var cliente = await SemearClientePj(fabrica, token, "Beta");
         var condutor = (await api.Post("/api/condutores", Condutor(cliente, "Joao", Dia(1000)))).Id;
 
         var semSeguro = await api.Post("/api/alugueis", PedidoAluguel(condutor, carro, "Livre", retorno: 1, seguro: "Nenhum"));
-        var comSeguro = await api.Post("/api/alugueis", PedidoAluguel(condutor, carro, "Livre", saida: 5, retorno: 6, seguro: "Terceiros"));
+        var comSeguro = await api.Post("/api/alugueis", PedidoAluguel(condutor, carro, "Livre", saida: 5, retorno: 6, seguro: "Contratado"));
 
         Assert.Equal(201, semSeguro.Codigo);
         Assert.Equal(400, comSeguro.Codigo);
@@ -204,10 +204,10 @@ public class AluguelIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFact
         var criado = await c.Api.Post("/api/alugueis", PedidoAluguel(c.CondutorId, carro, taxas: [c.TaxaDiariaId, c.TaxaFixaId]));
 
         var livre = await c.Api.Put($"/api/alugueis/{criado.Id}",
-            PedidoAluguel(c.CondutorId, carro, "Livre", seguro: "Terceiros", taxas: [c.TaxaFixaId]));
+            PedidoAluguel(c.CondutorId, carro, "Livre", seguro: "Contratado", taxas: [c.TaxaFixaId]));
 
         Assert.Equal(200, livre.Codigo);
-        Assert.Equal(2010m, livre.Corpo.GetProperty("previsto").GetProperty("valorTotalPrevisto").GetDecimal());
+        Assert.Equal(2040m, livre.Corpo.GetProperty("previsto").GetProperty("valorTotalPrevisto").GetDecimal());
 
         var diario = await c.Api.Put($"/api/alugueis/{criado.Id}", PedidoAluguel(c.CondutorId, carro));
 
@@ -353,7 +353,7 @@ public class AluguelIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFact
             controlado = new { kmDisponiveis = 50, precoDiaria = 120m, precoPorKmExtrapolado = 2m },
             livre = new { precoDiaria = 200m }
         });
-        var carro = (await api.Post("/api/automoveis", Automovel(grupo))).Id;
+        var carro = (await api.Post("/api/automoveis", Automovel(grupo, seguroDiaria: 0m))).Id;
         var cliente = await SemearClientePj(fabrica, token, "Beta");
         var condutor = (await api.Post("/api/condutores", Condutor(cliente, "Joao", Dia(1000)))).Id;
         var aluguel = await api.Post("/api/alugueis", PedidoAluguel(condutor, carro, "Livre", retorno: 1, seguro: "Nenhum"));
@@ -378,7 +378,7 @@ public class AluguelIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFact
         var totalAntes = devolvido.Corpo.GetProperty("devolucao").GetProperty("final").GetProperty("valorFinal").GetDecimal();
 
         await c.Api.Put($"/api/taxas-servicos/{c.TaxaFixaId}", new { nome = "Cadeirinha", preco = 500m, tipoCobranca = "Fixo" });
-        await c.Api.Put("/api/configuracoes", new { precoGasolina = 9m, precoGas = 9m, precoDiesel = 9m, precoAlcool = 9m, seguroClienteDiaria = 99m, seguroTerceirosDiaria = 99m });
+        await c.Api.Put("/api/configuracoes", new { precoGasolina = 9m, precoGas = 9m, precoDiesel = 9m, precoAlcool = 9m });
 
         var depois = await c.Api.Get($"/api/alugueis/{aluguel.Id}");
 

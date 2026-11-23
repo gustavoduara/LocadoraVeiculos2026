@@ -387,6 +387,9 @@ namespace LocadoraDeVeiculos.Infraestrutura.Orm.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(8)");
 
+                    b.Property<decimal>("SeguroDiaria")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<int>("TipoCombustivel")
                         .HasColumnType("int");
 
@@ -604,12 +607,6 @@ namespace LocadoraDeVeiculos.Infraestrutura.Orm.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("PrecoGasolina")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("SeguroClienteDiaria")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("SeguroTerceirosDiaria")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Telefone")

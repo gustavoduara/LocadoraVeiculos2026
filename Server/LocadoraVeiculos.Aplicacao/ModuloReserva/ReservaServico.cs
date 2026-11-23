@@ -75,11 +75,11 @@ public class ReservaServico(
 
         if (dados.TipoSeguro != TipoSeguro.Nenhum)
         {
-            precoSeguro = carro.Configuracao?.ObterPrecoSeguro(dados.TipoSeguro) ?? 0m;
+            precoSeguro = carro.SeguroDiaria;
 
             if (precoSeguro <= 0)
                 return Result.Fail(ResultadosErro.RequisicaoInvalidaErro(
-                    "Esta locadora ainda não oferece o seguro escolhido. Escolha outra opção."));
+                    "Este carro não tem seguro disponível. Reserve sem seguro ou fale com a locadora."));
         }
 
         if (await repositorioReserva.CarroOcupadoAsync(carro.AutomovelId, dados.Retirada, dados.Devolucao, hoje))

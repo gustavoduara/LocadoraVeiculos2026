@@ -11,7 +11,8 @@ public record CadastrarAutomovelRequest(
     int Ano,
     TipoCombustivel TipoCombustivel,
     int CapacidadeCombustivelLitros,
-    Guid GrupoVeiculosId
+    Guid GrupoVeiculosId,
+    decimal SeguroDiaria = 0m
 );
 
 public record CadastrarAutomovelResponse(Guid Id);
@@ -24,7 +25,8 @@ public record EditarAutomovelRequest(
     int Ano,
     TipoCombustivel TipoCombustivel,
     int CapacidadeCombustivelLitros,
-    Guid GrupoVeiculosId
+    Guid GrupoVeiculosId,
+    decimal SeguroDiaria = 0m
 );
 
 public record EditarAutomovelResponse(
@@ -35,7 +37,8 @@ public record EditarAutomovelResponse(
     int Ano,
     TipoCombustivel TipoCombustivel,
     int CapacidadeCombustivelLitros,
-    Guid GrupoVeiculosId
+    Guid GrupoVeiculosId,
+    decimal SeguroDiaria = 0m
 );
 
 public record SelecionarAutomoveisResponse(IReadOnlyList<AutomovelDto> Registros);

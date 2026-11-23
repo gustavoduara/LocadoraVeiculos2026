@@ -18,7 +18,8 @@ public record AutomovelResumo(
     Guid GrupoVeiculosId,
     string NomeGrupo,
     bool TemFoto,
-    string? FotoNomeArquivo
+    string? FotoNomeArquivo,
+    decimal SeguroDiaria
 );
 
 public class RepositorioAutomovelEmOrm : RepositorioBaseEmOrm<Automovel>
@@ -59,7 +60,8 @@ public class RepositorioAutomovelEmOrm : RepositorioBaseEmOrm<Automovel>
                 a.GrupoVeiculosId,
                 a.GrupoVeiculos!.Nome,
                 a.Foto != null,
-                a.FotoNomeArquivo
+                a.FotoNomeArquivo,
+                a.SeguroDiaria
             ))
             .ToListAsync();
     }

@@ -190,7 +190,6 @@ public class DetalharCarroQueryHandler(
             return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro(query.AutomovelId));
 
         var plano = carro.Plano;
-        var configuracao = carro.Configuracao;
 
         var taxas = (await repositorioReserva.SelecionarTaxasDaLocadoraAsync(carro.EmpresaId))
             .Select(t => new TaxaOpcaoDto(t.Id, t.Nome, t.Preco, t.TipoCobranca))
@@ -211,8 +210,7 @@ public class DetalharCarroQueryHandler(
             plano is null ? null : new PlanoDiarioOpcaoDto(plano.DiarioPrecoDiaria, plano.DiarioPrecoPorKm),
             plano is null ? null : new PlanoControladoOpcaoDto(plano.ControladoKmDisponiveis, plano.ControladoPrecoDiaria, plano.ControladoPrecoPorKmExtrapolado),
             plano is null ? null : new PlanoLivreOpcaoDto(plano.LivrePrecoDiaria),
-            configuracao is { SeguroClienteDiaria: > 0 } ? configuracao.SeguroClienteDiaria : null,
-            configuracao is { SeguroTerceirosDiaria: > 0 } ? configuracao.SeguroTerceirosDiaria : null,
+            carro.SeguroDiaria > 0 ? carro.SeguroDiaria : null,
             Aluguel.ValorCaucaoPadrao,
             taxas));
     }

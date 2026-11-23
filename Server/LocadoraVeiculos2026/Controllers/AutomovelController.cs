@@ -30,7 +30,8 @@ public sealed class AutomovelController(IMediator mediator) : MainController
             request.Ano,
             request.TipoCombustivel,
             request.CapacidadeCombustivelLitros,
-            request.GrupoVeiculosId
+            request.GrupoVeiculosId,
+            request.SeguroDiaria
         );
 
         Result<CadastrarAutomovelResult> result = await mediator.Send(command, cancellationToken);
@@ -55,7 +56,8 @@ public sealed class AutomovelController(IMediator mediator) : MainController
             request.Ano,
             request.TipoCombustivel,
             request.CapacidadeCombustivelLitros,
-            request.GrupoVeiculosId
+            request.GrupoVeiculosId,
+            request.SeguroDiaria
         );
 
         Result<EditarAutomovelResult> result = await mediator.Send(command, cancellationToken);
@@ -69,7 +71,8 @@ public sealed class AutomovelController(IMediator mediator) : MainController
                 valor.Ano,
                 valor.TipoCombustivel,
                 valor.CapacidadeCombustivelLitros,
-                valor.GrupoVeiculosId
+                valor.GrupoVeiculosId,
+                valor.SeguroDiaria
             )));
     }
 

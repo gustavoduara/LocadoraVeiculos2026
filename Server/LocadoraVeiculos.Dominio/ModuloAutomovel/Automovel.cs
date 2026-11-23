@@ -15,6 +15,9 @@ public class Automovel : EntidadeBase<Automovel>
     public TipoCombustivel TipoCombustivel { get; set; }
     public int CapacidadeCombustivelLitros { get; set; }
 
+    /// <summary>Valor por dia do seguro deste carro, escolhido pela locadora. Zero = o carro não oferece seguro.</summary>
+    public decimal SeguroDiaria { get; set; }
+
     public Guid GrupoVeiculosId { get; set; }
     public GrupoVeiculos? GrupoVeiculos { get; set; }
 
@@ -38,7 +41,8 @@ public class Automovel : EntidadeBase<Automovel>
         int ano,
         TipoCombustivel tipoCombustivel,
         int capacidadeCombustivelLitros,
-        Guid grupoVeiculosId
+        Guid grupoVeiculosId,
+        decimal seguroDiaria = 0m
     )
     {
         EmpresaId = empresaId;
@@ -50,6 +54,7 @@ public class Automovel : EntidadeBase<Automovel>
         TipoCombustivel = tipoCombustivel;
         CapacidadeCombustivelLitros = capacidadeCombustivelLitros;
         GrupoVeiculosId = grupoVeiculosId;
+        SeguroDiaria = seguroDiaria;
     }
 
     public void AtualizarFoto(byte[] conteudo, string tipoConteudo, string nomeArquivo)
@@ -77,5 +82,6 @@ public class Automovel : EntidadeBase<Automovel>
         TipoCombustivel = registroEditado.TipoCombustivel;
         CapacidadeCombustivelLitros = registroEditado.CapacidadeCombustivelLitros;
         GrupoVeiculosId = registroEditado.GrupoVeiculosId;
+        SeguroDiaria = registroEditado.SeguroDiaria;
     }
 }

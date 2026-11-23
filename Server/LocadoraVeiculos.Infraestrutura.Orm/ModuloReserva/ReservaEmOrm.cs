@@ -90,6 +90,7 @@ public record CarroReservavel(
     string Modelo,
     int Ano,
     string NomeGrupo,
+    decimal SeguroDiaria,
     PlanoCobranca? Plano,
     Configuracao? Configuracao
 );
@@ -108,7 +109,7 @@ public class RepositorioReservaEmOrm(AppDbContext dbContext) : RepositorioBaseEm
             .IgnoreQueryFilters()
             .AsNoTracking()
             .Where(a => a.Id == automovelId && !a.Excluido && !a.GrupoVeiculos!.Excluido)
-            .Select(a => new { a.Id, a.EmpresaId, a.Marca, a.Modelo, a.Ano, Grupo = a.GrupoVeiculos!.Nome, a.GrupoVeiculosId })
+            .Select(a => new { a.Id, a.EmpresaId, a.Marca, a.Modelo, a.Ano, Grupo = a.GrupoVeiculos!.Nome, a.GrupoVeiculosId, a.SeguroDiaria })
             .FirstOrDefaultAsync();
 
         if (carro is null)
@@ -124,7 +125,7 @@ public class RepositorioReservaEmOrm(AppDbContext dbContext) : RepositorioBaseEm
             .AsNoTracking()
             .FirstOrDefaultAsync(c => c.EmpresaId == carro.EmpresaId && !c.Excluido);
 
-        return new CarroReservavel(carro.Id, carro.EmpresaId, carro.Marca, carro.Modelo, carro.Ano, carro.Grupo, plano, configuracao);
+        return new CarroReservavel(carro.Id, carro.EmpresaId, carro.Marca, carro.Modelo, carro.Ano, carro.Grupo, carro.SeguroDiaria, plano, configuracao);
     }
 
     public async Task<bool> CarroOcupadoAsync(Guid automovelId, DateOnly retirada, DateOnly devolucao, DateOnly hoje)

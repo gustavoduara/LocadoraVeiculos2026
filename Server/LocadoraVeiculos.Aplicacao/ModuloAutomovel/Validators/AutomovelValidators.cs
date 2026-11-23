@@ -14,6 +14,7 @@ public class CadastrarAutomovelCommandValidator : AbstractValidator<CadastrarAut
         RuleFor(p => p.Ano).AnoValido();
         RuleFor(p => p.TipoCombustivel).IsInEnum().WithMessage("O tipo de combustível informado é inválido.");
         RuleFor(p => p.CapacidadeCombustivelLitros).CapacidadeValida();
+        RuleFor(p => p.SeguroDiaria).SeguroValido();
         RuleFor(p => p.GrupoVeiculosId).NotEmpty().WithMessage("O grupo de veículos é obrigatório.");
     }
 }
@@ -29,6 +30,7 @@ public class EditarAutomovelCommandValidator : AbstractValidator<EditarAutomovel
         RuleFor(p => p.Ano).AnoValido();
         RuleFor(p => p.TipoCombustivel).IsInEnum().WithMessage("O tipo de combustível informado é inválido.");
         RuleFor(p => p.CapacidadeCombustivelLitros).CapacidadeValida();
+        RuleFor(p => p.SeguroDiaria).SeguroValido();
         RuleFor(p => p.GrupoVeiculosId).NotEmpty().WithMessage("O grupo de veículos é obrigatório.");
     }
 }
@@ -66,5 +68,17 @@ internal static class RegrasDoAutomovel
         return regra
             .GreaterThan(0).WithMessage("A capacidade do tanque precisa ser maior que 0 litros.")
             .LessThanOrEqualTo(1000).WithMessage("A capacidade do tanque precisa ser de no máximo 1000 litros.");
+    }
+}
+
+internal static class RegrasDeSeguro
+{
+    /// <summary>Valor diário do seguro do carro: de R$ 0,00 (sem seguro) até R$ 999,99, com no máximo 2 casas.</summary>
+    public static IRuleBuilderOptions<T, decimal> SeguroValido<T>(this IRuleBuilder<T, decimal> regra)
+    {
+        return regra
+            .GreaterThanOrEqualTo(0).WithMessage("O valor do seguro não pode ser negativo.")
+            .LessThan(1000).WithMessage("O valor do seguro precisa ser menor que 1000.")
+            .PrecisionScale(18, 2, true).WithMessage("O valor do seguro deve ter no máximo 2 casas decimais.");
     }
 }

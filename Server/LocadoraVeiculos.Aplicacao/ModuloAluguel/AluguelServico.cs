@@ -75,17 +75,15 @@ public class AluguelServico(
         if (taxas.Count != idsTaxas.Count)
             return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro("Taxa ou serviço informado."));
 
-        Configuracao? configuracao = await repositorioConfiguracao.SelecionarDaEmpresaAsync();
-
         decimal precoSeguro = 0m;
 
         if (dados.TipoSeguro != TipoSeguro.Nenhum)
         {
-            precoSeguro = configuracao?.ObterPrecoSeguro(dados.TipoSeguro) ?? 0m;
+            precoSeguro = automovel.SeguroDiaria;
 
             if (precoSeguro <= 0)
                 return Result.Fail(ResultadosErro.RequisicaoInvalidaErro(
-                    "O valor diário do seguro escolhido ainda não foi configurado. Defina-o em Configurações."));
+                    "Este automóvel ainda não tem o valor do seguro definido. Informe-o no cadastro do automóvel ou faça o aluguel sem seguro."));
         }
 
         DateOnly hoje = DateOnly.FromDateTime(DateTime.UtcNow);

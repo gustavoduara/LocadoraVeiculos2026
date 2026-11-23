@@ -219,24 +219,21 @@ public class ModulosIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFact
 
         var nova = await c.Api.Put("/api/configuracoes", new
         {
-            precoGasolina = 7.25m, precoGas = 4m, precoDiesel = 5m, precoAlcool = 4m,
-            seguroClienteDiaria = 31m, seguroTerceirosDiaria = 21m
+            precoGasolina = 7.25m, precoGas = 4m, precoDiesel = 5m, precoAlcool = 4m
         });
         Assert.Equal(200, nova.Codigo);
         Assert.Equal(7.25m, (await c.Api.Get("/api/configuracoes")).Numero("precoGasolina"));
 
         Assert.Equal(400, (await c.Api.Put("/api/configuracoes", new
         {
-            precoGasolina = 0m, precoGas = 4m, precoDiesel = 5m, precoAlcool = 4m,
-            seguroClienteDiaria = 31m, seguroTerceirosDiaria = 21m
+            precoGasolina = 0m, precoGas = 4m, precoDiesel = 5m, precoAlcool = 4m
         })).Codigo);
 
         c.Api.UsarToken(c.TokenFuncionario);
         Assert.Equal(200, (await c.Api.Get("/api/configuracoes")).Codigo);
         Assert.Equal(403, (await c.Api.Put("/api/configuracoes", new
         {
-            precoGasolina = 7m, precoGas = 4m, precoDiesel = 5m, precoAlcool = 4m,
-            seguroClienteDiaria = 31m, seguroTerceirosDiaria = 21m
+            precoGasolina = 7m, precoGas = 4m, precoDiesel = 5m, precoAlcool = 4m
         })).Codigo);
     }
 
