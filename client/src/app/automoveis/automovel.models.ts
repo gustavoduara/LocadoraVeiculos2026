@@ -12,7 +12,9 @@ export function rotuloCombustivel(valor: string): string {
 }
 
 /** A API guarda a placa sem hífen (ABC1D23); na tela ela aparece como ABC-1D23. */
-export function formatarPlaca(placa: string): string {
+export function formatarPlaca(placa: string | null | undefined): string {
+    if (!placa) return '';
+
     return placa.length === 7 ? `${placa.slice(0, 3)}-${placa.slice(3)}` : placa;
 }
 
