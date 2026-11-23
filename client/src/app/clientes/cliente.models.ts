@@ -31,6 +31,8 @@ export interface ClienteModel {
     numero: string;
     pessoaJuridicaId: string | null;
     nomePessoaJuridica: string | null;
+    /** Veio de uma reserva online: tem conta própria e a locadora só consulta. */
+    contaOnline?: boolean;
 }
 
 export interface SelecionarClientesResponseModel {

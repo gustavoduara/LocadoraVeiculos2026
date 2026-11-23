@@ -54,7 +54,16 @@ export class ClienteForm {
         this.aplicarTipo(valor.tipo);
     }
 
+    /** Cliente com conta própria: a locadora só consulta, então todos os campos ficam travados e some o Salvar. */
+    @Input() set somenteLeitura(valor: boolean) {
+        this.leitura = valor;
+
+        if (valor) this.form.disable({ emitEvent: false });
+    }
+
     @Output() salvar = new EventEmitter<CadastrarClienteModel>();
+
+    protected leitura = false;
 
     protected edicao = false;
     protected idEmEdicao: string | null = null;

@@ -1,5 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { mensagemDeErro } from '../../shared/erros/mensagem-erro';
@@ -10,7 +11,7 @@ import { ClienteForm } from '../form/cliente-form';
 
 @Component({
     selector: 'app-editar-cliente',
-    imports: [MatCardModule, ClienteForm],
+    imports: [MatCardModule, MatIconModule, ClienteForm],
     templateUrl: './editar-cliente.html',
 })
 export class EditarCliente {

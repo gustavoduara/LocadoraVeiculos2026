@@ -111,9 +111,11 @@
     <div class="flex items-center justify-end gap-3 pt-4">
         <a mat-stroked-button routerLink="/clientes" class="px-4">Voltar</a>
 
+        @if (!leitura) {
         <button type="submit" mat-flat-button class="px-6">
             <mat-icon class="!text-base mr-1">check</mat-icon>
             {{ edicao ? 'Salvar' : 'Concluir' }}
         </button>
+        }
     </div>
 </form>

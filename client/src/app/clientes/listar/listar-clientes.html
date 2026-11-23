@@ -64,8 +64,10 @@
                 </mat-card-content>
 
                 <mat-card-actions align="end" class="flex items-center justify-end gap-2 pt-2">
-                    <a [routerLink]="['editar', cliente.id]" mat-icon-button aria-label="Editar">
-                        <mat-icon>edit</mat-icon>
+                    <a [routerLink]="['editar', cliente.id]" mat-icon-button
+                        [attr.aria-label]="cliente.contaOnline ? 'Ver dados' : 'Editar'"
+                        [title]="cliente.contaOnline ? 'Cliente com conta própria: só consulta' : 'Editar'">
+                        <mat-icon>{{ cliente.contaOnline ? 'visibility' : 'edit' }}</mat-icon>
                     </a>
                     <a [routerLink]="['excluir', cliente.id]" mat-icon-button aria-label="Excluir">
                         <mat-icon>delete</mat-icon>
