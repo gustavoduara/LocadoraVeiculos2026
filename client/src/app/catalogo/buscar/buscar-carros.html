@@ -241,13 +241,13 @@
                         <mat-icon>event_available</mat-icon>
                         Reservar
                     </a>
-                    } @else if (carro.diariaAPartirDe === null) {
-                    <!-- A locadora ainda não definiu o preço: dá para reservar só depois, mas já dá para perguntar. -->
-                    <a mat-stroked-button class="mt-4 w-full" routerLink="/mensagens/nova" [queryParams]="{ automovelId: carro.id }">
+                    }
+
+                    <!-- Sempre disponível: perguntar não depende de o carro estar livre nem de ter preço. -->
+                    <a mat-stroked-button class="mt-2 w-full" routerLink="/mensagens/nova" [queryParams]="{ automovelId: carro.id }">
                         <mat-icon>chat</mat-icon>
                         Falar com a locadora
                     </a>
-                    }
                 </mat-card-content>
             </mat-card>
             }
