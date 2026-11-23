@@ -22,6 +22,7 @@ import {
 } from '../catalogo.models';
 import { CatalogoService } from '../catalogo.service';
 import { FotoCatalogo } from '../foto/foto-catalogo';
+import { Revelar } from '../../shared/revelar/revelar';
 
 const FORMATO_ISO = 'yyyy-MM-dd';
 const TAMANHO_DA_PAGINA = 12;
@@ -39,6 +40,7 @@ const TAMANHO_DA_PAGINA = 12;
         MatSelectModule,
         CurrencyPipe,
         FotoCatalogo,
+        Revelar,
         RouterLink,
     ],
     templateUrl: './buscar-carros.html',
