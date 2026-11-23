@@ -115,7 +115,7 @@ interface LinkRodape {
                             >Gustavo Duara</a
                         >
                     </p>
-                    <p>.NET 8 · Angular 20 · SQL Server</p>
+                    <p>.NET 10 · Angular 20 · SQL Server</p>
                 </div>
             </div>
         </footer>

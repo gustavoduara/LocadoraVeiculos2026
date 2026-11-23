@@ -3,11 +3,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 
-import { SelecionarGruposVeiculosModel } from '../../grupo-veiculos/grupo-veiculos.models';
 import { mensagemDeErro } from '../../shared/erros/mensagem-erro';
 import { NotificacaoService } from '../../shared/notificacao/notificacao.service';
 import { PlanoCobrancaForm } from '../form/plano-cobranca-form';
-import { CadastrarPlanoCobrancaModel } from '../plano-cobranca.models';
+import { AutomovelOpcaoModel, CadastrarPlanoCobrancaModel } from '../plano-cobranca.models';
 import { PlanoCobrancaService } from '../plano-cobranca.service';
 
 @Component({
@@ -21,8 +20,7 @@ export class CadastrarPlanoCobranca {
     protected readonly planoService = inject(PlanoCobrancaService);
     protected readonly notificacaoService = inject(NotificacaoService);
 
-    protected readonly grupos = (this.route.snapshot.data['grupos'] ??
-        []) as SelecionarGruposVeiculosModel[];
+    protected readonly automoveis = (this.route.snapshot.data['automoveis'] ?? []) as AutomovelOpcaoModel[];
 
     public cadastrar(model: CadastrarPlanoCobrancaModel) {
         this.planoService.cadastrar(model).subscribe({

@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { ActivatedRoute, Router } from '@angular/router';
 
+import { formatarPlaca } from '../../automoveis/automovel.models';
 import { mensagemDeErro } from '../../shared/erros/mensagem-erro';
 import { NotificacaoService } from '../../shared/notificacao/notificacao.service';
 import { PlanoCobrancaForm } from '../form/plano-cobranca-form';
@@ -21,7 +22,7 @@ export class EditarPlanoCobranca {
 
     protected readonly plano = this.route.snapshot.data['plano'] as PlanoCobrancaModel;
 
-    protected readonly grupos = [{ id: this.plano.grupoVeiculosId, nome: this.plano.nomeGrupo }];
+    protected readonly automoveis = [{ id: this.plano.automovelId, nome: `${this.plano.nomeAutomovel} · ${formatarPlaca(this.plano.placa)}` }];
 
     public editar(model: CadastrarPlanoCobrancaModel) {
         this.planoService

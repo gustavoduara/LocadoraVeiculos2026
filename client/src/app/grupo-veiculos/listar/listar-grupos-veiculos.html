@@ -29,27 +29,6 @@
                     </mat-card-title>
                 </mat-card-header>
 
-                <mat-card-content class="mt-2 text-sm">
-                    @if (grupo.plano; as plano) {
-                    <p class="font-medium">Plano de cobrança</p>
-                    <p>
-                        <span class="font-medium">Diário:</span>
-                        {{ plano.diario.precoDiaria | currency }}/dia + {{ plano.diario.precoPorKm | currency }}/km
-                    </p>
-                    <p>
-                        <span class="font-medium">Controlado:</span>
-                        {{ plano.controlado.precoDiaria | currency }}/dia com
-                        {{ plano.controlado.kmDisponiveis | number }} km
-                        (extra {{ plano.controlado.precoPorKmExtrapolado | currency }}/km)
-                    </p>
-                    <p>
-                        <span class="font-medium">Livre:</span>
-                        {{ plano.livre.precoDiaria | currency }}/dia
-                    </p>
-                    } @else {
-                    <p class="text-gray-500">Sem plano de cobrança cadastrado.</p>
-                    }
-                </mat-card-content>
 
                 <mat-card-actions align="end" class="flex items-center justify-end gap-2 pt-2">
                     <a [routerLink]="['editar', grupo.id]" mat-icon-button aria-label="Editar">

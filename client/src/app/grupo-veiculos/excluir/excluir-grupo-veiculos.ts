@@ -2,6 +2,7 @@ import { filter, map, Observer, shareReplay, switchMap, take } from 'rxjs';
 
 import { AsyncPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,7 +15,7 @@ import { GrupoVeiculosService } from '../grupo-veiculos.service';
 
 @Component({
     selector: 'app-excluir-grupo-veiculos',
-    imports: [MatCardModule, MatButtonModule, MatIconModule, RouterLink, AsyncPipe],
+    imports: [FormsModule, MatCardModule, MatButtonModule, MatIconModule, RouterLink, AsyncPipe],
     templateUrl: './excluir-grupo-veiculos.html',
 })
 export class ExcluirGrupoVeiculos {

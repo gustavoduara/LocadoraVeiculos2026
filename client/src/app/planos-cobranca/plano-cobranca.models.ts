@@ -14,7 +14,7 @@ export interface PlanoLivreModel {
 }
 
 export interface CadastrarPlanoCobrancaModel {
-    grupoVeiculosId: string;
+    automovelId: string;
     diario: PlanoDiarioModel;
     controlado: PlanoControladoModel;
     livre: PlanoLivreModel;
@@ -38,8 +38,10 @@ export interface EditarPlanoCobrancaResponseModel {
 
 export interface PlanoCobrancaModel {
     id: string;
-    grupoVeiculosId: string;
-    nomeGrupo: string;
+    automovelId: string;
+    /** "Marca Modelo" do carro dono do plano. */
+    nomeAutomovel: string;
+    placa: string;
     diario: PlanoDiarioModel;
     controlado: PlanoControladoModel;
     livre: PlanoLivreModel;
@@ -49,8 +51,8 @@ export interface SelecionarPlanosCobrancaResponseModel {
     registros: PlanoCobrancaModel[];
 }
 
-/** Opção do seletor de grupo de veículos no formulário. */
-export interface GrupoOpcaoModel {
+/** Opção do seletor de automóvel no formulário ("Fiat Palio · ABC-1D23"). */
+export interface AutomovelOpcaoModel {
     id: string;
     nome: string;
 }

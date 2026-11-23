@@ -1,14 +1,14 @@
 <form [formGroup]="form" (ngSubmit)="enviar()" class="space-y-4">
     <mat-form-field class="w-full">
-        <mat-label>Grupo de veículos</mat-label>
-        <mat-select formControlName="grupoVeiculosId">
-            @for (grupo of grupos; track grupo.id) {
-            <mat-option [value]="grupo.id">{{ grupo.nome }}</mat-option>
+        <mat-label>Automóvel</mat-label>
+        <mat-select formControlName="automovelId">
+            @for (automovel of automoveis; track automovel.id) {
+            <mat-option [value]="automovel.id">{{ automovel.nome }}</mat-option>
             }
         </mat-select>
 
-        @if (erroDo('grupoVeiculosId'); as erro) {
-        <mat-error>Selecione o grupo de veículos.</mat-error>
+        @if (erroDo('automovelId'); as erro) {
+        <mat-error>Selecione o automóvel.</mat-error>
         }
     </mat-form-field>
 

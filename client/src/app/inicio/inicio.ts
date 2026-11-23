@@ -107,9 +107,9 @@ export class Inicio {
 
     protected readonly carros = computed<CarroVitrine[]>(() => {
         const busca = this.pesquisa();
-        const menorDiariaPorGrupo = new Map(
+        const menorDiariaPorCarro = new Map(
             this.planos().map((p) => [
-                p.grupoVeiculosId,
+                p.automovelId,
                 Math.min(p.diario.precoDiaria, p.controlado.precoDiaria, p.livre.precoDiaria),
             ]),
         );
@@ -118,7 +118,7 @@ export class Inicio {
             .filter((a) => !busca?.grupoId || a.grupoVeiculosId === busca.grupoId)
             .map<CarroVitrine>((automovel) => ({
                 automovel,
-                diariaAPartirDe: menorDiariaPorGrupo.get(automovel.grupoVeiculosId) ?? null,
+                diariaAPartirDe: menorDiariaPorCarro.get(automovel.id) ?? null,
                 disponivel: busca ? this.estaDisponivel(automovel.id, busca.retirada, busca.devolucao) : null,
             }));
 

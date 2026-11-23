@@ -1,9 +1,11 @@
-import { map } from 'rxjs';
+import { forkJoin, map } from 'rxjs';
 
 import { inject } from '@angular/core';
 import { ActivatedRouteSnapshot, Routes } from '@angular/router';
 
-import { GrupoVeiculosService } from '../grupo-veiculos/grupo-veiculos.service';
+import { AutomovelOpcaoModel } from './plano-cobranca.models';
+import { AutomovelService } from '../automoveis/automovel.service';
+import { formatarPlaca } from '../automoveis/automovel.models';
 import { CadastrarPlanoCobranca } from './cadastrar/cadastrar-plano-cobranca';
 import { EditarPlanoCobranca } from './editar/editar-plano-cobranca';
 import { ExcluirPlanoCobranca } from './excluir/excluir-plano-cobranca';
@@ -14,11 +16,17 @@ export const listarPlanosResolver = () => {
     return inject(PlanoCobrancaService).selecionarTodos();
 };
 
-/** Só os grupos que ainda não têm plano (há um plano por grupo). */
-export const gruposSemPlanoResolver = () => {
-    return inject(GrupoVeiculosService)
-        .selecionarTodos()
-        .pipe(map((grupos) => grupos.filter((g) => !g.plano)));
+/** Só os carros que ainda não têm plano (há um plano por carro). */
+export const automoveisSemPlanoResolver = () => {
+    return forkJoin([inject(AutomovelService).selecionarTodos(), inject(PlanoCobrancaService).selecionarTodos()]).pipe(
+        map(([automoveis, planos]): AutomovelOpcaoModel[] => {
+            const comPlano = new Set(planos.map((p) => p.automovelId));
+
+            return automoveis
+                .filter((a) => !comPlano.has(a.id))
+                .map((a) => ({ id: a.id, nome: `${a.marca} ${a.modelo} · ${formatarPlaca(a.placa)}` }));
+        }),
+    );
 };
 
 export const detalhesPlanoResolver = (route: ActivatedRouteSnapshot) => {
@@ -41,7 +49,7 @@ export const planoCobrancaRoutes: Routes = [
             {
                 path: 'cadastrar',
                 component: CadastrarPlanoCobranca,
-                resolve: { grupos: gruposSemPlanoResolver },
+                resolve: { automoveis: automoveisSemPlanoResolver },
             },
             {
                 path: 'editar/:id',
@@ -54,6 +62,6 @@ export const planoCobrancaRoutes: Routes = [
                 resolve: { plano: detalhesPlanoResolver },
             },
         ],
-        providers: [PlanoCobrancaService, GrupoVeiculosService],
+        providers: [PlanoCobrancaService, AutomovelService],
     },
 ];

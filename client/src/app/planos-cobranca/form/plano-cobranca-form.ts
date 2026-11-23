@@ -10,7 +10,7 @@ import { RouterLink } from '@angular/router';
 
 import {
     CadastrarPlanoCobrancaModel,
-    GrupoOpcaoModel,
+    AutomovelOpcaoModel,
     PlanoCobrancaModel,
 } from '../plano-cobranca.models';
 
@@ -40,14 +40,14 @@ const kmDisponiveis = [
 export class PlanoCobrancaForm {
     private readonly formBuilder = inject(FormBuilder);
 
-    @Input() grupos: GrupoOpcaoModel[] = [];
+    @Input() automoveis: AutomovelOpcaoModel[] = [];
 
-    /** Quando informado, o formulário entra em modo de edição e o grupo não pode ser trocado. */
+    /** Quando informado, o formulário entra em modo de edição e o automóvel não pode ser trocado. */
     @Input() set plano(valor: PlanoCobrancaModel | undefined) {
         if (!valor) return;
 
         this.form.patchValue(valor);
-        this.form.get('grupoVeiculosId')?.disable();
+        this.form.get('automovelId')?.disable();
         this.edicao = true;
     }
 
@@ -56,7 +56,7 @@ export class PlanoCobrancaForm {
     protected edicao = false;
 
     protected form: FormGroup = this.formBuilder.group({
-        grupoVeiculosId: ['', [Validators.required]],
+        automovelId: ['', [Validators.required]],
         diario: this.formBuilder.group({
             precoDiaria: [null, valorMonetario],
             precoPorKm: [null, valorMonetario],

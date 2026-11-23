@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,7 +12,7 @@ import { TaxaServicoService } from '../taxa-servico.service';
 
 @Component({
     selector: 'app-excluir-taxa-servico',
-    imports: [MatCardModule, MatButtonModule, MatIconModule, RouterLink],
+    imports: [FormsModule, MatCardModule, MatButtonModule, MatIconModule, RouterLink],
     templateUrl: './excluir-taxa-servico.html',
 })
 export class ExcluirTaxaServico {

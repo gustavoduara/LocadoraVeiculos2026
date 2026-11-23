@@ -1,3 +1,4 @@
+import { formatarPlaca } from '../../automoveis/automovel.models';
 import { CurrencyPipe, DecimalPipe } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -23,4 +24,5 @@ export class ListarPlanosCobranca {
 
     /** Busca por texto e páginas (a lista toda já está carregada na tela). */
     protected readonly lista = new ListaPaginada(this.planos);
+    protected readonly formatarPlaca = formatarPlaca;
 }
