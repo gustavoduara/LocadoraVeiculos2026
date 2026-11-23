@@ -11,6 +11,7 @@ public class MapeadorClienteEmOrm : IEntityTypeConfiguration<Cliente>
         builder.HasKey(c => c.Id);
 
         builder.Property(c => c.Tipo).IsRequired();
+        builder.Property(c => c.ContaOnline).IsRequired();
 
         builder.Property(c => c.Nome).HasColumnType("nvarchar(150)").IsRequired();
         builder.Property(c => c.Email).HasColumnType("varchar(150)").IsRequired();

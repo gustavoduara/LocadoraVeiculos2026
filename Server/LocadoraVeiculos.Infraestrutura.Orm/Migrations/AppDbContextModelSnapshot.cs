@@ -458,6 +458,9 @@ namespace LocadoraDeVeiculos.Infraestrutura.Orm.Migrations
                     b.Property<string>("Cnpj")
                         .HasColumnType("varchar(18)");
 
+                    b.Property<bool>("ContaOnline")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Cpf")
                         .HasColumnType("varchar(14)");
 

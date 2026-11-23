@@ -40,7 +40,9 @@ public record ClienteDto(
     string Rua,
     string Numero,
     Guid? PessoaJuridicaId,
-    string? NomePessoaJuridica
+    string? NomePessoaJuridica,
+    /// <summary>Cliente que veio de uma reserva online: a locadora só consulta, não edita.</summary>
+    bool ContaOnline
 );
 
 /// <summary>O tipo do cliente não pode ser alterado depois do cadastro.</summary>

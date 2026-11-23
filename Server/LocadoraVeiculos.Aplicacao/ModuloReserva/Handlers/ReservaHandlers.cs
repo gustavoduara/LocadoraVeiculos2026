@@ -325,6 +325,8 @@ public class AprovarReservaCommandHandler(
                         reserva.ClienteRua, reserva.ClienteNumero, null),
                     null);
 
+                cliente.ContaOnline = true;
+
                 await repositorioCliente.CadastrarAsync(cliente);
                 clienteCriado = cliente;
             }

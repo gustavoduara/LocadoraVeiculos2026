@@ -77,7 +77,8 @@ internal static class ClienteRegras
         c.Rua,
         c.Numero,
         c.PessoaJuridicaId,
-        c.PessoaJuridica?.Nome
+        c.PessoaJuridica?.Nome,
+        c.ContaOnline
     );
 }
 
@@ -95,6 +96,10 @@ public class EditarClienteCommandHandler(
 
         if (cliente is null)
             return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro(command.Id));
+
+        if (cliente.ContaOnline)
+            return Result.Fail(ResultadosErro.OperacaoBloqueadaErro(
+                "Este cliente se cadastrou pela própria conta e só ele pode alterar os dados (em Meus dados)."));
 
         // O tipo é o do registro existente: pessoa física continua física, jurídica continua jurídica.
         ValidationResult resultadoValidacao = ClienteRegras.Validar(cliente.Tipo, command.Dados);

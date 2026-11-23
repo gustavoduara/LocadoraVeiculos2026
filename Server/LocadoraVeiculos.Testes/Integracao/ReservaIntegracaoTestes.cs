@@ -396,6 +396,19 @@ public class ReservaIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFact
         Assert.Contains(cpf, clientes.Registros.EnumerateArray().Select(x => x.GetProperty("cpf").GetString()));
         Assert.Contains("Beatriz Lima", (await c.Api.Get("/api/condutores")).Registros.EnumerateArray().Select(x => x.GetProperty("nome").GetString()));
 
+        // Quem veio de uma reserva online tem conta própria: a locadora só consulta, não edita os dados dele.
+        var ficha = clientes.Registros.EnumerateArray().First(x => x.GetProperty("cpf").GetString() == cpf);
+        Assert.True(ficha.GetProperty("contaOnline").GetBoolean());
+
+        var tentativa = await c.Api.Put($"/api/clientes/{ficha.GetProperty("id").GetGuid()}", new
+        {
+            nome = "Outro Nome", email = "outro@ex.com", telefone = "(47) 99999-0000", cpf, rg = "1234567", cnh = "12345678901",
+            cnpj = (string?)null, estado = "SC", cidade = "Rio do Sul", bairro = "Centro", rua = "Rua XV", numero = "10",
+            pessoaJuridicaId = (Guid?)null
+        });
+        Assert.Equal(422, tentativa.Codigo);
+        Assert.Contains("Meus dados", tentativa.Bruto);
+
         // O cliente vê "Aprovada" e o telefone da locadora, e recebeu o e-mail.
         var minha = (await cliente.Get("/api/minhas-reservas")).Registros[0];
         Assert.Equal("Aprovada", minha.GetProperty("status").GetString());

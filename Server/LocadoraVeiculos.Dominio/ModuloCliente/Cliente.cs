@@ -31,6 +31,12 @@ public class Cliente : EntidadeBase<Cliente>
     public Guid? PessoaJuridicaId { get; set; }
     public Cliente? PessoaJuridica { get; set; }
 
+    /// <summary>
+    /// Verdadeiro quando a ficha nasceu de uma reserva online: a pessoa tem conta própria e é ela quem cuida dos
+    /// próprios dados (em "Meus dados"). A locadora só consulta; não edita.
+    /// </summary>
+    public bool ContaOnline { get; set; }
+
     protected Cliente() { }
 
     public static Cliente NovaPessoaFisica(
