@@ -53,7 +53,7 @@ Cada empresa enxerga **apenas os próprios dados** (multiempresa), e o que cada 
 
 ## 📸 Telas
 
-Prints do sistema rodando com dados de exemplo (locadora "Serra Aluguel" e a cliente Beatriz Lima). As imagens dos carros são ilustrações feitas para o projeto.
+Prints do sistema rodando com dados de exemplo (locadora "Serra Aluguel" e a cliente Beatriz Lima). As fotos dos carros são de terceiros, com licença livre (créditos logo abaixo das telas).
 
 ### Para o cliente
 
@@ -113,6 +113,18 @@ O cliente usa uma barra de navegação inferior, os filtros ficam recolhidos e, 
     <td align="center"><sub><b>Entrada</b>: o mesmo login atende cliente e locadora.</sub></td>
   </tr>
 </table>
+
+#### Créditos das fotos
+
+As fotos dos carros nos prints são de terceiros, com licença livre, tiradas do Wikimedia Commons. Cada uma mantém a licença original; as imagens foram apenas reduzidas e cortadas pelo sistema para caber nos cartões.
+
+| Carro | Autor | Licença | Origem |
+|---|---|---|---|
+| Fiat Mobi Trekking (2021) | NaBUru38 | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Fiat_Mobi_Trekking_1.0_2021_in_Montevideo_(front).jpg) |
+| Hyundai HB20 (2025) | Just a Man | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:2025_Hyundai_HB20_1.6_Comfort_Plus.jpg) |
+| Jeep Compass Latitude | HJUdall | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:22_Jeep_Compass_Latitude_Lux.jpg) |
+| Fiat Toro Freedom | Just a Man | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:2021_Fiat_Toro_Freedom_1.8_4X2_-_(2).jpg) |
+| Toyota Corolla XEi (2018) | Just a Man | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) | [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:2018_Toyota_Corolla_1.8_XEi_CVT_(Brazil).jpg) |
 
 ---
 
