@@ -51,6 +51,72 @@
     box-shadow: inset 3px 0 0 var(--mat-sys-tertiary-brand, #f47b20);
 }
 
+// Barra inferior do cliente no celular: o polegar alcança tudo, no verde de placa do menu.
+.nav-inferior {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 30;
+    display: flex;
+    gap: 4px;
+    padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
+    background-color: var(--menu-fundo);
+
+    a {
+        position: relative;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
+        min-height: 54px;
+        padding: 4px 2px;
+        border-radius: 10px;
+        color: #cfe3d6;
+        font-size: 0.75rem;
+        text-decoration: none;
+    }
+
+    a.ativo {
+        color: #ffffff;
+        background-color: rgb(255 255 255 / 0.12);
+        box-shadow: inset 0 3px 0 #f2b705;
+    }
+
+    .contador {
+        position: absolute;
+        top: 2px;
+        left: calc(50% + 8px);
+        min-width: 18px;
+        padding: 0 5px;
+        border-radius: 9px;
+        background-color: #f2b705;
+        color: #1f2429;
+        font-size: 0.7rem;
+        font-weight: 700;
+        line-height: 18px;
+        text-align: center;
+    }
+}
+
+.espaco-nav-inferior {
+    height: 72px;
+}
+
+// No celular só o ícone da pessoa: o nome longo empurrava a barra do topo.
+@media (max-width: 599px) {
+    .nome-usuario {
+        display: none;
+    }
+
+    .botao-usuario {
+        min-width: 48px;
+        padding: 0;
+    }
+}
+
 .marca-topo-celular {
     font-size: 1.25rem;
     font-weight: 500;

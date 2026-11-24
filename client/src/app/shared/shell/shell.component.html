@@ -210,9 +210,9 @@
         <span class="marca-topo-celular">SerraDrive</span>
       }
       @if (usuarioAutenticado) {
-        <button mat-raised-button [matMenuTriggerFor]="opcoesUsuario" class="ml-auto">
+        <button mat-raised-button [matMenuTriggerFor]="opcoesUsuario" class="ml-auto botao-usuario" aria-label="Menu da conta">
           <mat-icon>person</mat-icon>
-          {{ usuarioAutenticado.nomeCompleto }}
+          <span class="nome-usuario">{{ usuarioAutenticado.nomeCompleto }}</span>
         </button>
 
         <mat-menu #opcoesUsuario="matMenu">
@@ -262,5 +262,31 @@
     </div>
 
     <app-rodape [cargo]="usuarioAutenticado?.cargo ?? null" />
+
+    @if ((isHandset$ | async) && usuarioAutenticado?.cargo === 'Cliente') {
+      <div class="espaco-nav-inferior" aria-hidden="true"></div>
+
+      <nav class="nav-inferior" aria-label="Navegação principal">
+        <a [routerLink]="['/catalogo']" routerLinkActive="ativo">
+          <mat-icon class="material-icons-outlined">search</mat-icon>
+          <span>Buscar</span>
+        </a>
+        <a [routerLink]="['/meus-pedidos']" routerLinkActive="ativo">
+          <mat-icon class="material-icons-outlined">event_available</mat-icon>
+          <span>Pedidos</span>
+        </a>
+        <a [routerLink]="['/mensagens']" routerLinkActive="ativo">
+          <mat-icon class="material-icons-outlined">chat</mat-icon>
+          <span>Mensagens</span>
+          @if (naoLidas() > 0) {
+            <span class="contador" aria-label="{{ naoLidas() }} mensagens não lidas">{{ naoLidas() }}</span>
+          }
+        </a>
+        <a [routerLink]="['/meus-dados']" routerLinkActive="ativo">
+          <mat-icon class="material-icons-outlined">badge</mat-icon>
+          <span>Meus dados</span>
+        </a>
+      </nav>
+    }
   </mat-sidenav-content>
 </mat-sidenav-container>

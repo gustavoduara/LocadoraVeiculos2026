@@ -14,44 +14,48 @@ html {
 /* ---------- Identidade SerraDrive: paleta "Floresta profunda" ---------- */
 /* Os tokens do Material trocam entre claro e escuro por conta do color-scheme (light-dark). */
 html {
-  --mat-sys-primary: light-dark(#1f5a38, #8fd05a);
-  --mat-sys-on-primary: light-dark(#ffffff, #0f2e1a);
-  --mat-sys-primary-container: light-dark(#c9e8d3, #1f5a38);
-  --mat-sys-on-primary-container: light-dark(#0b2a18, #d4f0dc);
+  --fonte-titulo: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --fonte-texto: 'Atkinson Hyperlegible', system-ui, sans-serif;
+  --mat-sys-brand-font-family: var(--fonte-titulo);
+  --mat-sys-plain-font-family: var(--fonte-texto);
+  --mat-sys-primary: light-dark(#0d5c3e, #6fd6a4);
+  --mat-sys-on-primary: light-dark(#ffffff, #00301c);
+  --mat-sys-primary-container: light-dark(#cfe9da, #0d5c3e);
+  --mat-sys-on-primary-container: light-dark(#04301e, #d7f2e3);
+  --mat-sys-secondary: light-dark(#3f5a4c, #bcd2c5);
+  --mat-sys-on-secondary: light-dark(#ffffff, #1b3025);
+  --mat-sys-secondary-container: light-dark(#dbe7df, #2f4538);
+  --mat-sys-on-secondary-container: light-dark(#0f2118, #dbe7df);
+  --mat-sys-tertiary: light-dark(#b9500c, #ffa35c);
+  --mat-sys-on-tertiary: light-dark(#ffffff, #3d1a00);
+  --mat-sys-tertiary-container: light-dark(#ffe0c7, #6a3000);
+  --mat-sys-on-tertiary-container: light-dark(#381500, #ffe0c7);
+  --mat-sys-background: light-dark(#eef2ee, #111513);
+  --mat-sys-on-background: light-dark(#1f2429, #e4e9e5);
+  --mat-sys-surface: light-dark(#eef2ee, #111513);
+  --mat-sys-on-surface: light-dark(#1f2429, #e4e9e5);
+  --mat-sys-surface-variant: light-dark(#dfe6e0, #3a423d);
+  --mat-sys-on-surface-variant: light-dark(#454d47, #c4ccc6);
+  --mat-sys-outline: light-dark(#6f7871, #8d968f);
+  --mat-sys-outline-variant: light-dark(#cfd8d1, #343c37);
+  --mat-sys-surface-container-lowest: light-dark(#ffffff, #0c100e);
+  --mat-sys-surface-container-low: light-dark(#f6f9f6, #171c19);
+  --mat-sys-surface-container: light-dark(#eaf0eb, #1b211e);
+  --mat-sys-surface-container-high: light-dark(#e2e9e4, #252c28);
+  --mat-sys-surface-container-highest: light-dark(#dae2dc, #2f3732);
+  --mat-sys-tertiary-brand: #e8731a;
 
-  --mat-sys-secondary: light-dark(#4f6b58, #b7ccbd);
-  --mat-sys-on-secondary: light-dark(#ffffff, #22352a);
-  --mat-sys-secondary-container: light-dark(#d3e8d9, #384b3f);
-  --mat-sys-on-secondary-container: light-dark(#0e2416, #d3e8d9);
+  /* Cores da sinalização: placa de preço e destaques de foco. */
+  --placa-fundo: #0d5c3e;
+  --sinal-amarelo: #f2b705;
 
-  /* Laranja: destaque (preços, filete do menu, chamadas). */
-  --mat-sys-tertiary: light-dark(#c95a0c, #ff9a3d);
-  --mat-sys-on-tertiary: light-dark(#ffffff, #4a2300);
-  --mat-sys-tertiary-container: light-dark(#ffdcc2, #6a3400);
-  --mat-sys-on-tertiary-container: light-dark(#3a1800, #ffdcc2);
-  --mat-sys-tertiary-brand: #f47b20;
-
-  --mat-sys-background: light-dark(#f4f7f4, #141815);
-  --mat-sys-on-background: light-dark(#181d1a, #e1e6e1);
-  --mat-sys-surface: light-dark(#f4f7f4, #141815);
-  --mat-sys-on-surface: light-dark(#181d1a, #e1e6e1);
-  --mat-sys-surface-variant: light-dark(#dce5de, #414943);
-  --mat-sys-on-surface-variant: light-dark(#414943, #c1c9c2);
-  --mat-sys-outline: light-dark(#717972, #8b938c);
-  --mat-sys-outline-variant: light-dark(#c1c9c2, #414943);
-
-  --mat-sys-surface-container-lowest: light-dark(#ffffff, #0f1310);
-  --mat-sys-surface-container-low: light-dark(#eef2ee, #1a1f1b);
-  --mat-sys-surface-container: light-dark(#e9eee9, #1e2420);
-  --mat-sys-surface-container-high: light-dark(#e3e9e4, #282e29);
-  --mat-sys-surface-container-highest: light-dark(#dde3de, #333a35);
-
-  /* Menu lateral e rodapé: verde-floresta nos dois modos. */
-  --menu-fundo: #1f3d2b;
+  /* Menu lateral, barra inferior e rodapé: verde de placa de rodovia. */
+  --menu-fundo: #0a4a32;
 }
 
 html.modo-noturno {
-  --menu-fundo: #16281d;
+  --menu-fundo: #0a2a1d;
+  --placa-fundo: #11724e;
 }
 
 body {
@@ -71,7 +75,7 @@ body {
 
 body {
   margin: 0;
-  font-family: Roboto, 'Helvetica Neue', sans-serif;
+  font-family: var(--fonte-texto);
 }
 
 /* ---------- Selos de situação (claro) ---------- */
@@ -88,9 +92,9 @@ body {
 /* Cores do rodapé (trocadas no modo noturno). */
 :root {
   --rodape-fundo: var(--menu-fundo);
-  --rodape-texto: #c3d3c8;
-  --rodape-titulo: #f2f6f3;
-  --rodape-link: #9bd66a;
+  --rodape-texto: #bcd2c5;
+  --rodape-titulo: #ffffff;
+  --rodape-link: #f2b705;
   --rodape-linha: rgb(255 255 255 / 0.16);
 }
 
@@ -277,4 +281,160 @@ html.modo-noturno {
 .botao-perigo.mat-mdc-unelevated-button:not(:disabled) {
   --mat-button-filled-container-color: #b42318;
   --mat-button-filled-label-text-color: #ffffff;
+}
+
+/* ====================== Estrada de serra: sistema visual ====================== */
+
+body {
+  font-size: 1rem;
+  line-height: 1.55;
+  font-family: var(--fonte-texto);
+}
+
+/* Títulos: condensada e firme, como a letra das placas de rodovia. */
+h2 {
+  font-family: var(--fonte-titulo);
+  font-weight: 700;
+  font-size: clamp(2rem, 6vw, 2.75rem);
+  line-height: 1.02;
+  letter-spacing: 0;
+  color: var(--mat-sys-on-surface);
+}
+
+h3,
+h4 {
+  font-family: var(--fonte-titulo);
+  font-weight: 600;
+  letter-spacing: 0.005em;
+}
+
+/* Quem a página legal ou o texto corrido não quer condensado. */
+.texto-legal h3 {
+  font-family: var(--fonte-texto);
+}
+
+/* Cartões chapados: um filete fino separa, sem sombra. */
+mat-card {
+  --mat-card-elevated-container-color: var(--mat-sys-surface-container-lowest);
+  --mat-card-elevated-container-shape: 12px;
+  box-shadow: none !important;
+  border: 1px solid var(--mat-sys-outline-variant);
+}
+
+.rounded-2xl {
+  border-radius: 12px;
+}
+
+/* Botões: cantos de placa, altura boa para o dedo. */
+html {
+  --mat-button-filled-container-shape: 10px;
+  --mat-button-outlined-container-shape: 10px;
+  --mat-button-text-container-shape: 10px;
+  --mat-button-protected-container-shape: 10px;
+  --mat-button-filled-container-height: 46px;
+  --mat-button-outlined-container-height: 46px;
+  --mat-button-text-container-height: 46px;
+}
+
+/* Foco do teclado bem visível, na cor da sinalização. */
+:focus-visible {
+  outline: 3px solid var(--sinal-amarelo);
+  outline-offset: 2px;
+}
+
+/* Curvas de nível: o relevo da serra, só nos topos de login e catálogo. */
+.contornos {
+  background-color: var(--menu-fundo);
+  background-image: url('/img/contornos.svg');
+  background-size: cover;
+  background-position: center;
+}
+
+.marca-entrada {
+  background-image: url('/img/contornos.svg');
+  background-size: cover;
+  background-position: center;
+  padding-block: 28px;
+}
+
+/* O preço como placa de rodovia: o único elemento exagerado da interface. */
+.placa-preco {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 10px 16px 10px;
+  border-radius: 10px;
+  color: #ffffff;
+  background-color: var(--placa-fundo);
+  box-shadow: inset 0 0 0 3px var(--placa-fundo), inset 0 0 0 5px rgb(255 255 255 / 0.92);
+  line-height: 1;
+
+  .placa-linha-pequena {
+    font-family: var(--fonte-texto);
+    font-size: 0.78rem;
+    opacity: 0.9;
+  }
+
+  .placa-valor {
+    font-family: var(--fonte-titulo);
+    font-weight: 700;
+    font-size: 2.1rem;
+    letter-spacing: 0.01em;
+    margin-top: 3px;
+  }
+
+  .placa-unidade {
+    font-family: var(--fonte-texto);
+    font-size: 0.85rem;
+    font-weight: 400;
+    margin-left: 3px;
+  }
+}
+
+/* Quem pede menos movimento no sistema não vê transições. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Telas de toque: alvos maiores. */
+@media (pointer: coarse) {
+  .mat-mdc-icon-button {
+    --mat-icon-button-state-layer-size: 48px;
+  }
+}
+
+/* Filtros recolhidos só no celular (no computador aparecem sempre). */
+@media (max-width: 1023px) {
+  mat-card.filtros-fechados {
+    display: none !important;
+  }
+}
+
+/* Reserva no celular: total e botão fixos acima da barra inferior. */
+.barra-reserva {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(66px + env(safe-area-inset-bottom));
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 16px;
+  background-color: var(--mat-sys-surface-container-lowest);
+  border-top: 1px solid var(--mat-sys-outline-variant);
+
+  .barra-total {
+    font-family: var(--fonte-titulo);
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: var(--mat-sys-tertiary);
+  }
 }

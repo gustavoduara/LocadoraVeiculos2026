@@ -1,12 +1,20 @@
 <section class="mx-auto max-w-screen-xl px-4 py-6">
-    <h2 class="text-2xl font-semibold">Encontre seu carro</h2>
-    <p class="text-sm text-gray-600">
-        Procure entre os carros de todas as locadoras e faça o pedido de reserva. A locadora confirma e você acompanha em
-        "Meus pedidos".
-    </p>
+    <header class="contornos rounded-2xl px-5 py-6 sm:px-8 sm:py-8">
+        <h2 class="!text-white">Encontre seu carro</h2>
+        <p class="mt-2 max-w-xl text-base text-white/85">
+            Procure entre os carros de todas as locadoras e peça a reserva. A locadora confirma e você acompanha em
+            Meus pedidos.
+        </p>
+    </header>
 
-    <!-- Filtros -->
-    <mat-card class="mt-4 rounded-2xl shadow-sm">
+    <!-- Filtros: no celular ficam atrás do botão -->
+    <button type="button" mat-stroked-button class="mt-4 w-full lg:!hidden" (click)="filtrosAbertos.set(!filtrosAbertos())"
+        [attr.aria-expanded]="filtrosAbertos()">
+        <mat-icon>tune</mat-icon>
+        {{ filtrosAbertos() ? 'Esconder filtros' : 'Filtros' }}
+    </button>
+
+    <mat-card class="mt-4 rounded-2xl" [class.filtros-fechados]="!filtrosAbertos()">
         <mat-card-content class="p-4">
             <form
                 class="grid grid-cols-1 gap-x-4 gap-y-1 sm:grid-cols-2 lg:grid-cols-4"
@@ -199,8 +207,8 @@
                 </div>
 
                 <mat-card-content class="p-4">
-                    <p class="text-xs font-medium uppercase tracking-wide text-gray-500">{{ carro.categoria }}</p>
-                    <h4 class="text-lg font-semibold">{{ carro.marca }} {{ carro.modelo }}</h4>
+                    <p class="text-sm text-gray-600">{{ carro.categoria }}</p>
+                    <h4 class="text-2xl font-semibold leading-tight">{{ carro.marca }} {{ carro.modelo }}</h4>
 
                     <ul class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
                         <li class="flex items-center gap-1">
@@ -221,13 +229,13 @@
 
                     <div class="mt-4">
                         @if (carro.diariaAPartirDe !== null) {
-                        <p class="text-xs text-gray-500">a partir de</p>
-                        <p class="text-xl font-semibold text-destaque">
-                            {{ carro.diariaAPartirDe | currency: 'BRL'
-                            }}<span class="text-sm font-normal text-gray-500"> /dia</span>
-                        </p>
+                        <div class="placa-preco">
+                            <span class="placa-linha-pequena">a partir de</span>
+                            <span class="placa-valor">{{ carro.diariaAPartirDe | currency: 'BRL'
+                                }}<span class="placa-unidade">/dia</span></span>
+                        </div>
                         @if (carro.totalDoPeriodo !== null && r.dias) {
-                        <p class="text-xs text-gray-600">
+                        <p class="mt-2 text-sm text-gray-600">
                             {{ carro.totalDoPeriodo | currency: 'BRL' }} em {{ r.dias }}
                             {{ r.dias === 1 ? 'diária' : 'diárias' }}
                         </p>

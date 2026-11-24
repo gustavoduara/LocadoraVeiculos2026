@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300" preserveAspectRatio="xMidYMid slice" fill="none" stroke="#ffffff" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Curvas de nível de um morro, vistas de cima: cada linha é uma altitude. -->
+  <g stroke-opacity="0.10" stroke-width="1.4">
+    <path d="M-20 262 C 90 238, 170 252, 262 226 S 420 232, 520 204 S 690 214, 820 176"/>
+    <path d="M-20 232 C 80 206, 168 222, 256 192 S 410 200, 512 170 S 690 184, 820 142"/>
+    <path d="M-20 200 C 72 172, 164 188, 252 158 S 404 166, 506 136 S 690 152, 820 108"/>
+  </g>
+  <g stroke-opacity="0.16" stroke-width="1.5">
+    <path d="M118 184 C 150 120, 238 96, 322 112 S 468 150, 452 214 S 330 270, 232 252 S 92 238, 118 184 Z"/>
+    <path d="M150 182 C 176 134, 244 118, 312 130 S 428 158, 416 206 S 326 246, 250 234 S 128 220, 150 182 Z"/>
+    <path d="M184 180 C 202 148, 250 138, 302 148 S 384 168, 376 200 S 318 224, 262 216 S 166 206, 184 180 Z"/>
+    <path d="M222 180 C 232 164, 258 160, 288 166 S 334 178, 330 194 S 300 206, 270 202 S 212 196, 222 180 Z"/>
+  </g>
+  <g stroke-opacity="0.12" stroke-width="1.4">
+    <path d="M540 70 C 570 26, 650 18, 716 40 S 806 98, 772 140 S 670 176, 600 160 S 512 112, 540 70 Z"/>
+    <path d="M574 76 C 598 46, 656 40, 706 56 S 770 98, 746 126 S 674 150, 622 138 S 552 108, 574 76 Z"/>
+    <path d="M610 82 C 626 64, 662 62, 694 72 S 734 98, 718 114 S 672 128, 640 120 S 596 100, 610 82 Z"/>
+  </g>
+</svg>

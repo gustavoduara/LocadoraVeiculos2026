@@ -55,6 +55,9 @@ export class BuscarCarros implements OnInit {
     protected readonly rotuloCombustivel = rotuloCombustivel;
 
     // Campos do formulário.
+    /** No celular os filtros ficam recolhidos para os carros aparecerem logo. */
+    protected readonly filtrosAbertos = signal(false);
+
     protected readonly retirada = signal('');
     protected readonly devolucao = signal('');
     protected readonly texto = signal('');

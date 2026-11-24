@@ -249,6 +249,18 @@ interface OpcaoDePlano {
     } @else {
     <p class="mt-6 text-sm text-gray-500">Carregando…</p>
     }
+
+    @if (carro()) {
+    <div class="h-40 md:hidden" aria-hidden="true"></div>
+
+    <div class="barra-reserva md:hidden">
+        <div class="leading-tight">
+            <span class="block text-sm text-gray-600">Total previsto</span>
+            <strong class="barra-total">{{ estimativa() ? (estimativa()!.valorTotalPrevisto | currency: 'BRL') : '—' }}</strong>
+        </div>
+        <button mat-flat-button type="button" [disabled]="!podeEnviar()" (click)="enviar()">Enviar pedido</button>
+    </div>
+    }
 </section>
 `,
 })
