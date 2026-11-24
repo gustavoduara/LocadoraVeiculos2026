@@ -82,6 +82,9 @@ public class MapeadorReservaTaxaEmOrm : IEntityTypeConfiguration<ReservaTaxa>
     }
 }
 
+/// <summary>Um pedido de reserva do cliente que ainda está valendo (pendente ou aprovado).</summary>
+public record PedidoAtivoDoCliente(Guid AutomovelId, Guid ReservaId, StatusReserva Status, DateOnly Retirada, DateOnly Devolucao);
+
 /// <summary>Tudo o que o pedido de reserva precisa saber de um carro, de qualquer locadora.</summary>
 public record CarroReservavel(
     Guid AutomovelId,
@@ -188,6 +191,23 @@ public class RepositorioReservaEmOrm(AppDbContext dbContext) : RepositorioBaseEm
     public override async Task<Reserva?> SelecionarPorIdAsync(Guid idRegistro)
     {
         return await dbContext.Reservas.Include(r => r.Taxas).FirstOrDefaultAsync(r => r.Id == idRegistro);
+    }
+
+    /// <summary>
+    /// Os pedidos do cliente que ainda importam (aguardando resposta ou aprovados, com devolução de hoje em diante),
+    /// para o catálogo mostrar "Pedido enviado" / "Reserva aprovada" no carro certo.
+    /// </summary>
+    public async Task<List<PedidoAtivoDoCliente>> SelecionarAtivosDoClienteAsync(Guid usuarioClienteId, DateOnly hoje)
+    {
+        return await dbContext.Reservas
+            .IgnoreQueryFilters()
+            .AsNoTracking()
+            .Where(r => !r.Excluido && r.UsuarioClienteId == usuarioClienteId &&
+                        (r.Status == StatusReserva.Pendente || r.Status == StatusReserva.Aprovada) &&
+                        r.Devolucao >= hoje)
+            .OrderBy(r => r.Retirada)
+            .Select(r => new PedidoAtivoDoCliente(r.AutomovelId, r.Id, r.Status, r.Retirada, r.Devolucao))
+            .ToListAsync();
     }
 
     public async Task<List<Reserva>> SelecionarDoClienteAsync(Guid usuarioClienteId)

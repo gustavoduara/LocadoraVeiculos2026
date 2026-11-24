@@ -275,10 +275,10 @@ public class Cenario
         validadeCnh
     };
 
-    public static object Automovel(Guid grupoId, string combustivel = "Diesel", int litros = 60, string? placa = null, decimal seguroDiaria = 30m) => new
+    public static object Automovel(Guid grupoId, string combustivel = "Diesel", int litros = 60, string? placa = null, decimal seguroDiaria = 30m, string marca = "Fiat") => new
     {
         placa = placa ?? Geradores.Placa(),
-        marca = "Fiat",
+        marca,
         modelo = "Toro",
         cor = "Branco",
         ano = 2023,
@@ -292,9 +292,9 @@ public class Cenario
     /// Cadastra um carro. O plano de cobrança é de cada carro: todo carro novo ganha o plano padrão do cenário
     /// (diária R$ 150, 200 e 300), exceto os do grupo "Sem plano", que ficam sem plano para os testes dessa situação.
     /// </summary>
-    public async Task<Guid> NovoAutomovel(string combustivel = "Diesel", int litros = 60, Guid? grupo = null, decimal seguroDiaria = 30m)
+    public async Task<Guid> NovoAutomovel(string combustivel = "Diesel", int litros = 60, Guid? grupo = null, decimal seguroDiaria = 30m, string marca = "Fiat")
     {
-        var r = await Api.Post("/api/automoveis", Automovel(grupo ?? GrupoId, combustivel, litros, seguroDiaria: seguroDiaria));
+        var r = await Api.Post("/api/automoveis", Automovel(grupo ?? GrupoId, combustivel, litros, seguroDiaria: seguroDiaria, marca: marca));
         Assert.Equal(201, r.Codigo);
 
         if ((grupo ?? GrupoId) != GrupoSemPlanoId)

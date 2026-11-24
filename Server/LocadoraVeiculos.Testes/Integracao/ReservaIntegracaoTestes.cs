@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.Extensions.DependencyInjection;
 using static LocadoraDeVeiculos.Testes.Integracao.Cenario;
 
@@ -116,6 +117,48 @@ public class ReservaIntegracaoTestes(ApiFactory fabrica) : IClassFixture<ApiFact
 
         var locadora = await Criar(fabrica);
         Assert.Equal(403, (await locadora.Api.Get("/api/meus-dados")).Codigo);
+    }
+
+    [Fact]
+    public async Task Catalogo_mostra_o_pedido_de_quem_pediu_e_o_periodo_alugado_para_os_outros()
+    {
+        var c = await Criar(fabrica, comFuncionario: true);
+        string marca = "Ww" + Guid.NewGuid().ToString("N")[..8];
+        var carro = await c.NovoAutomovel(marca: marca);
+
+        var (cliente, _, _) = await NovoCliente();
+        var (outro, _, _) = await NovoCliente();
+
+        JsonElement Do(Resposta r) => r.Registros.EnumerateArray().Single(x => x.GetProperty("id").GetGuid() == carro);
+
+        // Sem pedido nenhum: nem pedido nem período alugado.
+        var antes = Do(await cliente.Get($"/api/catalogo?texto={marca}"));
+        Assert.Equal(JsonValueKind.Null, antes.GetProperty("meuPedido").ValueKind);
+        Assert.Equal(JsonValueKind.Null, antes.GetProperty("proximaOcupacao").ValueKind);
+
+        // Pedido aguardando resposta: só quem pediu vê, e o carro ainda não está alugado para ninguém.
+        Assert.Equal(201, (await cliente.Post("/api/minhas-reservas", Pedido(carro))).Codigo);
+
+        var meu = Do(await cliente.Get($"/api/catalogo?texto={marca}")).GetProperty("meuPedido");
+        Assert.Equal("Pendente", meu.GetProperty("status").GetString());
+        Assert.Equal(Dia(1), meu.GetProperty("retirada").GetString());
+
+        var dosOutros = Do(await outro.Get($"/api/catalogo?texto={marca}"));
+        Assert.Equal(JsonValueKind.Null, dosOutros.GetProperty("meuPedido").ValueKind);
+        Assert.Equal(JsonValueKind.Null, dosOutros.GetProperty("proximaOcupacao").ValueKind);
+
+        // A locadora aprova: o pedido de quem pediu fica "Aprovada" e os outros passam a ver o período alugado.
+        var id = (await c.Api.Get("/api/reservas")).Registros[0].GetProperty("id").GetGuid();
+        Assert.Equal(200, (await c.Api.Post($"/api/reservas/{id}/aprovar", new { kmInicial = 1000 })).Codigo);
+
+        var aprovado = Do(await cliente.Get($"/api/catalogo?texto={marca}"));
+        Assert.Equal("Aprovada", aprovado.GetProperty("meuPedido").GetProperty("status").GetString());
+        Assert.Equal(JsonValueKind.Null, aprovado.GetProperty("proximaOcupacao").ValueKind);
+
+        var visto = Do(await outro.Get($"/api/catalogo?texto={marca}"));
+        Assert.Equal(JsonValueKind.Null, visto.GetProperty("meuPedido").ValueKind);
+        Assert.Equal(Dia(1), visto.GetProperty("proximaOcupacao").GetProperty("retirada").GetString());
+        Assert.Equal(Dia(4), visto.GetProperty("proximaOcupacao").GetProperty("devolucao").GetString());
     }
 
     [Fact]

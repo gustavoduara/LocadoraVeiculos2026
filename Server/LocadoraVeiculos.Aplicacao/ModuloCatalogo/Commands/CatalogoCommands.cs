@@ -1,5 +1,6 @@
 using FluentResults;
 using LocadoraDeVeiculos.Dominio.Compartilhado;
+using LocadoraDeVeiculos.Dominio.ModuloReserva;
 using LocadoraDeVeiculos.Dominio.ModuloTaxaServico;
 using MediatR;
 
@@ -46,8 +47,16 @@ public record CarroCatalogoDto(
     /// <summary>Diárias do período × menor diária (sem km, taxas, seguro e caução). Só com datas.</summary>
     decimal? TotalDoPeriodo,
     /// <summary>Só é informado quando a pesquisa tem datas.</summary>
-    bool? Disponivel
+    bool? Disponivel,
+    /// <summary>O próximo período em que o carro está alugado (em andamento ou futuro), para quem não escolheu datas ainda.</summary>
+    PeriodoDoCarroDto? ProximaOcupacao = null,
+    /// <summary>O pedido deste cliente para este carro que ainda vale (aguardando resposta ou aprovado).</summary>
+    MeuPedidoDto? MeuPedido = null
 );
+
+public record PeriodoDoCarroDto(DateOnly Retirada, DateOnly Devolucao);
+
+public record MeuPedidoDto(Guid ReservaId, StatusReserva Status, DateOnly Retirada, DateOnly Devolucao);
 
 public record CatalogoResult(
     IReadOnlyList<CarroCatalogoDto> Registros,

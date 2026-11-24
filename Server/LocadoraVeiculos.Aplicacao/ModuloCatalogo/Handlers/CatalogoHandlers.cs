@@ -2,6 +2,8 @@ using FluentResults;
 using LocadoraDeVeiculos.Aplicacao.Compartilhado;
 using LocadoraDeVeiculos.Aplicacao.ModuloCatalogo.Commands;
 using LocadoraDeVeiculos.Dominio.ModuloAluguel;
+using LocadoraDeVeiculos.Dominio.ModuloAutenticacao;
+using LocadoraDeVeiculos.Dominio.ModuloReserva;
 using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloCatalogo;
 using LocadoraDeVeiculos.Infraestrutura.Orm.ModuloReserva;
 using MediatR;
@@ -9,7 +11,9 @@ using MediatR;
 namespace LocadoraDeVeiculos.Aplicacao.ModuloCatalogo.Handlers;
 
 public class PesquisarCatalogoQueryHandler(
-    RepositorioCatalogoEmOrm repositorio
+    RepositorioCatalogoEmOrm repositorio,
+    RepositorioReservaEmOrm repositorioReserva,
+    ITenantProvider tenantProvider
 ) : IRequestHandler<PesquisarCatalogoQuery, Result<CatalogoResult>>
 {
     private const int TamanhoMaximoDaPagina = 50;
@@ -40,13 +44,32 @@ public class PesquisarCatalogoQueryHandler(
 
         int? dias = query.Retirada is { } r && query.Devolucao is { } d ? Aluguel.CalcularDias(r, d) : null;
 
+        // Aluguéis em aberto: dão a disponibilidade (quando há datas) e o aviso "alugado de X a Y" (sempre).
+        List<PeriodoOcupado> periodos = await repositorio.SelecionarPeriodosOcupadosAsync(carros.Select(c => c.Id).ToList());
+
+        // Os pedidos deste cliente que ainda valem, por carro.
+        Dictionary<Guid, PedidoAtivoDoCliente> meusPedidos = tenantProvider.UsuarioId is { } usuarioId
+            ? (await repositorioReserva.SelecionarAtivosDoClienteAsync(usuarioId, hoje))
+                .GroupBy(p => p.AutomovelId)
+                .ToDictionary(g => g.Key, g => g.OrderByDescending(p => p.Status == StatusReserva.Aprovada).ThenBy(p => p.Retirada).First())
+            : [];
+
+        // O próximo período alugado de cada carro: o aluguel vencido e não devolvido conta até hoje.
+        Dictionary<Guid, PeriodoDoCarroDto> proximas = periodos
+            .Select(p => new { p.AutomovelId, p.Saida, Fim = p.RetornoPrevisto >= hoje ? p.RetornoPrevisto : hoje })
+            .GroupBy(p => p.AutomovelId)
+            .ToDictionary(g => g.Key, g =>
+            {
+                var primeiro = g.OrderBy(p => p.Saida).First();
+
+                return new PeriodoDoCarroDto(primeiro.Saida, primeiro.Fim);
+            });
+
         // Disponibilidade no período, quando há datas.
         HashSet<Guid> ocupados = [];
 
         if (dias is not null)
         {
-            List<PeriodoOcupado> periodos = await repositorio.SelecionarPeriodosOcupadosAsync(carros.Select(c => c.Id).ToList());
-
             // Mesma regra do aluguel: um aluguel vencido e não devolvido continua ocupando o carro até hoje.
             ocupados = periodos
                 .Where(p => p.Saida <= query.Devolucao!.Value &&
@@ -70,7 +93,12 @@ public class PesquisarCatalogoQueryHandler(
                 c.QuantidadeFotos,
                 c.DiariaAPartirDe,
                 c.DiariaAPartirDe is { } diaria && dias is { } n ? Math.Round(diaria * n, 2, MidpointRounding.AwayFromZero) : null,
-                dias is null ? null : !ocupados.Contains(c.Id)))
+                dias is null ? null : !ocupados.Contains(c.Id),
+                // Quem já pediu o carro vê o pedido dele; os outros veem quando o carro está alugado.
+                meusPedidos.ContainsKey(c.Id) ? null : proximas.GetValueOrDefault(c.Id),
+                meusPedidos.TryGetValue(c.Id, out var pedido)
+                    ? new MeuPedidoDto(pedido.ReservaId, pedido.Status, pedido.Retirada, pedido.Devolucao)
+                    : null))
             .ToList();
 
         if (query.ApenasDisponiveis && dias is not null)
