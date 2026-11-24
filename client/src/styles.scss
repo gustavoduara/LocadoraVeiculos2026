@@ -14,48 +14,47 @@ html {
 /* ---------- Identidade SerraDrive: paleta "Floresta profunda" ---------- */
 /* Os tokens do Material trocam entre claro e escuro por conta do color-scheme (light-dark). */
 html {
-  --fonte-titulo: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  --fonte-texto: 'Atkinson Hyperlegible', system-ui, sans-serif;
+  --fonte-titulo: 'Figtree', system-ui, sans-serif;
+  --fonte-texto: 'Figtree', system-ui, sans-serif;
   --mat-sys-brand-font-family: var(--fonte-titulo);
   --mat-sys-plain-font-family: var(--fonte-texto);
-  --mat-sys-primary: light-dark(#0d5c3e, #6fd6a4);
-  --mat-sys-on-primary: light-dark(#ffffff, #00301c);
-  --mat-sys-primary-container: light-dark(#cfe9da, #0d5c3e);
-  --mat-sys-on-primary-container: light-dark(#04301e, #d7f2e3);
-  --mat-sys-secondary: light-dark(#3f5a4c, #bcd2c5);
-  --mat-sys-on-secondary: light-dark(#ffffff, #1b3025);
-  --mat-sys-secondary-container: light-dark(#dbe7df, #2f4538);
-  --mat-sys-on-secondary-container: light-dark(#0f2118, #dbe7df);
-  --mat-sys-tertiary: light-dark(#b9500c, #ffa35c);
-  --mat-sys-on-tertiary: light-dark(#ffffff, #3d1a00);
-  --mat-sys-tertiary-container: light-dark(#ffe0c7, #6a3000);
-  --mat-sys-on-tertiary-container: light-dark(#381500, #ffe0c7);
-  --mat-sys-background: light-dark(#eef2ee, #111513);
-  --mat-sys-on-background: light-dark(#1f2429, #e4e9e5);
-  --mat-sys-surface: light-dark(#eef2ee, #111513);
-  --mat-sys-on-surface: light-dark(#1f2429, #e4e9e5);
-  --mat-sys-surface-variant: light-dark(#dfe6e0, #3a423d);
-  --mat-sys-on-surface-variant: light-dark(#454d47, #c4ccc6);
-  --mat-sys-outline: light-dark(#6f7871, #8d968f);
-  --mat-sys-outline-variant: light-dark(#cfd8d1, #343c37);
-  --mat-sys-surface-container-lowest: light-dark(#ffffff, #0c100e);
-  --mat-sys-surface-container-low: light-dark(#f6f9f6, #171c19);
-  --mat-sys-surface-container: light-dark(#eaf0eb, #1b211e);
-  --mat-sys-surface-container-high: light-dark(#e2e9e4, #252c28);
-  --mat-sys-surface-container-highest: light-dark(#dae2dc, #2f3732);
-  --mat-sys-tertiary-brand: #e8731a;
+  --mat-sys-primary: light-dark(#0b62e6, #8ab8ff);
+  --mat-sys-on-primary: light-dark(#ffffff, #002a66);
+  --mat-sys-primary-container: light-dark(#d9e6ff, #0a47a8);
+  --mat-sys-on-primary-container: light-dark(#001b44, #dbe7ff);
+  --mat-sys-secondary: light-dark(#4a5a70, #bcc8da);
+  --mat-sys-on-secondary: light-dark(#ffffff, #1c2a3e);
+  --mat-sys-secondary-container: light-dark(#dde5f1, #33445c);
+  --mat-sys-on-secondary-container: light-dark(#0f1c30, #dde5f1);
+  --mat-sys-tertiary: light-dark(#c2410c, #ffa070);
+  --mat-sys-on-tertiary: light-dark(#ffffff, #3d1500);
+  --mat-sys-tertiary-container: light-dark(#ffdccb, #6b2a08);
+  --mat-sys-on-tertiary-container: light-dark(#3a1300, #ffdccb);
+  --mat-sys-background: light-dark(#f1f4f9, #0b1220);
+  --mat-sys-on-background: light-dark(#0b1d33, #e6ecf5);
+  --mat-sys-surface: light-dark(#f1f4f9, #0b1220);
+  --mat-sys-on-surface: light-dark(#0b1d33, #e6ecf5);
+  --mat-sys-surface-variant: light-dark(#e3e9f2, #2c3a50);
+  --mat-sys-on-surface-variant: light-dark(#44546a, #c5cfdd);
+  --mat-sys-outline: light-dark(#6b7a90, #8b99ae);
+  --mat-sys-outline-variant: light-dark(#d0d8e4, #2c3a50);
+  --mat-sys-surface-container-lowest: light-dark(#ffffff, #08101c);
+  --mat-sys-surface-container-low: light-dark(#f7f9fc, #101a2b);
+  --mat-sys-surface-container: light-dark(#edf1f7, #142033);
+  --mat-sys-surface-container-high: light-dark(#e5ebf3, #1c2a40);
+  --mat-sys-surface-container-highest: light-dark(#dde5ef, #26364f);
+  --mat-sys-tertiary-brand: #ff8a3d;
 
-  /* Cores da sinalização: placa de preço e destaques de foco. */
-  --placa-fundo: #0d5c3e;
-  --sinal-amarelo: #f2b705;
+  /* Azul de ação (botão Buscar) e amarelo de foco do teclado. */
+  --azul-acao: #0b62e6;
+  --sinal-amarelo: #ffd24a;
 
-  /* Menu lateral, barra inferior e rodapé: verde de placa de rodovia. */
-  --menu-fundo: #0a4a32;
+  /* Faixa de busca, menu lateral, barra inferior e rodapé: azul-marinho. */
+  --menu-fundo: #05203c;
 }
 
 html.modo-noturno {
-  --menu-fundo: #0a2a1d;
-  --placa-fundo: #11724e;
+  --menu-fundo: #04182c;
 }
 
 body {
@@ -92,9 +91,9 @@ body {
 /* Cores do rodapé (trocadas no modo noturno). */
 :root {
   --rodape-fundo: var(--menu-fundo);
-  --rodape-texto: #bcd2c5;
+  --rodape-texto: #b7c6da;
   --rodape-titulo: #ffffff;
-  --rodape-link: #f2b705;
+  --rodape-link: #8ab8ff;
   --rodape-linha: rgb(255 255 255 / 0.16);
 }
 
@@ -291,24 +290,23 @@ body {
   font-family: var(--fonte-texto);
 }
 
-/* Títulos: condensada e firme, como a letra das placas de rodovia. */
+/* Títulos: grandes e firmes, em uma só família. */
 h2 {
   font-family: var(--fonte-titulo);
-  font-weight: 700;
-  font-size: clamp(2rem, 6vw, 2.75rem);
-  line-height: 1.02;
-  letter-spacing: 0;
+  font-weight: 800;
+  font-size: clamp(1.9rem, 5vw, 2.6rem);
+  line-height: 1.08;
+  letter-spacing: -0.015em;
   color: var(--mat-sys-on-surface);
 }
 
 h3,
 h4 {
   font-family: var(--fonte-titulo);
-  font-weight: 600;
-  letter-spacing: 0.005em;
+  font-weight: 700;
+  letter-spacing: -0.005em;
 }
 
-/* Quem a página legal ou o texto corrido não quer condensado. */
 .texto-legal h3 {
   font-family: var(--fonte-texto);
 }
@@ -327,13 +325,13 @@ mat-card {
 
 /* Botões: cantos de placa, altura boa para o dedo. */
 html {
-  --mat-button-filled-container-shape: 10px;
-  --mat-button-outlined-container-shape: 10px;
-  --mat-button-text-container-shape: 10px;
-  --mat-button-protected-container-shape: 10px;
-  --mat-button-filled-container-height: 46px;
-  --mat-button-outlined-container-height: 46px;
-  --mat-button-text-container-height: 46px;
+  --mat-button-filled-container-shape: 8px;
+  --mat-button-outlined-container-shape: 8px;
+  --mat-button-text-container-shape: 8px;
+  --mat-button-protected-container-shape: 8px;
+  --mat-button-filled-container-height: 48px;
+  --mat-button-outlined-container-height: 48px;
+  --mat-button-text-container-height: 48px;
 }
 
 /* Foco do teclado bem visível, na cor da sinalização. */
@@ -357,37 +355,176 @@ html {
   padding-block: 28px;
 }
 
-/* O preço como placa de rodovia: o único elemento exagerado da interface. */
-.placa-preco {
-  display: inline-flex;
+/* Preço do carro: grande e direto, sem enfeite. */
+.preco-carro {
+  display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  padding: 10px 16px 10px;
-  border-radius: 10px;
-  color: #ffffff;
-  background-color: var(--placa-fundo);
-  box-shadow: inset 0 0 0 3px var(--placa-fundo), inset 0 0 0 5px rgb(255 255 255 / 0.92);
-  line-height: 1;
+  line-height: 1.1;
 
-  .placa-linha-pequena {
-    font-family: var(--fonte-texto);
-    font-size: 0.78rem;
-    opacity: 0.9;
+  .preco-linha-pequena {
+    font-size: 0.82rem;
+    color: var(--mat-sys-on-surface-variant);
   }
 
-  .placa-valor {
-    font-family: var(--fonte-titulo);
-    font-weight: 700;
-    font-size: 2.1rem;
-    letter-spacing: 0.01em;
-    margin-top: 3px;
+  .preco-valor {
+    font-weight: 800;
+    font-size: 1.9rem;
+    letter-spacing: -0.01em;
+    color: var(--mat-sys-on-surface);
   }
 
-  .placa-unidade {
-    font-family: var(--fonte-texto);
-    font-size: 0.85rem;
-    font-weight: 400;
+  .preco-unidade {
     margin-left: 3px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+/* Faixa de busca: azul-marinho, título grande e uma linha de campos brancos. */
+.hero-busca {
+  margin-inline: -16px;
+  background-color: var(--menu-fundo);
+  color: #ffffff;
+
+  h2 {
+    color: #ffffff;
+  }
+
+  .hero-texto {
+    max-width: 42rem;
+    margin-top: 6px;
+    color: rgb(255 255 255 / 0.82);
+  }
+}
+
+.busca-linha {
+  display: grid;
+  gap: 4px;
+  grid-template-columns: 1fr;
+  margin-top: 22px;
+}
+
+/* Celular: o texto e o botão ocupam a linha toda; as duas datas ficam lado a lado. */
+@media (max-width: 899px) {
+  .busca-linha {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .busca-linha > :first-child,
+  .busca-linha > .botao-buscar {
+    grid-column: 1 / -1;
+  }
+
+  .busca-linha .campo-busca {
+    min-height: 62px;
+    padding-inline: 12px;
+  }
+
+  .busca-linha .botao-buscar {
+    min-height: 56px;
+  }
+}
+
+@media (min-width: 900px) {
+  .busca-linha {
+    grid-template-columns: 2.2fr 1fr 1fr auto;
+  }
+}
+
+.campo-busca {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  min-height: 68px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  background-color: #ffffff;
+  color: #0b1d33;
+  cursor: text;
+
+  > span {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #44546a;
+  }
+
+  input {
+    width: 100%;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    font: inherit;
+    font-size: 1.05rem;
+    color: #0b1d33;
+  }
+
+  &:focus-within {
+    outline: 3px solid var(--sinal-amarelo);
+  }
+}
+
+.botao-buscar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 68px;
+  padding-inline: 32px;
+  border: 0;
+  border-radius: 8px;
+  background-color: var(--azul-acao);
+  color: #ffffff;
+  font: inherit;
+  font-size: 1.1rem;
+  font-weight: 800;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background-color: #0a54c7;
+  }
+
+  &:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+}
+
+.hero-opcoes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+  margin-top: 14px;
+  font-size: 0.95rem;
+
+  label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+
+  input[type='checkbox'] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--azul-acao);
+  }
+
+  .hero-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border: 0;
+    border-radius: 8px;
+    background: rgb(255 255 255 / 0.1);
+    color: #ffffff;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
   }
 }
 
@@ -406,13 +543,6 @@ html {
 @media (pointer: coarse) {
   .mat-mdc-icon-button {
     --mat-icon-button-state-layer-size: 48px;
-  }
-}
-
-/* Filtros recolhidos só no celular (no computador aparecem sempre). */
-@media (max-width: 1023px) {
-  mat-card.filtros-fechados {
-    display: none !important;
   }
 }
 
