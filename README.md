@@ -19,6 +19,8 @@ Funcionários, frota, clientes, condutores, planos de cobrança e aluguéis com 
 
 </div>
 
+> **Primeira visita lenta.** No plano gratuito da Azure o servidor e o banco "dormem" quando ficam parados: a primeira visita depois de um tempo pode levar até 1 minuto. O site mostra "Acordando o servidor" e abre sozinho.
+
 > **Projeto de demonstração.** Os carros, as locadoras e as reservas do site publicado **não são reais**, e o site mostra esse aviso em todas as telas. Se for testar, use dados fictícios (CPF, CNH, telefone e e-mail de teste), nunca dados pessoais verdadeiros.
 
 ---

@@ -102,3 +102,18 @@ Passe o endereço do app. Cada pessoa cria a **própria empresa** em *Registro*,
 - **Banco "dormindo" (serverless):** a primeira chamada depois de um tempo parado pode demorar ou falhar uma vez. Tente de novo.
 - **Tela em branco ao abrir uma rota direto (ex.: `/alugueis`):** confirme que o deploy foi feito pelo workflow, que coloca o front dentro de `wwwroot`.
 - **Sessão cai logo após o login:** confira se o acesso é por HTTPS (o cookie de renovação exige).
+
+## Primeira visita lenta (plano gratuito)
+
+Duas coisas dormem quando o site fica parado, e a primeira visita espera as duas:
+
+- **O app (plano F1):** é descarregado depois de uns 20 minutos sem visita e leva alguns segundos para subir.
+- **O banco (Azure SQL gratuito, serverless):** pausa sozinho e leva de 25 a 60 segundos para acordar.
+
+O que já está no projeto para isso:
+
+- **Aviso na tela:** depois de 4 segundos sem resposta o site mostra "Acordando o servidor", e as leituras e o login tentam de novo sozinhos (até 10 vezes, a cada 6 segundos). Código em `client/src/app/shared/espera/`.
+- **Manter o app acordado:** o workflow `Manter o site acordado` (`.github/workflows/manter-acordado.yml`) visita a página inicial a cada 10 minutos. Essa página é um arquivo estático e **não consulta o banco**, então o banco continua pausando e não gasta a franquia gratuita do mês. Para parar: Actions > Manter o site acordado > menu "..." > Disable workflow. O GitHub desliga sozinho agendamentos de repositórios sem atividade por 60 dias. Para apontar para outro endereço, crie a variável de repositório `SITE_URL`.
+- **Tarefa de exclusões agendadas:** roda uma vez por dia (variável `EXCLUSOES_INTERVALO_HORAS`, padrão 24). Com a consulta a cada hora que existia antes, o app acordado manteria o banco sempre ligado.
+
+O que **não** dá para evitar no plano gratuito: depois de um tempo sem uso, a primeira ação que precisa do banco (login, catálogo) ainda espera o banco acordar.
