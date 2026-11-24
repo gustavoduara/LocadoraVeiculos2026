@@ -36,7 +36,7 @@ public class Program
             opcoes.PayloadSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
         builder.Services.AddScoped<IChatNotificador, ChatNotificador>();
 
-        // Executa de hora em hora as exclusões de locadora agendadas (os testes desligam e chamam o serviço direto).
+        // Executa uma vez por dia as exclusões de locadora agendadas (os testes desligam e chamam o serviço direto).
         if (!string.Equals(builder.Configuration["EXCLUSOES_AGENDADAS_DESLIGADAS"], "true", StringComparison.OrdinalIgnoreCase))
             builder.Services.AddHostedService<Config.Conta.ExclusoesAgendadasHostedService>();
 
