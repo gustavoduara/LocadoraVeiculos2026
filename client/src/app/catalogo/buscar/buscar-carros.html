@@ -215,12 +215,33 @@
                         }
                     </div>
 
+                    @if (carro.meuPedido; as pedido) {
+                    <p class="mt-3 flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium"
+                        [class.selo-verde]="pedido.status === 'Aprovada'" [class.selo-ambar]="pedido.status !== 'Aprovada'">
+                        <mat-icon class="!h-5 !w-5 !text-[20px]">{{ pedido.status === 'Aprovada' ? 'check_circle' : 'hourglass_top' }}</mat-icon>
+                        {{ pedido.status === 'Aprovada' ? 'Reserva aprovada' : 'Pedido enviado' }}:
+                        {{ pedido.retirada | date: 'dd/MM' }} a {{ pedido.devolucao | date: 'dd/MM' }}
+                    </p>
+
+                    <a mat-flat-button class="mt-3 w-full" routerLink="/meus-pedidos">
+                        <mat-icon>receipt_long</mat-icon>
+                        Ver pedido
+                    </a>
+                    } @else {
+                    @if (carro.proximaOcupacao; as ocupado) {
+                    <p class="mt-3 flex items-center gap-2 text-sm text-gray-600">
+                        <mat-icon class="!h-5 !w-5 !text-[20px]">event_busy</mat-icon>
+                        Alugado de {{ ocupado.retirada | date: 'dd/MM' }} a {{ ocupado.devolucao | date: 'dd/MM' }}
+                    </p>
+                    }
+
                     @if (carro.disponivel !== false && carro.diariaAPartirDe !== null) {
                     <a mat-flat-button class="mt-4 w-full" [routerLink]="['/reservar', carro.id]"
                         [queryParams]="{ retirada: retirada() || null, devolucao: devolucao() || null }">
                         <mat-icon>event_available</mat-icon>
                         Reservar
                     </a>
+                    }
                     }
 
                     <!-- Sempre disponível: perguntar não depende de o carro estar livre nem de ter preço. -->

@@ -1,6 +1,6 @@
 import { addDays, format } from 'date-fns';
 
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -37,6 +37,7 @@ const TAMANHO_DA_PAGINA = 12;
         MatInputModule,
         MatSelectModule,
         CurrencyPipe,
+        DatePipe,
         FotoCatalogo,
         Revelar,
         RouterLink,

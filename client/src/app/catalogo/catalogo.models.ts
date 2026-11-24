@@ -43,6 +43,10 @@ export interface CarroCatalogoModel {
     totalDoPeriodo: number | null;
     /** Só quando há datas. */
     disponivel: boolean | null;
+    /** O próximo período em que o carro está alugado (para quem ainda não escolheu datas). */
+    proximaOcupacao?: { retirada: string; devolucao: string } | null;
+    /** O pedido deste cliente para este carro que ainda vale (aguardando resposta ou aprovado). */
+    meuPedido?: { reservaId: string; status: 'Pendente' | 'Aprovada'; retirada: string; devolucao: string } | null;
 }
 
 export interface ResultadoCatalogoModel {
