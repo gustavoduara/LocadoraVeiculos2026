@@ -141,7 +141,7 @@ export class Rodape {
     protected readonly telefoneLink = '+5549991130685';
 
     protected readonly perfilGithub = 'https://github.com/gustavoduara';
-    protected readonly repositorio = 'https://github.com/gustavoduara/LocadoraVeiculos2026';
+    protected readonly repositorio = 'https://github.com/gustavoduara/SerraDrive';
 
     protected readonly operacao: LinkRodape[] = [
         { rotulo: 'Aluguéis', rota: '/alugueis' },

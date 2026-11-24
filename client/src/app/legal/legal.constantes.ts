@@ -8,4 +8,4 @@ export const VERSAO_DOS_TERMOS = '2026-11-22';
 export const DATA_DOS_TERMOS = '22 de novembro de 2026';
 
 export const CONTATO_TELEFONE = '(49) 99113-0685';
-export const CONTATO_PROBLEMAS = 'https://github.com/gustavoduara/LocadoraVeiculos2026/issues';
+export const CONTATO_PROBLEMAS = 'https://github.com/gustavoduara/SerraDrive/issues';
