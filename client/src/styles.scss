@@ -386,6 +386,9 @@ html {
 .hero-busca {
   margin-inline: -16px;
   background-color: var(--menu-fundo);
+  background-image: url('/img/contornos.svg');
+  background-size: cover;
+  background-position: center;
   color: #ffffff;
 
   h2 {

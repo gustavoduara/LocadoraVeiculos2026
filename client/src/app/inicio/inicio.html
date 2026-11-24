@@ -1,32 +1,13 @@
-<mat-card>
-    <mat-card-content>
-        <div class="grid grid-cols-1 lg:grid-cols-12 items-center justify-center gap-3 p-3">
-            <div class="lg:col-span-10">
-                @if (usuarioAutenticado$ | async; as usuarioAutenticado) {
-                <h2 class="text-2xl">
-                    Olá, <span class="font-medium text-primary">{{ usuarioAutenticado.nomeCompleto }}</span>.
-                </h2>
-                <hr class="text-primary w-2/4 mt-2" />
-                }
+<header class="contornos rounded-2xl px-5 py-7 text-white sm:px-8 sm:py-9">
+    @if (usuarioAutenticado$ | async; as usuarioAutenticado) {
+    <h2 class="!text-white">Olá, {{ usuarioAutenticado.nomeCompleto }}.</h2>
+    }
 
-                <h3 class="text-2xl mt-4">
-                    Seja bem-vindo(a) à <span class="font-medium text-primary">SerraDrive</span>!
-                </h3>
-
-                <p class="mt-4 text-base">
-                    Nossa aplicação visa facilitar o gerenciamento de negócios de locação através da
-                    organização fácil de informações, cálculo de taxas e acompanhamento de atrasos. Gerencie
-                    sua frota de veículos e fique por dentro dos aluguéis em aberto. Você também pode
-                    cadastrar parceiros e cupons de desconto.
-                </p>
-            </div>
-
-            <div class="lg:col-span-2">
-                <img class="max-w-full h-auto" src="img/img_inicial.png" alt="Ilustração do Início" />
-            </div>
-        </div>
-    </mat-card-content>
-</mat-card>
+    <p class="mt-3 max-w-2xl text-base text-white/85">
+        Bem-vindo(a) ao SerraDrive. Cuide da frota, acompanhe os aluguéis em aberto, responda às reservas e confira
+        abaixo quais carros estão livres em cada período.
+    </p>
+</header>
 
 <!-- Pesquisa de período -->
 <mat-card class="mt-6">
