@@ -18,43 +18,44 @@ html {
   --fonte-texto: 'Figtree', system-ui, sans-serif;
   --mat-sys-brand-font-family: var(--fonte-titulo);
   --mat-sys-plain-font-family: var(--fonte-texto);
-  --mat-sys-primary: light-dark(#0b62e6, #8ab8ff);
-  --mat-sys-on-primary: light-dark(#ffffff, #002a66);
-  --mat-sys-primary-container: light-dark(#d9e6ff, #0a47a8);
-  --mat-sys-on-primary-container: light-dark(#001b44, #dbe7ff);
-  --mat-sys-secondary: light-dark(#4a5a70, #bcc8da);
-  --mat-sys-on-secondary: light-dark(#ffffff, #1c2a3e);
-  --mat-sys-secondary-container: light-dark(#dde5f1, #33445c);
-  --mat-sys-on-secondary-container: light-dark(#0f1c30, #dde5f1);
-  --mat-sys-tertiary: light-dark(#c2410c, #ffa070);
-  --mat-sys-on-tertiary: light-dark(#ffffff, #3d1500);
-  --mat-sys-tertiary-container: light-dark(#ffdccb, #6b2a08);
-  --mat-sys-on-tertiary-container: light-dark(#3a1300, #ffdccb);
-  --mat-sys-background: light-dark(#f1f4f9, #0b1220);
-  --mat-sys-on-background: light-dark(#0b1d33, #e6ecf5);
-  --mat-sys-surface: light-dark(#f1f4f9, #0b1220);
-  --mat-sys-on-surface: light-dark(#0b1d33, #e6ecf5);
-  --mat-sys-surface-variant: light-dark(#e3e9f2, #2c3a50);
-  --mat-sys-on-surface-variant: light-dark(#44546a, #c5cfdd);
-  --mat-sys-outline: light-dark(#6b7a90, #8b99ae);
-  --mat-sys-outline-variant: light-dark(#d0d8e4, #2c3a50);
-  --mat-sys-surface-container-lowest: light-dark(#ffffff, #08101c);
-  --mat-sys-surface-container-low: light-dark(#f7f9fc, #101a2b);
-  --mat-sys-surface-container: light-dark(#edf1f7, #142033);
-  --mat-sys-surface-container-high: light-dark(#e5ebf3, #1c2a40);
-  --mat-sys-surface-container-highest: light-dark(#dde5ef, #26364f);
-  --mat-sys-tertiary-brand: #ff8a3d;
+  --mat-sys-primary: light-dark(#1f5a38, #8fd05a);
+  --mat-sys-on-primary: light-dark(#ffffff, #0f2e1a);
+  --mat-sys-primary-container: light-dark(#c9e8d3, #1f5a38);
+  --mat-sys-on-primary-container: light-dark(#0b2a18, #d4f0dc);
+  --mat-sys-secondary: light-dark(#4f6b58, #b7ccbd);
+  --mat-sys-on-secondary: light-dark(#ffffff, #22352a);
+  --mat-sys-secondary-container: light-dark(#d3e8d9, #384b3f);
+  --mat-sys-on-secondary-container: light-dark(#0e2416, #d3e8d9);
+  --mat-sys-tertiary: light-dark(#c95a0c, #ff9a3d);
+  --mat-sys-on-tertiary: light-dark(#ffffff, #4a2300);
+  --mat-sys-tertiary-container: light-dark(#ffdcc2, #6a3400);
+  --mat-sys-on-tertiary-container: light-dark(#3a1800, #ffdcc2);
+  --mat-sys-background: light-dark(#f4f7f4, #141815);
+  --mat-sys-on-background: light-dark(#181d1a, #e1e6e1);
+  --mat-sys-surface: light-dark(#f4f7f4, #141815);
+  --mat-sys-on-surface: light-dark(#181d1a, #e1e6e1);
+  --mat-sys-surface-variant: light-dark(#dce5de, #414943);
+  --mat-sys-on-surface-variant: light-dark(#414943, #c1c9c2);
+  --mat-sys-outline: light-dark(#717972, #8b938c);
+  --mat-sys-outline-variant: light-dark(#c1c9c2, #414943);
+  --mat-sys-surface-container-lowest: light-dark(#ffffff, #0f1310);
+  --mat-sys-surface-container-low: light-dark(#eef2ee, #1a1f1b);
+  --mat-sys-surface-container: light-dark(#e9eee9, #1e2420);
+  --mat-sys-surface-container-high: light-dark(#e3e9e4, #282e29);
+  --mat-sys-surface-container-highest: light-dark(#dde3de, #333a35);
+  --mat-sys-tertiary-brand: #f47b20;
 
-  /* Azul de ação (botão Buscar) e amarelo de foco do teclado. */
-  --azul-acao: #0b62e6;
+  /* Laranja de ação (botão Buscar) e amarelo de foco do teclado. */
+  --cor-acao: #c95a0c;
+  --cor-acao-forte: #b34f0a;
   --sinal-amarelo: #ffd24a;
 
-  /* Faixa de busca, menu lateral, barra inferior e rodapé: azul-marinho. */
-  --menu-fundo: #05203c;
+  /* Faixa de busca, menu lateral, barra inferior e rodapé: verde-floresta. */
+  --menu-fundo: #1f3d2b;
 }
 
 html.modo-noturno {
-  --menu-fundo: #04182c;
+  --menu-fundo: #16281d;
 }
 
 body {
@@ -91,9 +92,9 @@ body {
 /* Cores do rodapé (trocadas no modo noturno). */
 :root {
   --rodape-fundo: var(--menu-fundo);
-  --rodape-texto: #b7c6da;
+  --rodape-texto: #c3d3c8;
   --rodape-titulo: #ffffff;
-  --rodape-link: #8ab8ff;
+  --rodape-link: #9bd66a;
   --rodape-linha: rgb(255 255 255 / 0.16);
 }
 
@@ -381,7 +382,7 @@ html {
   }
 }
 
-/* Faixa de busca: azul-marinho, título grande e uma linha de campos brancos. */
+/* Faixa de busca: verde-floresta, título grande e uma linha de campos brancos. */
 .hero-busca {
   margin-inline: -16px;
   background-color: var(--menu-fundo);
@@ -475,7 +476,7 @@ html {
   padding-inline: 32px;
   border: 0;
   border-radius: 8px;
-  background-color: var(--azul-acao);
+  background-color: var(--cor-acao);
   color: #ffffff;
   font: inherit;
   font-size: 1.1rem;
@@ -483,7 +484,7 @@ html {
   cursor: pointer;
 
   &:hover:not(:disabled) {
-    background-color: #0a54c7;
+    background-color: var(--cor-acao-forte);
   }
 
   &:disabled {
@@ -510,7 +511,7 @@ html {
   input[type='checkbox'] {
     width: 20px;
     height: 20px;
-    accent-color: var(--azul-acao);
+    accent-color: var(--cor-acao);
   }
 
   .hero-link {
