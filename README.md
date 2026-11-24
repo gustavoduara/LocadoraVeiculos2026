@@ -13,11 +13,17 @@ Funcionários, frota, clientes, condutores, planos de cobrança e aluguéis com 
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)
 ![SQL Server](https://img.shields.io/badge/SQL%20Server-LocalDB-CC2927?logo=microsoftsqlserver&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-06B6D4?logo=tailwindcss&logoColor=white)
-![CI](https://github.com/gustavoduara/LocadoraVeiculos2026/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/gustavoduara/SerraDrive/actions/workflows/ci.yml/badge.svg)
 ![Cobertura](https://img.shields.io/badge/cobertura-89%25-brightgreen)
 ![Status](https://img.shields.io/badge/status-em%20desenvolvimento-orange)
 
 </div>
+
+<p align="center">
+  <img src="docs/animacao/serradrive.gif" alt="Resumo animado do SerraDrive: catálogo, reserva no celular, aprovação e planos de cobrança" width="720" />
+  <br />
+  <sub>Resumo em 13 segundos. <a href="docs/animacao/serradrive.mp4">Versão em vídeo (MP4)</a></sub>
+</p>
 
 > **Primeira visita lenta.** No plano gratuito da Azure o servidor e o banco "dormem" quando ficam parados: a primeira visita depois de um tempo pode levar até 1 minuto. O site mostra "Acordando o servidor" e abre sozinho.
 
@@ -268,8 +274,8 @@ flowchart LR
 ### 1. Clonar o repositório
 
 ```bash
-git clone https://github.com/gustavoduara/LocadoraVeiculos2026.git
-cd LocadoraVeiculos2026
+git clone https://github.com/gustavoduara/SerraDrive.git
+cd SerraDrive
 ```
 
 ### 2. Configurar os segredos da API
@@ -369,7 +375,7 @@ A documentação interativa completa está no Swagger.
 ## 📂 Estrutura de pastas
 
 ```
-LocadoraVeiculos2026/
+SerraDrive/
 ├── Server/                                  # Back-end (.NET 10)
 │   ├── LocadoraVeiculos2026/                #   WebApi: controllers, config, Program.cs
 │   ├── LocadoraVeiculos.Aplicacao/          #   Casos de uso (comandos, handlers, validadores)

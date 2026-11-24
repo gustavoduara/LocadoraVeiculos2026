@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<title>SerraDrive: resumo animado</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;800&display=swap" rel="stylesheet" />
+<style>
+  /* Resumo do projeto em 13 segundos. A linha do tempo é controlada por render(ms), para gerar o vídeo quadro a quadro. */
+  :root { --verde: #1f3d2b; --laranja: #c95a0c; --texto: #ffffff; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 1280px; height: 720px; overflow: hidden; background: #000; }
+  body { font-family: 'Figtree', system-ui, sans-serif; color: var(--texto); }
+
+  #palco { position: relative; width: 1280px; height: 720px; overflow: hidden; background: var(--verde); }
+  #fundo { position: absolute; inset: -60px; background: var(--verde) url('../../client/public/img/contornos.svg') center / cover; will-change: transform; }
+
+  .cena { position: absolute; inset: 0; opacity: 0; }
+
+  /* Abertura e fecho */
+  .centro { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 26px; }
+  .centro .logo { width: 560px; height: auto; }
+  .centro p { font-size: 34px; font-weight: 600; color: rgb(255 255 255 / .9); }
+  .fecho .logo { width: 300px; }
+  .fecho ul { list-style: none; display: flex; flex-direction: column; gap: 12px; font-size: 36px; font-weight: 600; }
+  .fecho .repo { margin-top: 10px; padding: 12px 24px; border-radius: 10px; background: var(--laranja); font-size: 34px; font-weight: 800; }
+  .fecho .credito { position: absolute; bottom: 30px; left: 0; right: 0; font-size: 18px; font-weight: 400; color: rgb(255 255 255 / .65); }
+
+  /* Cenas com legenda à esquerda e tela à direita */
+  .legenda { position: absolute; left: 70px; top: 50%; width: 440px; transform: translateY(-50%); font-size: 58px; font-weight: 800; line-height: 1.06; letter-spacing: -0.015em; }
+  .lado { position: absolute; right: 56px; top: 0; bottom: 0; width: 700px; display: flex; align-items: center; }
+  .janela { position: relative; width: 100%; border-radius: 14px; overflow: hidden; background: #fff; box-shadow: 0 24px 60px rgb(0 0 0 / .45); }
+  .janela img { display: block; width: 100%; height: auto; }
+  .janela .par { position: relative; }
+  .janela .par img + img { position: absolute; inset: 0; }
+
+  .celulares { position: absolute; right: 70px; top: 50%; display: flex; gap: 28px; transform: translateY(-50%); }
+  .celular { width: 292px; border-radius: 30px; overflow: hidden; border: 6px solid #0b140e; background: #fff; box-shadow: 0 24px 60px rgb(0 0 0 / .45); }
+  .celular img { display: block; width: 100%; height: auto; }
+
+  #barra { position: absolute; left: 0; bottom: 0; height: 6px; width: 0; background: var(--laranja); }
+</style>
+</head>
+<body>
+<div id="palco">
+  <div id="fundo"></div>
+
+  <section class="cena centro" id="c1">
+    <img class="logo" id="logo1" src="../../client/public/img/serradrive-logo.png" alt="SerraDrive" />
+    <p id="sub1">Sistema web para locadoras de veículos</p>
+  </section>
+
+  <section class="cena" id="c2">
+    <h2 class="legenda">O cliente busca carros de todas as locadoras</h2>
+    <div class="lado"><div class="janela" id="j2"><img src="../img/02-catalogo.jpg" alt="" /></div></div>
+  </section>
+
+  <section class="cena" id="c3">
+    <h2 class="legenda">Reserva pelo celular, com ou sem seguro</h2>
+    <div class="celulares">
+      <div class="celular" id="p1"><img src="../img/05-celular-carros.jpg" alt="" /></div>
+      <div class="celular" id="p2"><img src="../img/06-celular-reserva.jpg" alt="" /></div>
+    </div>
+  </section>
+
+  <section class="cena" id="c4">
+    <h2 class="legenda">A locadora aprova e o pedido vira aluguel</h2>
+    <div class="lado"><div class="janela" id="j4"><div class="par"><img id="i4a" src="../img/10-reservas.jpg" alt="" /><img id="i4b" src="../img/11-alugueis.jpg" alt="" /></div></div></div>
+  </section>
+
+  <section class="cena" id="c5">
+    <h2 class="legenda">Preço e plano de cobrança de cada carro</h2>
+    <div class="lado"><div class="janela" id="j5"><img src="../img/09-planos-cobranca.jpg" alt="" /></div></div>
+  </section>
+
+  <section class="cena centro fecho" id="c6">
+    <img class="logo" id="logo6" src="../../client/public/img/serradrive-logo.png" alt="SerraDrive" />
+    <ul id="lista6">
+      <li>230 testes automatizados</li>
+      <li>.NET 10, Angular 20, SQL Server, Docker e Azure</li>
+    </ul>
+    <div class="repo" id="repo6">github.com/gustavoduara/SerraDrive</div>
+    <p class="credito">Fotos dos carros: Wikimedia Commons (licenças livres, créditos no README)</p>
+  </section>
+
+  <div id="barra"></div>
+</div>
+
+<script>
+  const TOTAL = 13000;
+  // início e fim de cada cena, em milissegundos
+  const CENAS = { c1: [0, 2000], c2: [2000, 4400], c3: [4400, 6800], c4: [6800, 9300], c5: [9300, 11000], c6: [11000, 13000] };
+
+  const limitar = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const suave = (p) => 1 - Math.pow(1 - limitar(p), 3);              // desacelera no fim
+  const apagar = (t, ini, fim, entrada = 350, saida = 320) =>        // opacidade de uma cena
+    limitar((t - ini) / entrada) * limitar((fim - t) / saida);
+
+  const $ = (id) => document.getElementById(id);
+
+  function cena(id, t) {
+    const [ini, fim] = CENAS[id];
+    const el = $(id);
+    el.style.opacity = t >= ini && t < fim ? apagar(t, ini, fim) : 0;
+    return limitar((t - ini) / (fim - ini));
+  }
+
+  function entrar(el, t, ini, atraso = 0, dx = 90) {
+    const p = suave((t - ini - atraso) / 650);
+    el.style.opacity = p;
+    el.style.transform = `translateX(${(1 - p) * dx}px)`;
+  }
+
+  window.render = function (t) {
+    // O relevo do fundo anda devagar durante o vídeo todo.
+    const andar = t / TOTAL;
+    $('fundo').style.transform = `translate(${-40 * andar}px, ${-18 * andar}px) scale(${1 + 0.06 * andar})`;
+    $('barra').style.width = `${100 * andar}%`;
+
+    // 1. Abertura
+    let p = cena('c1', t);
+    $('logo1').style.transform = `scale(${0.92 + 0.08 * suave(t / 800)})`;
+    $('sub1').style.opacity = limitar((t - 600) / 500);
+
+    // 2. Catálogo
+    p = cena('c2', t);
+    entrar($('j2'), t, CENAS.c2[0], 150);
+    $('j2').style.transform += ` scale(${1 + 0.03 * p})`;
+
+    // 3. Celular: dois aparelhos entram um depois do outro
+    p = cena('c3', t);
+    entrar($('p1'), t, CENAS.c3[0], 100, 70);
+    entrar($('p2'), t, CENAS.c3[0], 420, 70);
+
+    // 4. Reservas viram aluguel: a segunda tela cobre a primeira no meio da cena
+    p = cena('c4', t);
+    entrar($('j4'), t, CENAS.c4[0], 150);
+    $('i4b').style.opacity = limitar((t - (CENAS.c4[0] + 1250)) / 450);
+
+    // 5. Planos de cobrança
+    p = cena('c5', t);
+    entrar($('j5'), t, CENAS.c5[0], 150);
+    $('j5').style.transform += ` scale(${1 + 0.03 * p})`;
+
+    // 6. Fecho
+    p = cena('c6', t);
+    $('logo6').style.opacity = limitar((t - CENAS.c6[0]) / 400);
+    $('lista6').style.opacity = limitar((t - CENAS.c6[0] - 350) / 500);
+    $('repo6').style.opacity = limitar((t - CENAS.c6[0] - 900) / 500);
+  };
+
+  // Para ver no navegador: abre e toca em tempo real. O gerador de vídeo chama render(ms) quadro a quadro.
+  window.total = TOTAL;
+  const aoVivo = new URLSearchParams(location.search).get('quadro') === null;
+  if (aoVivo) {
+    const inicio = performance.now();
+    const passo = () => { render((performance.now() - inicio) % (TOTAL + 800)); requestAnimationFrame(passo); };
+    requestAnimationFrame(passo);
+  } else {
+    render(0);
+  }
+</script>
+</body>
+</html>
