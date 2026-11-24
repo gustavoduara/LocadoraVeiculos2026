@@ -1,0 +1,24 @@
+name: Manter o site acordado
+
+# No plano gratuito da Azure o app "dorme" depois de uns 20 minutos sem visita, e a primeira visita seguinte demora.
+# A cada 10 minutos este agendamento visita a PÁGINA INICIAL (arquivo estático: não consulta o banco, que pode continuar pausando).
+# Para parar: Actions > Manter o site acordado > menu "..." > Disable workflow. O GitHub também desliga agendamentos
+# de repositórios sem atividade por 60 dias.
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  visitar:
+    name: Visitar a página inicial
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+
+    steps:
+      - name: Visitar o site
+        env:
+          SITE: ${{ vars.SITE_URL || 'https://serradrive-bqgdgcctg7hjh8cy.brazilsouth-01.azurewebsites.net' }}
+        run: |
+          # Sem "-f": se a cota diária do plano acabar o site responde 403 e isso não deve virar falha vermelha.
+          curl -sS --max-time 90 --retry 2 --retry-delay 10 -o /dev/null -w "Resposta %{http_code} em %{time_total}s\n" "$SITE/" || echo "Sem resposta do site."
