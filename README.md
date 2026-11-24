@@ -26,6 +26,7 @@ Funcionários, frota, clientes, condutores, planos de cobrança e aluguéis com 
 ## 📑 Sumário
 
 - [Sobre o projeto](#-sobre-o-projeto)
+- [Telas](#-telas)
 - [Funcionalidades](#-funcionalidades)
 - [Regras de negócio](#-regras-de-negócio)
 - [Tecnologias](#-tecnologias)
@@ -45,6 +46,71 @@ O sistema permite que uma **empresa locadora** crie sua conta, cadastre seus **f
 Cada empresa enxerga **apenas os próprios dados** (multiempresa), e o que cada pessoa pode fazer depende do seu **perfil**: o administrador da empresa gerencia tudo, enquanto o funcionário executa as tarefas operacionais e cuida do próprio cadastro.
 
 > Projeto de estudo desenvolvido a partir de uma especificação da formação da **Academia do Programador**.
+
+---
+
+## 📸 Telas
+
+Prints do sistema rodando com dados de exemplo (locadora "Serra Aluguel" e a cliente Beatriz Lima). As imagens dos carros são ilustrações feitas para o projeto.
+
+### Para o cliente
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/img/02-catalogo.jpg" alt="Catálogo com busca por período e cartões dos carros" /></td>
+    <td width="50%"><img src="docs/img/03-meus-pedidos.jpg" alt="Meus pedidos: reservas enviadas e respostas das locadoras" /></td>
+  </tr>
+  <tr>
+    <td align="center"><sub><b>Catálogo</b>: busca por período, carros de todas as locadoras e preço a partir da menor diária.</sub></td>
+    <td align="center"><sub><b>Meus pedidos</b>: acompanhamento das reservas e do que a locadora respondeu.</sub></td>
+  </tr>
+</table>
+
+### No celular
+
+O cliente usa uma barra de navegação inferior, os filtros ficam recolhidos e, na reserva, o total e o botão de enviar ficam sempre à vista.
+
+<table>
+  <tr>
+    <td width="33%"><img src="docs/img/04-celular-catalogo.jpg" alt="Catálogo no celular" /></td>
+    <td width="33%"><img src="docs/img/05-celular-carros.jpg" alt="Lista de carros no celular" /></td>
+    <td width="33%"><img src="docs/img/06-celular-reserva.jpg" alt="Reserva no celular, com o total fixo e a escolha de seguro" /></td>
+  </tr>
+  <tr>
+    <td align="center"><sub><b>Busca</b></sub></td>
+    <td align="center"><sub><b>Carros</b></sub></td>
+    <td align="center"><sub><b>Reserva</b>: com ou sem seguro, vendo o total de cada opção.</sub></td>
+  </tr>
+</table>
+
+### Para a locadora
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/img/07-locadora-inicio.jpg" alt="Início da locadora com a vitrine da frota" /></td>
+    <td width="50%"><img src="docs/img/08-automoveis.jpg" alt="Lista de automóveis da frota" /></td>
+  </tr>
+  <tr>
+    <td align="center"><sub><b>Início</b>: pesquisa de período e vitrine da frota.</sub></td>
+    <td align="center"><sub><b>Automóveis</b>: frota com fotos, placa, grupo e valor do seguro.</sub></td>
+  </tr>
+  <tr>
+    <td><img src="docs/img/09-planos-cobranca.jpg" alt="Planos de cobrança de cada carro" /></td>
+    <td><img src="docs/img/10-reservas.jpg" alt="Reservas recebidas para aprovar ou recusar" /></td>
+  </tr>
+  <tr>
+    <td align="center"><sub><b>Planos de cobrança</b>: Diário, Controlado e Livre, definidos em cada carro.</sub></td>
+    <td align="center"><sub><b>Reservas</b>: pedidos dos clientes para aprovar ou recusar.</sub></td>
+  </tr>
+  <tr>
+    <td><img src="docs/img/11-alugueis.jpg" alt="Aluguéis em aberto" /></td>
+    <td><img src="docs/img/01-login.jpg" alt="Tela de entrada, com escolha entre cliente e locadora" /></td>
+  </tr>
+  <tr>
+    <td align="center"><sub><b>Aluguéis</b>: o aprovado vira aluguel em aberto, com devolução e edição.</sub></td>
+    <td align="center"><sub><b>Entrada</b>: o mesmo login atende cliente e locadora.</sub></td>
+  </tr>
+</table>
 
 ---
 
