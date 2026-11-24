@@ -5,7 +5,7 @@
     fixedInViewport
     [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
     [mode]="(isHandset$ | async) ? 'over' : 'side'"
-    [opened]="(isHandset$ | async) === false"
+    [opened]="(isHandset$ | async) === false && usuarioAutenticado?.cargo !== 'Cliente'"
   >
     <mat-toolbar>
       @if (isHandset$ | async) {
@@ -195,8 +195,8 @@
   </mat-sidenav>
   <mat-sidenav-content>
     <app-aviso-demonstracao />
-    <mat-toolbar color="primary">
-      @if (isHandset$ | async) {
+    <mat-toolbar color="primary" class="topo-verde">
+      @if ((isHandset$ | async) && usuarioAutenticado?.cargo !== 'Cliente') {
         <button
           type="button"
           aria-label="Ativar barra de navegação lateral"
@@ -206,8 +206,12 @@
         >
           <mat-icon aria-label="Ícone ativar barra de navegação lateral">menu</mat-icon>
         </button>
+      }
 
-        <span class="marca-topo-celular">SerraDrive</span>
+      @if (usuarioAutenticado?.cargo === 'Cliente' || (isHandset$ | async)) {
+        <a [routerLink]="usuarioAutenticado?.cargo === 'Cliente' ? '/catalogo' : '/inicio'" class="marca-topo" aria-label="SerraDrive, ir para o início">
+          <img src="img/serradrive-logo.png" alt="SerraDrive - Locadora de Veículos" />
+        </a>
       }
       @if (usuarioAutenticado) {
         <button mat-raised-button [matMenuTriggerFor]="opcoesUsuario" class="ml-auto botao-usuario" aria-label="Menu da conta">
@@ -243,9 +247,30 @@
         </mat-menu>
       }
     </mat-toolbar>
-    <svg height="32" width="32" class="relative top-0 right-0">
-      <path class="sidenav-svg" d="M 32,0 H -32,0 V 0,32 a 32, 32 0 0, 1 32,-32"></path>
-    </svg>
+
+    @if (usuarioAutenticado?.cargo === 'Cliente' && (isHandset$ | async) === false) {
+      <nav class="abas-topo" aria-label="Navegação principal">
+        <a [routerLink]="['/catalogo']" routerLinkActive="ativo">
+          <mat-icon class="material-icons-outlined">search</mat-icon>
+          Buscar carros
+        </a>
+        <a [routerLink]="['/meus-pedidos']" routerLinkActive="ativo">
+          <mat-icon class="material-icons-outlined">event_available</mat-icon>
+          Meus pedidos
+        </a>
+        <a [routerLink]="['/mensagens']" routerLinkActive="ativo">
+          <mat-icon class="material-icons-outlined">chat</mat-icon>
+          Mensagens
+          @if (naoLidas() > 0) {
+            <span class="contador" aria-label="{{ naoLidas() }} mensagens não lidas">{{ naoLidas() }}</span>
+          }
+        </a>
+        <a [routerLink]="['/meus-dados']" routerLinkActive="ativo">
+          <mat-icon class="material-icons-outlined">badge</mat-icon>
+          Meus dados
+        </a>
+      </nav>
+    }
 
     @if (exclusaoAgendada(); as data) {
       <div class="mx-4 mb-4 flex flex-wrap items-center justify-between gap-3 rounded-lg px-4 py-3 text-sm selo-ambar" role="status">
