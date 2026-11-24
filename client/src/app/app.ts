@@ -5,13 +5,14 @@ import { Router, RouterOutlet } from '@angular/router';
 import { AuthService } from './auth/auth.service';
 import { NotificacaoService } from './shared/notificacao/notificacao.service';
 import { AvisoDemonstracao } from './shared/demonstracao/aviso-demonstracao';
+import { AvisoServidor } from './shared/espera/aviso-servidor';
 import { Rodape } from './shared/rodape/rodape';
 import { TemaService } from './shared/tema/tema.service';
 import { ShellComponent } from './shared/shell/shell.component';
 
 @Component({
   selector: 'app-root',
-  imports: [ShellComponent, RouterOutlet, AsyncPipe, Rodape, AvisoDemonstracao],
+  imports: [ShellComponent, RouterOutlet, AsyncPipe, Rodape, AvisoDemonstracao, AvisoServidor],
   template: `
     @if (accessToken$ | async; as accessToken) {
       <app-shell
@@ -30,6 +31,8 @@ import { ShellComponent } from './shared/shell/shell.component';
       </main>
       <app-rodape />
     }
+
+    <app-aviso-servidor />
   `,
 })
 export class App {
